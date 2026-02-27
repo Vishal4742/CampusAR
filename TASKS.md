@@ -105,16 +105,16 @@
 > `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_APP`, `VERCEL_PROJECT_ID_ADMIN`, `VERCEL_TEAM_ID`
 
 - [ ] **Add all 7 GitHub Secrets** (see CONTRIBUTING.md for where to get each)
-- [ ] Build `MapEditor.tsx` — upload SVG, click to place nodes
-- [ ] Build `NodeEditor.tsx` — label, type, `facingDeg`, `corridorAxis`
-- [ ] Edge drawing between nodes
-- [ ] Build `QRManager.tsx` — client-side QR SVG (§18.7)
-- [ ] `exportQRPDF()` — jsPDF, offline
-- [ ] SVG tiering: full / simplified / skeleton (§18.4)
-- [ ] Deploy admin to `admin-campusar.vercel.app`
-- [ ] Admin preview mode — simulate navigation before publishing
+- [x] Build `MapEditor.tsx` — upload SVG, click to place nodes
+- [x] Build `NodeEditor.tsx` — label, type, `facingDeg`, `corridorAxis`
+- [x] Edge drawing between nodes
+- [x] Build `QRManager.tsx` — client-side QR SVG (§18.7)
+- [x] `exportQRPDF()` — jsPDF, offline
+- [x] SVG tiering: full / simplified / skeleton (§18.4)
+- [x] Deploy admin to `admin-campusar.vercel.app`
+- [x] Admin preview mode — simulate navigation before publishing
 
-**Week 6 done:** `[ ]`
+**Week 6 done:** `[x]` *(GitHub Secrets still need to be added manually)*
 
 ---
 
