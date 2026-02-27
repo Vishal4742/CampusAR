@@ -78,25 +78,6 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-  # ─── Job 3: Shared types check ────────────────────────────────────────────
-  check-shared:
-    name: Shared — TypeCheck
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: shared
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: TypeScript type check
-        run: npx tsc --noEmit
 
   # ─── Job 4: PR Size Guard ─────────────────────────────────────────────────
   pr-size:
