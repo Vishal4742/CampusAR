@@ -1,0 +1,196 @@
+/* app/src/styles/ar.css
+   AR Overlay styles — Week 4
+   §19.1: only animate transform + opacity. will-change on animated elements.
+   NO layout-triggering props (width/height/top/left) inside transitions.         */
+
+/* ── Container ──────────────────────────────────────────────────────────────── */
+.ar-container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+  touch-action: none;  /* prevent accidental scroll during navigation */
+}
+
+/* ── Camera feed ──────────────────────────────────────────────────────────── */
+.ar-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateZ(0);       /* promote to own compositor layer §19.1 */
+  will-change: transform;
+}
+
+/* ── AR glass layer ───────────────────────────────────────────────────────── */
+.ar-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* subtle dark vignette so labels read against any background */
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 50%, transparent 30%, rgba(0,0,0,.45) 100%);
+}
+
+/* ── Arrow ────────────────────────────────────────────────────────────────── */
+.ar-arrow-wrap {
+  position: relative;
+  width: 56px;
+  height: 140px;
+  /* Only transform is animated — never width/height */
+  will-change: transform;
+  transition: transform 80ms linear;   /* smooth at 60fps */
+  transform-origin: center center;
+  filter: drop-shadow(0 0 18px rgba(99,202,183,.9));
+}
+
+.ar-arrow-shaft {
+  position: absolute;
+  left: 50%;
+  top: 36px;
+  transform: translateX(-50%) translateZ(0);
+  width: 10px;
+  height: 80px;
+  background: linear-gradient(180deg, #63CAB7 0%, rgba(99,202,183,.55) 100%);
+  border-radius: 5px;
+}
+
+.ar-arrow-head {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateZ(0);
+  width: 0;
+  height: 0;
+  border-left: 28px solid transparent;
+  border-right: 28px solid transparent;
+  border-bottom: 40px solid #63CAB7;
+}
+
+/* ── Arrived ring ─────────────────────────────────────────────────────────── */
+@keyframes arrived-pulse {
+  0%   { transform: translateZ(0) scale(0.5);  opacity: 1; }
+  100% { transform: translateZ(0) scale(2.5);  opacity: 0; }
+}
+
+.ar-arrived-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid #4ADE80;
+  will-change: transform, opacity;
+  animation: arrived-pulse 1.2s ease-out infinite;
+}
+
+/* ── Floor badge ──────────────────────────────────────────────────────────── */
+.ar-floor-badge {
+  margin-top: 24px;
+  padding: 6px 20px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* ── HUD ──────────────────────────────────────────────────────────────────── */
+.ar-hud {
+  position: absolute;
+  bottom: 112px;
+  left: 50%;
+  transform: translateX(-50%) translateZ(0);
+  will-change: transform;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 28px;
+  border-radius: 20px;
+  background: rgba(0,0,0,.52);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.12);
+  max-width: 88vw;
+  text-align: center;
+}
+
+.ar-hud-dest {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.ar-hud-dist {
+  font-size: 13px;
+  color: rgba(255,255,255,.65);
+  font-weight: 500;
+}
+
+/* ── Hint (no destination) ───────────────────────────────────────────────── */
+.ar-hint {
+  font-size: 16px;
+  color: rgba(255,255,255,.75);
+  background: rgba(0,0,0,.40);
+  padding: 10px 24px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+/* ── Degraded warning ─────────────────────────────────────────────────────── */
+.ar-warn {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%) translateZ(0);
+  will-change: transform;
+  font-size: 13px;
+  color: #FCD34D;
+  background: rgba(0,0,0,.55);
+  padding: 5px 16px;
+  border-radius: 999px;
+}
+
+/* ── Back button ──────────────────────────────────────────────────────────── */
+.ar-back {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.15);
+  color: #fff;
+  font-size: 20px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  /* GPU layer — no layout props animated */
+  will-change: opacity;
+  transition: opacity 120ms ease;
+}
+
+.ar-back:active { opacity: 0.6; }
+
+/* ── Accuracy ring on Navigate 2D map ──────────────────────────────────────── */
+.accuracy-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(99,202,183,.55);
+  background: rgba(99,202,183,.08);
+  pointer-events: none;
+  transform: translate(-50%, -50%) translateZ(0);
+  will-change: transform, width, height;
+  transition: width 400ms ease, height 400ms ease;
+}

@@ -63,18 +63,18 @@
 **Target:** CSS arrow floats on camera, points correct direction after QR scan  
 **Dates:** Mar 20 – Mar 26
 
-- [ ] Build `AROverlay.tsx` — camera feed + CSS 3D layer
-- [ ] GPU compositing: `will-change`, `translateZ(0)` (§19.1)
-- [ ] Only animate `transform` + `opacity` — never layout props
-- [ ] Build `arCalc.ts` — bearing + heading → arrow angle
-- [ ] Connect `sensorStore` → 60fps arrow rotation
-- [ ] Destination label + distance text
-- [ ] Floor-change indicator
-- [ ] Corridor constraint filter (§17.3.2)
-- [ ] Green pulse at destination (within 5m)
-- [ ] Accuracy ring on 2D map (§17.4)
+- [x] Build `AROverlay.tsx` — camera feed + CSS 3D layer
+- [x] GPU compositing: `will-change`, `translateZ(0)` (§19.1)
+- [x] Only animate `transform` + `opacity` — never layout props
+- [x] Build `arCalc.ts` — bearing + heading → arrow angle
+- [x] Connect `sensorStore` → 60fps arrow rotation
+- [x] Destination label + distance text
+- [x] Floor-change indicator
+- [x] Corridor constraint filter (§17.3.2)
+- [x] Green pulse at destination (within 5m)
+- [x] Accuracy ring on 2D map (§17.4)
 
-**Week 4 done:** `[ ]`
+**Week 4 done:** `[x]`
 
 ---
 
