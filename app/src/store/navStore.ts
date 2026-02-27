@@ -7,6 +7,7 @@ import type { CampusMap, Node, CachedRoute, QRPayload } from '../../../shared/ty
 import { buildGraph } from '../engine/graph'
 import { precomputeAllRoutes, getRoute } from '../engine/dijkstra'
 import { loadStartupData, saveMapData, saveRouteCache } from '../offline/idb'
+import { searchIndex } from '../engine/searchIndex'
 import campusDataRaw from '../data/oct_campus.json'
 
 const campusData = campusDataRaw as unknown as CampusMap
@@ -30,30 +31,29 @@ function createNavStore() {
         const map: CampusMap = mapData ?? campusData
         setCampusMap(map)
 
-        // Build node lookup index
+        // Build node lookup index + search index
         const idx = new Map<string, Node>()
+        const allNodes: Node[] = []
         for (const building of map.buildings) {
             for (const floor of building.floors) {
                 for (const node of floor.nodes) {
                     idx.set(node.id, node)
+                    allNodes.push(node)
                 }
             }
         }
         setNodeIndex(idx)
+        searchIndex.build(allNodes)   // prefix trie — O(N·L) once at startup
 
         if (cachedRoutes.size > 0) {
             // Fast path — routes already precomputed
             setRouteCache(cachedRoutes)
         } else {
             // First install — precompute all routes and persist
-            const allNodes: Node[] = []
             const allEdges = []
-            for (const building of map.buildings) {
-                for (const floor of building.floors) {
-                    allNodes.push(...floor.nodes)
+            for (const building of map.buildings)
+                for (const floor of building.floors)
                     allEdges.push(...floor.edges)
-                }
-            }
             const graph = buildGraph(allNodes, allEdges)
             const nodeIds = allNodes.map(n => n.id)
             const routes = precomputeAllRoutes(graph, nodeIds)
@@ -64,7 +64,7 @@ function createNavStore() {
         }
 
         setReady(true)
-        console.info(`[navStore] ready — ${nodeIndex().size} nodes, ${routeCache().size} routes cached`)
+        console.info(`[navStore] ready — ${idx.size} nodes, ${routeCache().size} routes cached`)
     }
 
     // ─── QR scan handler ─────────────────────────────────────────────────────

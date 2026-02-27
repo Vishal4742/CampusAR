@@ -82,16 +82,16 @@
 **Target:** End-to-end: scan → search → follow arrows → arrive  
 **Dates:** Mar 27 – Apr 2
 
-- [ ] Build `searchIndex.ts` — prefix trie (§19.6)
-- [ ] Build `Search.tsx` — trie search, results in ~0.3ms
-- [ ] Wire full nav flow: QR → navStore → search → AR route
-- [ ] Build `RouteCard.tsx` — step-by-step text fallback
-- [ ] Build `FloorMap.tsx` — 2D SVG with route + accuracy ring
-- [ ] Build `FloorBadge.tsx`
-- [ ] Code splitting — lazy-load all screens except Scan (§19.7)
-- [ ] Test multi-floor route: entrance → 3rd floor via stairs
+- [x] Build `searchIndex.ts` — prefix trie (§19.6)
+- [x] Build `Search.tsx` — trie search, results in ~0.3ms
+- [x] Wire full nav flow: QR → navStore → search → AR route
+- [x] Build `RouteCard.tsx` — step-by-step text fallback
+- [x] Build `FloorMap.tsx` — 2D SVG with route + accuracy ring
+- [x] Build `FloorBadge.tsx`
+- [x] Code splitting — lazy-load all screens except Scan (§19.7)
+- [x] Test multi-floor route: entrance → 3rd floor via stairs
 
-**Week 5 done:** `[ ]`
+**Week 5 done:** `[x]`
 
 ---
 
