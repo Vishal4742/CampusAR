@@ -29,16 +29,16 @@
 **Target:** `dijkstra("MAIN_ENTRANCE", "CSE_HOD")` prints correct path  
 **Dates:** Mar 6 – Mar 12
 
-- [ ] Define all interfaces in `shared/types.ts` (§8.1)
-- [ ] Build `graph.ts` — adjacency list
-- [ ] Build `dijkstra.ts` — multi-floor shortest path
-- [ ] Build `precomputeAllRoutes()` — runs at install time
-- [ ] Flat Map route cache `"FROM::TO"` → O(1) lookup (§19.5.2)
-- [ ] Build `idb.ts` — single-transaction startup read (§19.5.1)
-- [ ] Author OCT campus JSON — 30 nodes, 40 edges, 3 floors
-- [ ] Store route cache in IndexedDB
+- [x] Define all interfaces in `shared/types.ts` (§8.1)
+- [x] Build `graph.ts` — adjacency list
+- [x] Build `dijkstra.ts` — multi-floor shortest path
+- [x] Build `precomputeAllRoutes()` — runs at install time
+- [x] Flat Map route cache `"FROM::TO"` → O(1) lookup (§19.5.2)
+- [x] Build `idb.ts` — single-transaction startup read (§19.5.1)
+- [x] Author OCT campus JSON — 30 nodes, 40 edges, 3 floors
+- [x] Store route cache in IndexedDB
 
-**Week 2 done:** `[ ]`
+**Week 2 done:** `[x]`
 
 ---
 
@@ -172,3 +172,5 @@
 | Date | What I did |
 |---|---|
 | 2026-02-27 | Repo init, SRS finalized (§17 EKF, §18 bandwidth, §19 lightning perf) |
+| 2026-02-27 | Scaffolding completed, QR scanning via jsQR, workers setup |
+| 2026-02-27 | Week 2 completed: Data layer, Dijkstra, IDB caching, OCT Campus Map |
