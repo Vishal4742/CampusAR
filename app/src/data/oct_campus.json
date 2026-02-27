@@ -1,0 +1,1027 @@
+{
+    "id": "oct_bhopal_main",
+    "name": "Oriental College of Technology, Bhopal",
+    "version": 1,
+    "updatedAt": "2026-02-27T00:00:00Z",
+    "buildings": [
+        {
+            "id": "main_block",
+            "name": "Main Academic Block",
+            "floors": [
+                {
+                    "id": "main_block_f0",
+                    "number": 0,
+                    "label": "Ground Floor",
+                    "svgFull": "",
+                    "svgSimplified": "",
+                    "svgSkeleton": "",
+                    "nodes": [
+                        {
+                            "id": "N_ENTRANCE_MAIN",
+                            "type": "entrance",
+                            "label": "Main Entrance",
+                            "shortLabel": "Entrance",
+                            "x": 500,
+                            "y": 950,
+                            "floor": 0,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "entrance",
+                                "main",
+                                "gate"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 0,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_LOBBY_GF"
+                            ]
+                        },
+                        {
+                            "id": "N_LOBBY_GF",
+                            "type": "junction",
+                            "label": "Ground Floor Lobby",
+                            "shortLabel": "Lobby",
+                            "x": 500,
+                            "y": 800,
+                            "floor": 0,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "lobby",
+                                "ground"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 0,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_ENTRANCE_MAIN",
+                                "N_CORRIDOR_GF_E",
+                                "N_CORRIDOR_GF_W",
+                                "N_STAIRS_A_GF"
+                            ]
+                        },
+                        {
+                            "id": "N_CORRIDOR_GF_E",
+                            "type": "junction",
+                            "label": "East Corridor GF",
+                            "shortLabel": "E Corridor",
+                            "x": 750,
+                            "y": 800,
+                            "floor": 0,
+                            "building": "main_block",
+                            "hasQR": false,
+                            "qrData": "",
+                            "tags": [
+                                "corridor",
+                                "east"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 90,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_LOBBY_GF",
+                                "N_CLASS_101",
+                                "N_CLASS_102"
+                            ]
+                        },
+                        {
+                            "id": "N_CORRIDOR_GF_W",
+                            "type": "junction",
+                            "label": "West Corridor GF",
+                            "shortLabel": "W Corridor",
+                            "x": 250,
+                            "y": 800,
+                            "floor": 0,
+                            "building": "main_block",
+                            "hasQR": false,
+                            "qrData": "",
+                            "tags": [
+                                "corridor",
+                                "west"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 270,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_LOBBY_GF",
+                                "N_CLASS_103",
+                                "N_OFFICE_ADMIN"
+                            ]
+                        },
+                        {
+                            "id": "N_CLASS_101",
+                            "type": "room",
+                            "label": "Classroom 101",
+                            "shortLabel": "Room 101",
+                            "x": 900,
+                            "y": 800,
+                            "floor": 0,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "classroom",
+                                "lecture",
+                                "101"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 90,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_GF_E"
+                            ]
+                        },
+                        {
+                            "id": "N_CLASS_102",
+                            "type": "room",
+                            "label": "Classroom 102",
+                            "shortLabel": "Room 102",
+                            "x": 900,
+                            "y": 700,
+                            "floor": 0,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "classroom",
+                                "lecture",
+                                "102"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 90,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_GF_E"
+                            ]
+                        },
+                        {
+                            "id": "N_CLASS_103",
+                            "type": "room",
+                            "label": "Classroom 103",
+                            "shortLabel": "Room 103",
+                            "x": 100,
+                            "y": 800,
+                            "floor": 0,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "classroom",
+                                "lecture",
+                                "103"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 270,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_GF_W"
+                            ]
+                        },
+                        {
+                            "id": "N_OFFICE_ADMIN",
+                            "type": "room",
+                            "label": "Administrative Office",
+                            "shortLabel": "Admin",
+                            "x": 100,
+                            "y": 700,
+                            "floor": 0,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "office",
+                                "admin",
+                                "administrative"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 270,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_GF_W"
+                            ]
+                        },
+                        {
+                            "id": "N_STAIRS_A_GF",
+                            "type": "stair",
+                            "label": "Staircase A (GF)",
+                            "shortLabel": "Stairs A↑",
+                            "x": 500,
+                            "y": 650,
+                            "floor": 0,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "stairs",
+                                "staircase",
+                                "a"
+                            ],
+                            "accessible": false,
+                            "facingDeg": 0,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_LOBBY_GF",
+                                "N_STAIRS_A_F1"
+                            ]
+                        },
+                        {
+                            "id": "N_LIBRARY",
+                            "type": "room",
+                            "label": "Library",
+                            "shortLabel": "Library",
+                            "x": 500,
+                            "y": 550,
+                            "floor": 0,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "library",
+                                "books",
+                                "reading"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 0,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_STAIRS_A_GF"
+                            ]
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "id": "E_GF_01",
+                            "from": "N_ENTRANCE_MAIN",
+                            "to": "N_LOBBY_GF",
+                            "weight": 15,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_GF_02",
+                            "from": "N_LOBBY_GF",
+                            "to": "N_CORRIDOR_GF_E",
+                            "weight": 25,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_GF_03",
+                            "from": "N_LOBBY_GF",
+                            "to": "N_CORRIDOR_GF_W",
+                            "weight": 25,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_GF_04",
+                            "from": "N_CORRIDOR_GF_E",
+                            "to": "N_CLASS_101",
+                            "weight": 15,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_GF_05",
+                            "from": "N_CORRIDOR_GF_E",
+                            "to": "N_CLASS_102",
+                            "weight": 20,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_GF_06",
+                            "from": "N_CORRIDOR_GF_W",
+                            "to": "N_CLASS_103",
+                            "weight": 15,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_GF_07",
+                            "from": "N_CORRIDOR_GF_W",
+                            "to": "N_OFFICE_ADMIN",
+                            "weight": 20,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_GF_08",
+                            "from": "N_LOBBY_GF",
+                            "to": "N_STAIRS_A_GF",
+                            "weight": 15,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": false
+                        },
+                        {
+                            "id": "E_GF_09",
+                            "from": "N_STAIRS_A_GF",
+                            "to": "N_LIBRARY",
+                            "weight": 10,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": false
+                        }
+                    ]
+                },
+                {
+                    "id": "main_block_f1",
+                    "number": 1,
+                    "label": "First Floor",
+                    "svgFull": "",
+                    "svgSimplified": "",
+                    "svgSkeleton": "",
+                    "nodes": [
+                        {
+                            "id": "N_STAIRS_A_F1",
+                            "type": "stair",
+                            "label": "Staircase A (F1)",
+                            "shortLabel": "Stairs A",
+                            "x": 500,
+                            "y": 750,
+                            "floor": 1,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "stairs",
+                                "staircase",
+                                "a"
+                            ],
+                            "accessible": false,
+                            "facingDeg": 180,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_STAIRS_A_GF",
+                                "N_STAIRS_A_F2",
+                                "N_CORRIDOR_F1_C"
+                            ]
+                        },
+                        {
+                            "id": "N_CORRIDOR_F1_C",
+                            "type": "junction",
+                            "label": "First Floor Corridor",
+                            "shortLabel": "F1 Corridor",
+                            "x": 500,
+                            "y": 600,
+                            "floor": 1,
+                            "building": "main_block",
+                            "hasQR": false,
+                            "qrData": "",
+                            "tags": [
+                                "corridor",
+                                "first"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 0,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_STAIRS_A_F1",
+                                "N_CSE_HOD",
+                                "N_CORRIDOR_F1_E",
+                                "N_CORRIDOR_F1_W"
+                            ]
+                        },
+                        {
+                            "id": "N_CORRIDOR_F1_E",
+                            "type": "junction",
+                            "label": "East Corridor F1",
+                            "shortLabel": "E Corridor",
+                            "x": 750,
+                            "y": 600,
+                            "floor": 1,
+                            "building": "main_block",
+                            "hasQR": false,
+                            "qrData": "",
+                            "tags": [
+                                "corridor",
+                                "east",
+                                "first"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 90,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F1_C",
+                                "N_CSE_LAB1",
+                                "N_CSE_LAB2"
+                            ]
+                        },
+                        {
+                            "id": "N_CORRIDOR_F1_W",
+                            "type": "junction",
+                            "label": "West Corridor F1",
+                            "shortLabel": "W Corridor",
+                            "x": 250,
+                            "y": 600,
+                            "floor": 1,
+                            "building": "main_block",
+                            "hasQR": false,
+                            "qrData": "",
+                            "tags": [
+                                "corridor",
+                                "west",
+                                "first"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 270,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F1_C",
+                                "N_EC_LAB",
+                                "N_CLASS_201"
+                            ]
+                        },
+                        {
+                            "id": "N_CSE_HOD",
+                            "type": "room",
+                            "label": "CSE HOD Office",
+                            "shortLabel": "CSE HOD",
+                            "x": 500,
+                            "y": 450,
+                            "floor": 1,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "cse",
+                                "hod",
+                                "office",
+                                "head"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 0,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_CORRIDOR_F1_C"
+                            ]
+                        },
+                        {
+                            "id": "N_CSE_LAB1",
+                            "type": "room",
+                            "label": "CSE Lab 1",
+                            "shortLabel": "CSE Lab 1",
+                            "x": 900,
+                            "y": 600,
+                            "floor": 1,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "cse",
+                                "lab",
+                                "computer",
+                                "programming"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 90,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F1_E"
+                            ]
+                        },
+                        {
+                            "id": "N_CSE_LAB2",
+                            "type": "room",
+                            "label": "CSE Lab 2",
+                            "shortLabel": "CSE Lab 2",
+                            "x": 900,
+                            "y": 500,
+                            "floor": 1,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "cse",
+                                "lab",
+                                "computer",
+                                "networking"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 90,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F1_E"
+                            ]
+                        },
+                        {
+                            "id": "N_EC_LAB",
+                            "type": "room",
+                            "label": "EC Lab",
+                            "shortLabel": "EC Lab",
+                            "x": 100,
+                            "y": 600,
+                            "floor": 1,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "ec",
+                                "electronics",
+                                "lab"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 270,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F1_W"
+                            ]
+                        },
+                        {
+                            "id": "N_CLASS_201",
+                            "type": "room",
+                            "label": "Classroom 201",
+                            "shortLabel": "Room 201",
+                            "x": 100,
+                            "y": 500,
+                            "floor": 1,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "classroom",
+                                "lecture",
+                                "201"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 270,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F1_W"
+                            ]
+                        },
+                        {
+                            "id": "N_SEMINAR_HALL",
+                            "type": "room",
+                            "label": "Seminar Hall",
+                            "shortLabel": "Seminar",
+                            "x": 500,
+                            "y": 350,
+                            "floor": 1,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "seminar",
+                                "hall",
+                                "auditorium",
+                                "event"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 0,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_CSE_HOD"
+                            ]
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "id": "E_F1_01",
+                            "from": "N_STAIRS_A_GF",
+                            "to": "N_STAIRS_A_F1",
+                            "weight": 12,
+                            "bidirectional": true,
+                            "type": "stair",
+                            "accessible": false
+                        },
+                        {
+                            "id": "E_F1_02",
+                            "from": "N_STAIRS_A_F1",
+                            "to": "N_CORRIDOR_F1_C",
+                            "weight": 10,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F1_03",
+                            "from": "N_CORRIDOR_F1_C",
+                            "to": "N_CORRIDOR_F1_E",
+                            "weight": 25,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F1_04",
+                            "from": "N_CORRIDOR_F1_C",
+                            "to": "N_CORRIDOR_F1_W",
+                            "weight": 25,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F1_05",
+                            "from": "N_CORRIDOR_F1_C",
+                            "to": "N_CSE_HOD",
+                            "weight": 15,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F1_06",
+                            "from": "N_CORRIDOR_F1_E",
+                            "to": "N_CSE_LAB1",
+                            "weight": 15,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F1_07",
+                            "from": "N_CORRIDOR_F1_E",
+                            "to": "N_CSE_LAB2",
+                            "weight": 25,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F1_08",
+                            "from": "N_CORRIDOR_F1_W",
+                            "to": "N_EC_LAB",
+                            "weight": 15,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F1_09",
+                            "from": "N_CORRIDOR_F1_W",
+                            "to": "N_CLASS_201",
+                            "weight": 25,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F1_10",
+                            "from": "N_CSE_HOD",
+                            "to": "N_SEMINAR_HALL",
+                            "weight": 10,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        }
+                    ]
+                },
+                {
+                    "id": "main_block_f2",
+                    "number": 2,
+                    "label": "Second Floor",
+                    "svgFull": "",
+                    "svgSimplified": "",
+                    "svgSkeleton": "",
+                    "nodes": [
+                        {
+                            "id": "N_STAIRS_A_F2",
+                            "type": "stair",
+                            "label": "Staircase A (F2)",
+                            "shortLabel": "Stairs A",
+                            "x": 500,
+                            "y": 750,
+                            "floor": 2,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "stairs",
+                                "staircase",
+                                "a"
+                            ],
+                            "accessible": false,
+                            "facingDeg": 180,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_STAIRS_A_F1",
+                                "N_CORRIDOR_F2_C"
+                            ]
+                        },
+                        {
+                            "id": "N_CORRIDOR_F2_C",
+                            "type": "junction",
+                            "label": "Second Floor Corridor",
+                            "shortLabel": "F2 Corridor",
+                            "x": 500,
+                            "y": 600,
+                            "floor": 2,
+                            "building": "main_block",
+                            "hasQR": false,
+                            "qrData": "",
+                            "tags": [
+                                "corridor",
+                                "second"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 0,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_STAIRS_A_F2",
+                                "N_IT_HOD",
+                                "N_CORRIDOR_F2_E",
+                                "N_CORRIDOR_F2_W"
+                            ]
+                        },
+                        {
+                            "id": "N_CORRIDOR_F2_E",
+                            "type": "junction",
+                            "label": "East Corridor F2",
+                            "shortLabel": "E Corridor",
+                            "x": 750,
+                            "y": 600,
+                            "floor": 2,
+                            "building": "main_block",
+                            "hasQR": false,
+                            "qrData": "",
+                            "tags": [
+                                "corridor",
+                                "east",
+                                "second"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 90,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F2_C",
+                                "N_IT_LAB1",
+                                "N_IT_LAB2"
+                            ]
+                        },
+                        {
+                            "id": "N_CORRIDOR_F2_W",
+                            "type": "junction",
+                            "label": "West Corridor F2",
+                            "shortLabel": "W Corridor",
+                            "x": 250,
+                            "y": 600,
+                            "floor": 2,
+                            "building": "main_block",
+                            "hasQR": false,
+                            "qrData": "",
+                            "tags": [
+                                "corridor",
+                                "west",
+                                "second"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 270,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F2_C",
+                                "N_MECH_LAB",
+                                "N_CLASS_301"
+                            ]
+                        },
+                        {
+                            "id": "N_IT_HOD",
+                            "type": "room",
+                            "label": "IT HOD Office",
+                            "shortLabel": "IT HOD",
+                            "x": 500,
+                            "y": 450,
+                            "floor": 2,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "it",
+                                "hod",
+                                "office",
+                                "head"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 0,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_CORRIDOR_F2_C"
+                            ]
+                        },
+                        {
+                            "id": "N_IT_LAB1",
+                            "type": "room",
+                            "label": "IT Lab 1",
+                            "shortLabel": "IT Lab 1",
+                            "x": 900,
+                            "y": 600,
+                            "floor": 2,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "it",
+                                "lab",
+                                "software"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 90,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F2_E"
+                            ]
+                        },
+                        {
+                            "id": "N_IT_LAB2",
+                            "type": "room",
+                            "label": "IT Lab 2",
+                            "shortLabel": "IT Lab 2",
+                            "x": 900,
+                            "y": 500,
+                            "floor": 2,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "it",
+                                "lab",
+                                "database"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 90,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F2_E"
+                            ]
+                        },
+                        {
+                            "id": "N_MECH_LAB",
+                            "type": "room",
+                            "label": "Mechanical Lab",
+                            "shortLabel": "Mech Lab",
+                            "x": 100,
+                            "y": 600,
+                            "floor": 2,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "mechanical",
+                                "mech",
+                                "lab",
+                                "workshop"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 270,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F2_W"
+                            ]
+                        },
+                        {
+                            "id": "N_CLASS_301",
+                            "type": "room",
+                            "label": "Classroom 301",
+                            "shortLabel": "Room 301",
+                            "x": 100,
+                            "y": 500,
+                            "floor": 2,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "classroom",
+                                "lecture",
+                                "301"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 270,
+                            "corridorAxis": "EW",
+                            "nextNodes": [
+                                "N_CORRIDOR_F2_W"
+                            ]
+                        },
+                        {
+                            "id": "N_PRINCIPAL",
+                            "type": "room",
+                            "label": "Principal's Office",
+                            "shortLabel": "Principal",
+                            "x": 500,
+                            "y": 350,
+                            "floor": 2,
+                            "building": "main_block",
+                            "hasQR": true,
+                            "qrData": "",
+                            "tags": [
+                                "principal",
+                                "office",
+                                "director"
+                            ],
+                            "accessible": true,
+                            "facingDeg": 0,
+                            "corridorAxis": "NS",
+                            "nextNodes": [
+                                "N_IT_HOD"
+                            ]
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "id": "E_F2_01",
+                            "from": "N_STAIRS_A_F1",
+                            "to": "N_STAIRS_A_F2",
+                            "weight": 12,
+                            "bidirectional": true,
+                            "type": "stair",
+                            "accessible": false
+                        },
+                        {
+                            "id": "E_F2_02",
+                            "from": "N_STAIRS_A_F2",
+                            "to": "N_CORRIDOR_F2_C",
+                            "weight": 10,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F2_03",
+                            "from": "N_CORRIDOR_F2_C",
+                            "to": "N_CORRIDOR_F2_E",
+                            "weight": 25,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F2_04",
+                            "from": "N_CORRIDOR_F2_C",
+                            "to": "N_CORRIDOR_F2_W",
+                            "weight": 25,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F2_05",
+                            "from": "N_CORRIDOR_F2_C",
+                            "to": "N_IT_HOD",
+                            "weight": 15,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F2_06",
+                            "from": "N_CORRIDOR_F2_E",
+                            "to": "N_IT_LAB1",
+                            "weight": 15,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F2_07",
+                            "from": "N_CORRIDOR_F2_E",
+                            "to": "N_IT_LAB2",
+                            "weight": 25,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F2_08",
+                            "from": "N_CORRIDOR_F2_W",
+                            "to": "N_MECH_LAB",
+                            "weight": 15,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F2_09",
+                            "from": "N_CORRIDOR_F2_W",
+                            "to": "N_CLASS_301",
+                            "weight": 25,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        },
+                        {
+                            "id": "E_F2_10",
+                            "from": "N_IT_HOD",
+                            "to": "N_PRINCIPAL",
+                            "weight": 10,
+                            "bidirectional": true,
+                            "type": "corridor",
+                            "accessible": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
