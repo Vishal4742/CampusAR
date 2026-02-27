@@ -174,3 +174,4 @@
 | 2026-02-27 | Repo init, SRS finalized (§17 EKF, §18 bandwidth, §19 lightning perf) |
 | 2026-02-27 | Scaffolding completed, QR scanning via jsQR, workers setup |
 | 2026-02-27 | Week 2 completed: Data layer, Dijkstra, IDB caching, OCT Campus Map |
+| 2026-02-27 | Week 3 completed: EKF dead reckoning, Weinberg step length, sensorStore, bearing/distance utils, iOS gate |

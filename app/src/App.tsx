@@ -4,6 +4,7 @@
 import { createSignal, lazy, Suspense } from 'solid-js'
 import ScanScreen from './screens/Scan'
 import type { QRPayload } from '../../shared/types'
+import navStore from './store/navStore'
 
 // Lazy-loaded screens — only downloaded when the user navigates there
 const NavigateScreen = lazy(() => import('./screens/Navigate'))
@@ -15,10 +16,9 @@ type Screen = 'scan' | 'navigate' | 'search' | 'map' | 'settings'
 
 export default function App() {
   const [screen, setScreen] = createSignal<Screen>('scan')
-  const [lastPayload, setLastPayload] = createSignal<QRPayload | null>(null)
 
   function onScanned(payload: QRPayload) {
-    setLastPayload(payload)
+    navStore.onQRScanned(payload)
     setScreen('navigate')
   }
 
@@ -31,8 +31,8 @@ export default function App() {
 
       {/* All other screens — lazy loaded */}
       <Suspense fallback={<div class="screen-loading" aria-label="Loading…" />}>
-        {screen() === 'navigate' && lastPayload() && (
-          <NavigateScreen payload={lastPayload()!} onBack={() => setScreen('scan')} />
+        {screen() === 'navigate' && (
+          <NavigateScreen onBack={() => setScreen('scan')} />
         )}
         {screen() === 'search' && (
           <SearchScreen onNavigate={(id: string) => { console.log('nav to', id); setScreen('navigate') }} />
