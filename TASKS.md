@@ -46,16 +46,16 @@
 **Target:** Walking updates estimated position on screen — offline  
 **Dates:** Mar 13 – Mar 19
 
-- [ ] Build `ekf.ts` — Extended Kalman Filter (§17.2)
-- [ ] Weinberg adaptive step length (§17.2.3)
-- [ ] `sensorStore.ts` — 30Hz orientation, 50Hz motion (§19.9)
-- [ ] `{ passive: true }` on all sensor listeners
-- [ ] Frame-budget rAF sensor loop (§19.3)
-- [ ] Build `bearing.ts` + `distance.ts`
-- [ ] iOS permission gate button
-- [ ] Graceful fallback if gyroscope unavailable
+- [x] Build `ekf.ts` — Extended Kalman Filter (§17.2)
+- [x] Weinberg adaptive step length (§17.2.3)
+- [x] `sensorStore.ts` — 30Hz orientation, 50Hz motion (§19.9)
+- [x] `{ passive: true }` on all sensor listeners
+- [x] Frame-budget rAF sensor loop (§19.3)
+- [x] Build `bearing.ts` + `distance.ts`
+- [x] iOS permission gate button
+- [x] Graceful fallback if gyroscope unavailable
 
-**Week 3 done:** `[ ]`
+**Week 3 done:** `[x]`
 
 ---
 
