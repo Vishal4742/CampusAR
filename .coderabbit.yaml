@@ -1,0 +1,68 @@
+# CodeRabbit AI Review Configuration
+# Free for public repos — install the GitHub App at: https://coderabbit.ai
+
+language: "en-US"
+
+reviews:
+  # Review every PR automatically
+  auto_review:
+    enabled: true
+    drafts: false           # Don't review draft PRs
+    base_branches:
+      - master
+      - main
+
+  # What the AI focuses on
+  profile: "assertive"      # assertive = flags real issues, not nitpicks
+
+  # CampusAR-specific review instructions
+  instructions: |
+    This is CampusAR — a SolidJS PWA for indoor AR navigation on budget Android phones.
+    
+    ALWAYS flag these performance violations (they break 60fps):
+    - Animating any CSS property other than `transform` or `opacity`
+    - Missing `will-change: transform` on `.ar-arrow` or `.accuracy-ring`
+    - Missing `backface-visibility: hidden` on AR-animated elements
+    - Sensor event listeners without `{ passive: true }`
+    - Any `postMessage` sending raw `ImageData` instead of `ImageBitmap`
+    - Using `routeCache[from][to]` nested lookup instead of `ROUTE_MAP.get('from::to')`
+    - Multiple sequential IndexedDB transactions instead of one batched transaction
+    - Importing from `react` or `react-dom` (this project uses SolidJS)
+    - Using `any` type in TypeScript
+    - Missing `{ passive: true }` on deviceorientation/devicemotion listeners
+    
+    ALWAYS praise:
+    - Transferable postMessage usage
+    - Single-transaction IDB reads
+    - Trie-based search implementations
+    - EKF state updates via `requestAnimationFrame`
+
+  # File-type specific behaviour
+  path_instructions:
+    - path: "app/src/engine/**"
+      instructions: |
+        Engine files are performance-critical. Check:
+        - Dijkstra must not run live — only precomputed route lookups allowed
+        - EKF updates must be throttled to max 50Hz
+        - No DOM access from engine files
+    - path: "app/src/components/AROverlay*"
+      instructions: |
+        AR overlay is the 60fps-critical path.
+        Flag any CSS property change that isn't transform or opacity.
+        Flag any synchronous work inside the rAF loop.
+    - path: "**/*.ts"
+      instructions: |
+        TypeScript strict mode — flag any implicit `any` or missing return types
+        on public functions.
+
+  # Don't waste time on these
+  path_filters:
+    - "!**/*.md"
+    - "!**/*.json"
+    - "!dist/**"
+    - "!node_modules/**"
+    - "!**/*.lock"
+
+chat:
+  # Allow @coderabbitai commands in PR comments
+  auto_reply: true

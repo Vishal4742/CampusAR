@@ -99,6 +99,12 @@
 **Target:** Admin places nodes, draws paths, exports QR PDF  
 **Dates:** Apr 3 – Apr 9
 
+> 🔑 **REMINDER: Add GitHub Secrets this week** (needed for Vercel deploy to work)
+> Go to: `github.com/Vishal4742/CampusAR` → Settings → Secrets → Actions
+> Add: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VERCEL_TOKEN`,
+> `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_APP`, `VERCEL_PROJECT_ID_ADMIN`, `VERCEL_TEAM_ID`
+
+- [ ] **Add all 7 GitHub Secrets** (see CONTRIBUTING.md for where to get each)
 - [ ] Build `MapEditor.tsx` — upload SVG, click to place nodes
 - [ ] Build `NodeEditor.tsx` — label, type, `facingDeg`, `corridorAxis`
 - [ ] Edge drawing between nodes

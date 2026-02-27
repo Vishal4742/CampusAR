@@ -1,0 +1,91 @@
+name: AI Code Review (Gemini)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [master, main]
+
+permissions:
+  contents: read
+  pull-requests: write  # needed to post review comments
+
+jobs:
+  gemini-review:
+    name: Gemini PR Review
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history so we can get the diff
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD \
+            -- '*.ts' '*.tsx' '*.css' \
+            > /tmp/pr_diff.txt
+          # Cap at 8000 chars to stay within API limits
+          head -c 8000 /tmp/pr_diff.txt > /tmp/pr_diff_trimmed.txt
+          echo "diff_content=$(cat /tmp/pr_diff_trimmed.txt | base64 -w 0)" >> $GITHUB_OUTPUT
+
+      - name: Run Gemini review
+        id: review
+        run: |
+          DIFF=$(cat /tmp/pr_diff_trimmed.txt)
+          
+          PROMPT="You are reviewing a pull request for CampusAR — a SolidJS PWA for indoor AR navigation on budget Android phones. The project must hit 60fps on Redmi 9 phones.
+
+          CRITICAL rules to enforce:
+          1. Only animate CSS 'transform' or 'opacity' — never top/left/width/height/color (causes reflow)
+          2. AR arrow element must have: will-change:transform, translateZ(0), backface-visibility:hidden
+          3. All deviceorientation/devicemotion listeners must use { passive: true }
+          4. Camera frames to WebWorker must use Transferable ImageBitmap, never raw ImageData
+          5. Route lookups must use flat Map: ROUTE_MAP.get('from::to') not routeCache[from][to]
+          6. IndexedDB reads must be batched in one transaction
+          7. No React imports — this is SolidJS
+          8. No TypeScript 'any' type
+          9. EKF/sensor updates must be throttled via requestAnimationFrame, max 50Hz
+          10. Search must use trie, not Array.filter
+
+          Here is the diff:
+          \`\`\`diff
+          $DIFF
+          \`\`\`
+
+          Give a concise review:
+          - List any violations of the above rules with line references
+          - List 1-2 things done well
+          - Overall: APPROVE, REQUEST CHANGES, or COMMENT
+          Keep it under 400 words."
+
+          RESPONSE=$(curl -s \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${{ secrets.GEMINI_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"contents\":[{\"parts\":[{\"text\":$(echo "$PROMPT" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}]}]}")
+
+          REVIEW_TEXT=$(echo "$RESPONSE" | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          try:
+            print(data['candidates'][0]['content']['parts'][0]['text'])
+          except:
+            print('AI review unavailable — check GEMINI_API_KEY secret.')
+          ")
+
+          echo "review_text<<EOF" >> $GITHUB_OUTPUT
+          echo "$REVIEW_TEXT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post review comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reviewText = `${{ steps.review.outputs.review_text }}`
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🤖 Gemini AI Code Review\n\n${reviewText}\n\n---\n*Reviewed by Gemini 2.0 Flash · [CampusAR performance rules §19](https://github.com/Vishal4742/CampusAR/blob/master/CampusAR_SRS_MVP.md)*`
+            })
