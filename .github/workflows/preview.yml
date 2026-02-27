@@ -8,6 +8,7 @@ jobs:
   preview-app:
     name: Preview → app PR#${{ github.event.number }}
     runs-on: ubuntu-latest
+    if: hashFiles('app/package.json') != ''  # skip until app/ exists
 
     steps:
       - name: Checkout code

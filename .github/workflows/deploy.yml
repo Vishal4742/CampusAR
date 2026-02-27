@@ -9,6 +9,7 @@ jobs:
   deploy-app:
     name: Deploy App → campusar.vercel.app
     runs-on: ubuntu-latest
+    if: hashFiles('app/package.json') != ''  # skip until app/ exists
     environment:
       name: production
       url: https://campusar.vercel.app
@@ -52,6 +53,7 @@ jobs:
   deploy-admin:
     name: Deploy Admin → admin-campusar.vercel.app
     runs-on: ubuntu-latest
+    if: hashFiles('admin/package.json') != ''  # skip until admin/ exists
     environment:
       name: production-admin
       url: https://admin-campusar.vercel.app

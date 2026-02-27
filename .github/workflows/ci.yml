@@ -11,6 +11,7 @@ jobs:
   check-app:
     name: App — TypeCheck + Lint + Build
     runs-on: ubuntu-latest
+    if: hashFiles('app/package.json') != ''   # skip until app/ exists
     defaults:
       run:
         working-directory: app
@@ -48,6 +49,7 @@ jobs:
   check-admin:
     name: Admin — TypeCheck + Lint + Build
     runs-on: ubuntu-latest
+    if: hashFiles('admin/package.json') != ''  # skip until admin/ exists
     defaults:
       run:
         working-directory: admin
@@ -82,6 +84,7 @@ jobs:
   check-shared:
     name: Shared — TypeCheck
     runs-on: ubuntu-latest
+    if: hashFiles('shared/tsconfig.json') != ''  # skip until shared/ exists
     defaults:
       run:
         working-directory: shared
