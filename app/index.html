@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>CampusAR — Find your way</title>
+  <meta name="description" content="QR-based AR indoor navigation for college campuses. Works offline." />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#3b82f6" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- §19.8 — critical CSS inlined, zero render-blocking -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59,130,246,0.3);
+      --text: #f1f5f9;
+      --text-dim: #94a3b8;
+      color-scheme: dark;
+    }
+    html, body { height: 100%; background: var(--bg); color: var(--text); overflow: hidden; }
+    #app { height: 100%; display: flex; flex-direction: column; }
+
+    /* Scan skeleton — visible BEFORE JS hydrates (frame 1) */
+    .scan-skeleton {
+      position: absolute; inset: 0;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 24px;
+    }
+    .scan-skeleton__ring {
+      width: 220px; height: 220px;
+      border: 2px solid var(--accent-glow);
+      border-radius: 20px;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    .scan-skeleton__label {
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 0.3; border-color: var(--accent-glow); }
+                       50%         { opacity: 1;   border-color: var(--accent); } }
+  </style>
+
+  <!-- Non-critical CSS — loaded async, does NOT block render -->
+  <link rel="preload" href="/src/index.css" as="style" onload="this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="/src/index.css" /></noscript>
+</head>
+<body>
+  <!-- Skeleton visible before JS — user sees something in frame 1 -->
+  <div id="app">
+    <div class="scan-skeleton">
+      <div class="scan-skeleton__ring"></div>
+      <span class="scan-skeleton__label">Loading CampusAR…</span>
+    </div>
+  </div>
+  <script type="module" src="/src/index.tsx"></script>
+</body>
+</html>

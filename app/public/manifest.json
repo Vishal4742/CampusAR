@@ -1,0 +1,39 @@
+{
+    "name": "CampusAR",
+    "short_name": "CampusAR",
+    "description": "AR indoor navigation for your college campus",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#0a0a0f",
+    "theme_color": "#3b82f6",
+    "lang": "en",
+    "icons": [
+        {
+            "src": "/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshots/scan.png",
+            "sizes": "390x844",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Scan a QR code to start navigation"
+        }
+    ],
+    "categories": [
+        "navigation",
+        "education"
+    ],
+    "prefer_related_applications": false
+}
