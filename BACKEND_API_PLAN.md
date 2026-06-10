@@ -186,16 +186,16 @@ Completed or documented by CLI 2:
 - API boundary decisions for auth, map manifest, delta sync, admin approval, and role management.
 - Conceptual database model review against SRS requirements.
 - Backend hosting and provider assumptions list.
-- OTP/email provider options with Resend recommended for MVP testing.
+- OTP/email provider selected as Resend, with adapter implemented behind environment configuration.
 - Initial seed data ingestion plan for campus geofence, buildings, floors, locations, and path graph.
 - API security baseline: HTTPS, JWT through `jose`, admin role checks, and cooldown enforcement.
 
 ## Open Questions
 
 - Official OCT college email domain for student and staff OTP: decided as `oriental.ac.in`.
-- Which OTP/email provider account is approved? Resend is the current recommendation, but no account or DNS setup exists yet.
+- Resend is selected for OTP. Sender address/domain setup and production verification remain open.
 - Backend Node.js framework: decided as Fastify with TypeScript and TypeBox/Ajv validation.
-- What hosting environment, domain, TLS certificate, SMS provider, push provider, and email provider are approved?
+- What hosting environment, domain, TLS certificate, SMS provider, push provider, and Resend sender-domain setup are approved?
 - Current seed campus data: two Google Maps links only, captured in `database/seeds/source-links.json`. User confirmed no other campus data exists.
 - What are the exact location categories and confirmation thresholds?
 - What audit logs are institutionally required for admin actions?

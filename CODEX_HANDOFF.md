@@ -48,7 +48,7 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - Active planning artifacts: `BACKEND_API_PLAN.md` and `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`.
 - CLI 2 must not edit `android-app/` or `native-engine/`.
 - CLI 2 Phase 1 backend/data/admin scaffold is complete. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
-- CLI 2 must get explicit approval before connecting a real PostgreSQL service, adding a production OTP provider integration, or scaffolding the React admin dashboard.
+- CLI 2 must get explicit approval before connecting a real PostgreSQL service or scaffolding the React admin dashboard. Resend OTP provider integration is approved and implemented; real keys must remain in local environment variables or deployment secrets.
 
 ## Source Analyzed
 
@@ -115,7 +115,7 @@ No dependencies were installed. No Android or Rust implementation files were cre
 
 ## Open Questions To Resolve Before Implementation
 
-- OTP/email provider remains open. College email domain is decided as `oriental.ac.in`; CLI 2 recommends Resend first for free-tier MVP OTP email, with Mailgun or MailerSend as fallbacks.
+- OTP/email provider is decided as Resend. College email domain is decided as `oriental.ac.in`. Resend key is user-held and must not be committed.
 - User confirmed no campus dataset exists. Seed campus data currently consists of two Google Maps source links only. Geofence, buildings, floors, paths, rooms, staircases, lifts, QR anchor points, and accessibility metadata must be created through verified mapping/admin workflows.
 - Which offline map renderer should be used for v1.0: OSMDroid or Mapbox SDK?
 - Which Android UI toolkit should own non-AR screens? The SRS only requires the AR overlay not to use Compose.
@@ -124,7 +124,7 @@ No dependencies were installed. No Android or Rust implementation files were cre
 - What privacy aggregation threshold is required for occupancy heatmaps?
 - What institutional approvals are required for buddy tracking, SOS nearby alerts, SMS sending, occupancy analytics, and campus-wide notifications?
 - How are verified mappers selected and provisioned?
-- Which hosting, SMS, push notification, domain/certificate, and final email provider accounts are approved?
+- Which hosting, SMS, push notification, domain/certificate, and Resend sender-domain setup are approved?
 - How should offline contributions resolve conflicts if they arrive after admin rejection, map lock, or newer edits?
 
 ## Suggested Next Step
@@ -132,7 +132,7 @@ No dependencies were installed. No Android or Rust implementation files were cre
 Review the build-verified Phase 1 scaffold and answer the highest-impact open questions:
 
 1. Device-test the debug APK on the Redmi Note 10 Pro.
-2. Choose the production OTP/email provider and sender-domain plan.
+2. Configure and verify Resend sender-domain setup without committing API keys.
 3. Confirm initial admin/mapper provisioning for collecting real OCT campus data.
 4. Decide the Room versus Rust SQLite persistence boundary.
 5. Confirm privacy and institutional policies for SOS, buddy tracking, and occupancy.
@@ -282,3 +282,16 @@ Coordinate through this file before editing shared docs.
 - CLI 2 did not edit Android or Rust implementation files.
 - Next CLI 2 tasks: choose final OTP provider account, connect PostgreSQL/PostGIS through Drizzle, define real seed-data import format, and keep admin dashboard implementation deferred until approved.
 - Blockers: no real campus geofence/building/floor/path/room dataset, OTP sender DNS/account not selected, no production hosting/database target, and no device validation result from the Redmi Note 10 Pro yet.
+
+### 2026-06-11 - CLI 2 Resend OTP integration
+
+- User selected Resend for email OTP and said they have API keys.
+- Decision: do not store API keys in git. Use `EMAIL_PROVIDER=resend`, `RESEND_API_KEY`, and `RESEND_FROM_EMAIL` in `backend/.env` or deployment secrets.
+- Implemented `backend/src/services/email.ts` with a Resend email adapter using Node's built-in `fetch` and the Resend `/emails` API.
+- Updated auth OTP registration/request flows to send OTP through the configured email service. Development mode still returns `devCode` only when Resend is not configured; production requires a configured email provider and never returns OTP codes.
+- Updated docs: `backend/.env.example`, `backend/README.md`, `backend/API_CONTRACT.md`, `backend/DEPLOYMENT_PLAN.md`, `backend/EMAIL_PROVIDER_OPTIONS.md`, `BACKLOG.md`, `BACKEND_API_PLAN.md`, `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`, `PHASED_ROADMAP.md`, and this handoff.
+- Checks run: `npm run check`, `npm test`, and `npm run build`.
+- Results: all checks passed.
+- CLI 2 did not edit Android or Rust implementation files.
+- Next CLI 2 tasks: verify Resend with a real sender address/key in local `.env`, then connect PostgreSQL/PostGIS when approved.
+- Remaining blockers: Resend sender address/domain verification, no real campus dataset, no production hosting/database target, and no Redmi Note 10 Pro device validation result yet.

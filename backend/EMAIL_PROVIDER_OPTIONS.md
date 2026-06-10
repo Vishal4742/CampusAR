@@ -2,19 +2,31 @@
 
 Owner: CLI 2, WSL Codex.
 
-Status: recommendation only. No provider account or production OTP integration has been created.
+Status: selected and integrated for OTP email delivery. The real API key must stay in local environment variables or a deployment secret manager.
 
 Checked: 2026-06-10.
 
-## Recommendation
+## Decision
 
-Use Resend first for development and early MVP OTP email.
+Use Resend for development and early MVP OTP email.
 
 Why:
 
 - Official pricing currently lists a free plan with 3,000 emails/month, 100 emails/day, one domain, API/SMTP access, webhooks, DKIM/SPF/DMARC support, and ticket support: https://resend.com/pricing
 - The API is small and fits a simple backend provider adapter.
 - The free daily cap is enough for initial testing if OTP retry limits are conservative.
+
+## Implemented Configuration
+
+Set these in `backend/.env` locally or deployment secrets:
+
+```bash
+EMAIL_PROVIDER=resend
+RESEND_API_KEY=your_resend_key
+RESEND_FROM_EMAIL=CampusAR <your_verified_sender@example.com>
+```
+
+Do not commit the real API key.
 
 ## Fallbacks
 
@@ -37,7 +49,7 @@ Sources:
 Keep OTP delivery behind a small provider interface:
 
 - `sendOtpEmail({ to, code, purpose, expiresAt })`
-- development mode may return `devCode`
+- development mode may return `devCode` only when Resend is not configured
 - production mode must never return OTP codes in API responses
 - provider failures should return a retry-safe error without creating duplicate active challenges
 

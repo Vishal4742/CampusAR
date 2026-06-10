@@ -103,6 +103,6 @@ Admin creation is intentionally admin-only. For local development, set `CAMPUSAR
 
 - Persistence is in-memory only.
 - JWT signing and verification use `jose`, but token revocation and persistent refresh-token tracking are not implemented yet.
-- OTP delivery is not integrated with an email provider. Development responses include `devCode` outside production.
+- OTP delivery integrates with Resend when `EMAIL_PROVIDER=resend` and `RESEND_API_KEY` are configured. Development mode without Resend returns `devCode`; production does not expose OTP codes in API responses.
 - Password-based login is not implemented because SRS only specifies registration and OTP requirements, not password policy.
 - Map data is placeholder seed data only.

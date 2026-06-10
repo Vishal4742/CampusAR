@@ -51,6 +51,27 @@ const serializeSession = async (services: Services, user: User) => ({
   tokens: await services.tokens.issuePair(user)
 });
 
+const serializeOtp = ({
+  services,
+  challengeId,
+  expiresAt,
+  code,
+  delivery
+}: {
+  services: Services;
+  challengeId: string;
+  expiresAt: string;
+  code: string;
+  delivery: Awaited<ReturnType<Services['email']['sendOtpEmail']>>;
+}) => ({
+  challengeId,
+  expiresAt,
+  delivery: delivery.delivery,
+  provider: delivery.provider,
+  providerMessageId: delivery.providerMessageId,
+  devCode: delivery.delivery === 'dev_response' && services.config.environment !== 'production' ? code : undefined
+});
+
 const getBearerToken = (request: FastifyRequest): string | null => {
   const header = request.headers.authorization ?? '';
   const [scheme, token] = header.split(' ');
@@ -81,7 +102,7 @@ export const registerVisitor = async (services: Services, body: Body) => {
   return serializeSession(services, user);
 };
 
-export const registerVerified = (services: Services, body: Body) => {
+export const registerVerified = async (services: Services, body: Body) => {
   const fullName = text(body, 'fullName');
   const email = text(body, 'email').toLowerCase();
   const role = typeof body.role === 'string' ? body.role : USER_ROLES.STUDENT;
@@ -108,31 +129,36 @@ export const registerVerified = (services: Services, body: Body) => {
     verificationStatus: 'otp_pending'
   });
   const { otp, code } = services.store.createOtp({ userId: user.id, email });
+  const delivery = await services.email.sendOtpEmail({
+    to: email,
+    code,
+    challengeId: otp.id,
+    purpose: otp.purpose,
+    expiresAt: otp.expiresAt
+  });
 
   return {
     user: services.store.publicUser(user),
-    otp: {
-      challengeId: otp.id,
-      expiresAt: otp.expiresAt,
-      delivery: services.config.collegeEmailDomain ? 'provider_pending' : 'dev_response',
-      devCode: services.config.environment === 'production' ? undefined : code
-    }
+    otp: serializeOtp({ services, challengeId: otp.id, expiresAt: otp.expiresAt, code, delivery })
   };
 };
 
-export const requestOtp = (services: Services, body: Body) => {
+export const requestOtp = async (services: Services, body: Body) => {
   const email = text(body, 'email').toLowerCase();
   const user = services.store.findUserByEmail(email);
   if (!user) {
     throw unauthorized('No account exists for that email');
   }
   const { otp, code } = services.store.createOtp({ userId: user.id, email });
-  return {
+  const delivery = await services.email.sendOtpEmail({
+    to: email,
+    code,
     challengeId: otp.id,
-    expiresAt: otp.expiresAt,
-    delivery: services.config.collegeEmailDomain ? 'provider_pending' : 'dev_response',
-    devCode: services.config.environment === 'production' ? undefined : code
-  };
+    purpose: otp.purpose,
+    expiresAt: otp.expiresAt
+  });
+
+  return serializeOtp({ services, challengeId: otp.id, expiresAt: otp.expiresAt, code, delivery });
 };
 
 export const verifyOtp = async (services: Services, body: Body) => {

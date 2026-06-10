@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createApp } from '../src/app.js';
+import { createEmailService } from '../src/services/email.js';
 
 test('health and route catalog are available', async () => {
   const app = await createApp();
@@ -94,4 +95,45 @@ test('relay packet upload deduplicates packet hashes', async () => {
   });
   assert.equal(second.statusCode, 202);
   assert.equal(second.json().results[0].result, 'duplicate');
+});
+
+test('resend email service posts OTP email payload with idempotency key', async () => {
+  const calls: Array<{ url: string; init: RequestInit }> = [];
+  const email = createEmailService({
+    environment: 'production',
+    emailProvider: 'resend',
+    resendApiKey: 're_test_key',
+    resendFromEmail: 'CampusAR <noreply@example.com>'
+  }, async (url, init) => {
+    calls.push({ url: String(url), init: init ?? {} });
+    return new Response(JSON.stringify({ id: 'email_123' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  });
+
+  const result = await email.sendOtpEmail({
+    to: 'student@oriental.ac.in',
+    code: '123456',
+    challengeId: 'challenge_123',
+    purpose: 'email_verification',
+    expiresAt: '2026-06-11T10:00:00.000Z'
+  });
+
+  assert.equal(result.delivery, 'email_sent');
+  assert.equal(result.provider, 'resend');
+  assert.equal(result.providerMessageId, 'email_123');
+  assert.equal(calls.length, 1);
+  const call = calls[0];
+  assert.ok(call);
+  assert.equal(call.url, 'https://api.resend.com/emails');
+  assert.equal(call.init.method, 'POST');
+  assert.equal((call.init.headers as Record<string, string>).Authorization, 'Bearer re_test_key');
+  assert.equal((call.init.headers as Record<string, string>)['Idempotency-Key'], 'challenge_123');
+
+  const body = JSON.parse(String(call.init.body)) as { from: string; to: string[]; subject: string; text: string };
+  assert.equal(body.from, 'CampusAR <noreply@example.com>');
+  assert.deepEqual(body.to, ['student@oriental.ac.in']);
+  assert.equal(body.subject, 'Your CampusAR verification code');
+  assert.match(body.text, /123456/);
 });

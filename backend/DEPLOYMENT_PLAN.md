@@ -38,7 +38,9 @@ Status: Phase 1 planning. No server or database has been provisioned. Backend de
 | `CAMPUSAR_COLLEGE_EMAIL_DOMAIN` | OTP email domain restriction | Decided: `oriental.ac.in` |
 | `CAMPUSAR_SEED_ADMIN_EMAIL` | Development seed admin | Decided: `vg8904937@gmail.com` |
 | `DATABASE_URL` | PostgreSQL connection string | Open |
-| `EMAIL_PROVIDER_*` | OTP delivery | Open |
+| `EMAIL_PROVIDER` | OTP delivery provider | Decided: `resend` |
+| `RESEND_API_KEY` | Resend API key | User-held secret; set in environment only |
+| `RESEND_FROM_EMAIL` | OTP sender address | Open until sender/domain is verified |
 | `PUSH_PROVIDER_*` | Future SOS/push path | Open |
 
 ## Operational Requirements
@@ -55,7 +57,7 @@ Status: Phase 1 planning. No server or database has been provisioned. Backend de
 - VPS or managed hosting provider.
 - PostgreSQL/PostGIS hosting model.
 - Domain and TLS certificate source.
-- Email/OTP provider. Current recommendation: Resend for development and early MVP; see `EMAIL_PROVIDER_OPTIONS.md`.
+- Resend sender/domain verification for OTP email; see `EMAIL_PROVIDER_OPTIONS.md`.
 - Push notification provider.
 - SMS provider for mobile SOS path.
 - Backup storage target.
