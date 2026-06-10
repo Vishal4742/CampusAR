@@ -19,7 +19,7 @@ export const SYNC_CONTRACT_NOTES = Object.freeze([
   'Offline navigation uses cached graph data and does not call live route APIs.'
 ]);
 
-export const normalizeCursor = (cursor) => {
+export const normalizeCursor = (cursor: string | null): number => {
   const parsed = Number.parseInt(cursor ?? '0', 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
 };

@@ -2,7 +2,7 @@
 
 Owner: CLI 2, WSL Codex.
 
-Status: CLI 2 Phase 1 dependency-free scaffold complete. Paths are implemented with in-memory storage until PostgreSQL and the final Node framework are selected.
+Status: CLI 2 Phase 1 TypeScript/Fastify scaffold complete. Paths are implemented with in-memory storage until PostgreSQL/PostGIS is connected.
 
 Base path: `/api/v1`
 
@@ -102,7 +102,7 @@ Admin creation is intentionally admin-only. For local development, set `CAMPUSAR
 ## Scaffold Limitations
 
 - Persistence is in-memory only.
-- JWT implementation uses Node built-ins for scaffold purposes and should be replaced with a reviewed library once dependencies are approved.
+- JWT signing and verification use `jose`, but token revocation and persistent refresh-token tracking are not implemented yet.
 - OTP delivery is not integrated with an email provider. Development responses include `devCode` outside production.
 - Password-based login is not implemented because SRS only specifies registration and OTP requirements, not password policy.
 - Map data is placeholder seed data only.

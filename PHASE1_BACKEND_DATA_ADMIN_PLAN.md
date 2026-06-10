@@ -6,7 +6,7 @@ Owner: CLI 2, WSL Codex.
 
 Scope: backend, database, API design, auth and roles, admin dashboard planning, and sync API planning.
 
-This plan tracks CLI 2 Phase 1 implementation. The user approved starting work after the initial plan, so the allowed scaffold areas now exist.
+This plan tracks CLI 2 Phase 1 implementation. The user approved backend dependency installation and the TypeScript/Fastify conversion after the initial dependency-free scaffold.
 
 ## CLI 2 Boundary
 
@@ -55,15 +55,15 @@ No Android or Rust directories should be created or edited by CLI 2.
 
 Created by CLI 2:
 
-- `backend/`: dependency-free Node.js backend with in-memory Phase 1 auth, roles, map bootstrap, sync, relay dedupe, and admin contract routes.
+- `backend/`: TypeScript/Fastify backend with in-memory Phase 1 auth, roles, map bootstrap, sync, relay dedupe, admin contract routes, TypeBox validation, Drizzle schema layout, and `jose` JWTs.
 - `database/`: PostgreSQL/PostGIS Phase 1 foundation migration, schema notes, and seed-data notes.
 - `admin-dashboard/`: no-build contract console for local backend smoke checks plus planning notes for future React dashboard work.
 
 Not done:
 
-- No dependencies installed.
 - No database created or migrated.
-- No framework scaffold such as Fastify, Express, NestJS, React, or Vite installed.
+- No PostgreSQL service connected.
+- No production OTP/email provider integrated.
 - No Android or Rust files touched.
 
 ## Phase 1 Work Packages
@@ -71,7 +71,7 @@ Not done:
 | ID | Area | Plan |
 | --- | --- | --- |
 | B1-01 | Repository boundary | Keep backend, database, and admin dashboard work isolated from Android and Rust ownership. |
-| B1-02 | Backend framework decision | Choose Node.js framework before scaffolding. Candidate decision remains open. |
+| B1-02 | Backend framework decision | Done: Node.js + TypeScript + Fastify + TypeBox/Ajv. |
 | B1-03 | Database baseline | Plan PostgreSQL with PostGIS as the authoritative server database. |
 | B1-04 | Auth model | Plan visitor registration, verified student/staff OTP registration, login, refresh, and account deletion. |
 | B1-05 | Roles | Plan visitor, student, staff/faculty, verified mapper, and admin authorization rules. |
@@ -196,35 +196,33 @@ No admin dashboard UI should be scaffolded unless implementation is explicitly a
 
 ## CLI 2 Phase 1 Completion
 
-Completed in this pass:
+Completed in this phase:
 
-- Dependency-free Node.js server using built-in `http`.
-- In-memory store for Phase 1 behavior until PostgreSQL tooling is selected.
+- TypeScript/Fastify server using TypeBox/Ajv validation.
+- In-memory store for Phase 1 behavior until PostgreSQL/PostGIS is connected.
 - Visitor registration.
 - Verified student/staff/faculty OTP challenge and verification flow.
-- JWT-like signed access and refresh tokens using Node built-ins for scaffold use.
+- JWT signed access and refresh tokens using `jose`.
 - Current-user and account deletion route.
 - Map manifest and placeholder seed map reads.
 - Delta sync and relay packet deduplication route behavior.
 - Admin-only user list, admin creation, role assignment, audit, map lock, threshold, and pending-location route shapes.
+- Drizzle config and TypeScript schema draft for PostgreSQL/PostGIS.
 - API contract, deployment plan, database schema notes, and no-build admin console.
-- Backend tests and syntax checks.
+- Backend tests, TypeScript checks, and production compile.
 
 Remaining after CLI 2 Phase 1:
 
-1. Install and convert to the selected stack after explicit approval: Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS, Drizzle, and `pg`.
-2. Replace dependency-free scaffold with the approved Node framework and TypeScript path.
-3. Add configuration and PostgreSQL connection layout.
-4. Review and apply the Phase 1 PostGIS migration through the chosen migration tool.
-5. Replace scaffold token/OTP logic with reviewed production libraries and provider integrations.
-6. Replace placeholder seed data with approved OCT campus seed data.
-7. Add admin dashboard shell only if approved as part of the same implementation scope.
-8. Update docs and create a git checkpoint after review.
+1. Connect services to PostgreSQL/PostGIS through Drizzle.
+2. Review and apply the Phase 1 PostGIS migration through the chosen migration workflow.
+3. Replace development OTP responses with a production email provider adapter.
+4. Replace placeholder seed data with approved OCT campus seed data.
+5. Add a React admin dashboard shell only when dashboard implementation is approved.
+6. Run device validation on the Redmi Note 10 Pro after the mobile CLI installs the APK.
 
 ## Blockers Before Implementation
 
-- Package installation approval for TypeScript/Fastify/Drizzle conversion.
-- OTP/email provider.
+- Production OTP/email provider account and sender DNS.
 - Backend hosting target and database hosting target.
 - Real OCT campus geofence, buildings, floors, rooms, paths, staircases, lifts, QR anchors, and accessibility metadata.
 - Location categories and default confirmation thresholds.
@@ -232,8 +230,8 @@ Remaining after CLI 2 Phase 1:
 
 ## Next Tasks For CLI 2
 
-- Convert the scaffold to TypeScript/Fastify/Drizzle after dependency approval.
-- Turn the conceptual model into an entity relationship plan.
+- Connect the in-memory service boundary to PostgreSQL/PostGIS.
+- Turn the conceptual model into a reviewed entity relationship plan.
 - Draft an OpenAPI-style contract once endpoint shapes are approved.
 - Define seed data import format for campus geometry.
 - Define admin dashboard information architecture for Phase 3 while keeping Phase 1 implementation focused.

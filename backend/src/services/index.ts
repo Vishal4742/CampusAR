@@ -10,9 +10,7 @@ export const createServices = () => {
     refreshTokenSeconds: config.refreshTokenSeconds
   });
 
-  return {
-    config,
-    store,
-    tokens
-  };
+  return { config, store, tokens };
 };
+
+export type Services = ReturnType<typeof createServices>;

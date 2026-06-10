@@ -4,10 +4,10 @@ This file is the shared coordination state for Codex sessions. Read it before ed
 
 ## Current Instruction Boundary
 
-- CLI 2 Phase 1 backend/data/admin scaffold is complete inside `backend/`, `database/`, and `admin-dashboard/`.
-- CLI 1 Phase 1 mobile/native scaffold is approved inside `android-app/` and `native-engine/`.
-- Do not install dependencies.
-- Keep unapproved areas limited to understanding, planning, and coordination documents.
+- CLI 2 Phase 1 backend/data/admin scaffold and the approved TypeScript/Fastify conversion are complete inside `backend/`, `database/`, and `admin-dashboard/`.
+- CLI 1 Phase 1 mobile/native scaffold is approved inside `android-app/` and `native-engine/` and is build-verified, pending physical device validation.
+- Do not install additional dependencies or scaffold new implementation areas without explicit approval.
+- Keep work inside the active CLI ownership boundary unless coordination docs require a careful shared update.
 
 ## Dual Codex CLI Coordination Rules
 
@@ -41,14 +41,14 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - Active backlog IDs: `P1-01`, `P1-08`, `P2-01`, and `P2-10`.
 - Active planning artifact: `PHASE1_MOBILE_NATIVE_PLAN.md`.
 - CLI 1 must not edit `backend/`, `database/`, or `admin-dashboard/`.
-- CLI 1 Phase 1 mobile/native scaffold is complete inside `android-app/` and `native-engine/`, pending Android SDK/NDK/Gradle device verification.
+- CLI 1 Phase 1 mobile/native scaffold is complete and debug-build verified inside `android-app/` and `native-engine/`, pending only device or emulator validation.
 - CLI 2, WSL Codex session owns backend, database, API, auth and roles, admin dashboard planning, and sync API planning.
 - Reason: WSL is the preferred environment for later Node.js and PostgreSQL/PostGIS work.
 - Active backlog IDs: `P1-04` and `P1-09`.
 - Active planning artifacts: `BACKEND_API_PLAN.md` and `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`.
 - CLI 2 must not edit `android-app/` or `native-engine/`.
-- CLI 2 Phase 1 backend/data/admin scaffold is complete. Backend stack is decided as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS, Drizzle, and `pg`.
-- CLI 2 still needs explicit approval before installing dependencies or converting the scaffold to TypeScript/Fastify.
+- CLI 2 Phase 1 backend/data/admin scaffold is complete. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
+- CLI 2 must get explicit approval before connecting a real PostgreSQL service, adding a production OTP provider integration, or scaffolding the React admin dashboard.
 
 ## Source Analyzed
 
@@ -60,8 +60,9 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - Workspace: `C:\Users\vg890\OneDrive\Desktop\CampusAR_1`
 - Initial file list contained only `CampusAR_SRS_v1.0.docx`.
 - `.git` initially existed as an empty directory in this environment, and `git status` reported this was not a repository.
-- `git init` was run successfully on 2026-06-10. Current branch is the default `master` branch.
+- `git init` was run successfully on 2026-06-10. Current working branch observed by CLI 2 is `cli1-mobile-native-phase1`.
 - CLI 2 Phase 1 checkpoint commit was created on 2026-06-10: `e52d29e` with message `Complete CLI 2 phase 1 backend scaffold`.
+- CLI 2 backend decision and mapping-bootstrap checkpoint commit was created on 2026-06-10: `78acb03` with message `docs(backend): record stack and mapping bootstrap decisions`.
 - No existing planning docs or handoff file were present before this pass.
 
 ## Technical Understanding
@@ -114,7 +115,7 @@ No dependencies were installed. No Android or Rust implementation files were cre
 
 ## Open Questions To Resolve Before Implementation
 
-- OTP/email provider remains open. College email domain is decided as `oriental.ac.in`.
+- OTP/email provider remains open. College email domain is decided as `oriental.ac.in`; CLI 2 recommends Resend first for free-tier MVP OTP email, with Mailgun or MailerSend as fallbacks.
 - User confirmed no campus dataset exists. Seed campus data currently consists of two Google Maps source links only. Geofence, buildings, floors, paths, rooms, staircases, lifts, QR anchor points, and accessibility metadata must be created through verified mapping/admin workflows.
 - Which offline map renderer should be used for v1.0: OSMDroid or Mapbox SDK?
 - Which Android UI toolkit should own non-AR screens? The SRS only requires the AR overlay not to use Compose.
@@ -123,20 +124,20 @@ No dependencies were installed. No Android or Rust implementation files were cre
 - What privacy aggregation threshold is required for occupancy heatmaps?
 - What institutional approvals are required for buddy tracking, SOS nearby alerts, SMS sending, occupancy analytics, and campus-wide notifications?
 - How are verified mappers selected and provisioned?
-- Which hosting, SMS, email, push notification, and domain/certificate providers are approved?
+- Which hosting, SMS, push notification, domain/certificate, and final email provider accounts are approved?
 - How should offline contributions resolve conflicts if they arrive after admin rejection, map lock, or newer edits?
 
 ## Suggested Next Step
 
-Review the planning docs against the SRS and answer the highest-impact open questions:
+Review the build-verified Phase 1 scaffold and answer the highest-impact open questions:
 
-1. Confirm map renderer and Android UI approach.
-2. Confirm initial campus data source and admin/mapper provisioning.
-3. Decide the Room versus Rust SQLite persistence boundary.
-4. Decide the Kotlin/Rust FFI contract style.
+1. Device-test the debug APK on the Redmi Note 10 Pro.
+2. Choose the production OTP/email provider and sender-domain plan.
+3. Confirm initial admin/mapper provisioning for collecting real OCT campus data.
+4. Decide the Room versus Rust SQLite persistence boundary.
 5. Confirm privacy and institutional policies for SOS, buddy tracking, and occupancy.
 
-After those decisions, create a narrow implementation plan for Phase 1 only. Do not scaffold until explicitly approved.
+After those decisions, move into the next narrow implementation slice rather than broad Phase 2 work.
 
 ## Suggested Split Between Two Codex Sessions
 
@@ -238,10 +239,12 @@ Coordinate through this file before editing shared docs.
 - Decisions made: package name is `com.campusar.app`; UI uses plain Android Views; map SDK is deferred; JNI uses primitive functions; seed destinations are temporary placeholders until real OCT coordinates are available.
 - Checks run: `cargo fmt --manifest-path native-engine/Cargo.toml -- --check` and `cargo test --manifest-path native-engine/Cargo.toml`.
 - Results: Rust formatting check passed; Rust tests passed with 6 passed, 0 failed.
-- Android verification blocked: `gradle` is not installed, no `ANDROID_HOME` or `ANDROID_SDK_ROOT` is set, and only host Rust targets are installed.
+- Installed local toolchain under `C:\tmp\campusar-toolchain`: JDK 17, Gradle 8.10.2, Android command-line tools, Android SDK platform 35, build-tools 35.0.0 and 34.0.0, platform-tools, NDK 27.2.12479018, and Rust Android targets `aarch64-linux-android` and `armv7-linux-androideabi`.
+- Added `scripts/use-android-toolchain.ps1` to set the local toolchain environment for future PowerShell sessions.
+- Android verification completed: `native-engine/scripts/build-android.ps1` built `arm64-v8a` and `armeabi-v7a` native libraries, and `gradle -p android-app :app:assembleDebug --stacktrace` produced `android-app/app/build/outputs/apk/debug/app-debug.apk`.
 - Files changed by CLI 1: `.gitignore`, `PHASE1_MOBILE_NATIVE_PLAN.md`, `PHASED_ROADMAP.md`, `BACKLOG.md`, `CODEX_HANDOFF.md`, `android-app/`, and `native-engine/`.
 - CLI 1 did not edit `backend/`, `database/`, or `admin-dashboard/`.
-- Next tasks: install/configure Android SDK, Android NDK, Gradle or Gradle wrapper, add Rust Android targets, run `native-engine/scripts/build-android.ps1`, then run an Android debug build.
+- Next tasks: run `android-app/app/build/outputs/apk/debug/app-debug.apk` on an Android device or emulator, replace placeholder campus coordinates with verified OCT seed data, and select the OTP/email provider.
 
 ### 2026-06-10 - User backend decisions recorded
 
@@ -262,3 +265,20 @@ Coordinate through this file before editing shared docs.
 - Updated seed notes to treat the two Google Maps points as draft anchors only.
 - Updated backlog and backend plan to make mapping walks the source of truth for initial graph creation.
 - Key product implication: CampusAR must start with sparse/draft map data and rely on verified mapper/admin workflows before claiming full campus navigation.
+
+### 2026-06-10 - CLI 2 TypeScript/Fastify conversion and provider recommendation
+
+- User approved dependency installation and backend conversion work.
+- Installed backend dependencies under `backend/` and kept `backend/node_modules/` ignored by git.
+- Converted the active backend path from the dependency-free JavaScript scaffold to TypeScript/Fastify with TypeBox/Ajv validation.
+- Added Drizzle config and a TypeScript PostgreSQL/PostGIS schema layout; no database service was created or migrated.
+- Replaced scaffold token signing with `jose` JWT signing and verification.
+- Removed older tracked JavaScript backend scaffold files after the TypeScript path passed validation.
+- Added `backend/EMAIL_PROVIDER_OPTIONS.md`; recommendation is Resend for free-tier MVP OTP email, with Mailgun or MailerSend as fallbacks.
+- Recorded the user's Redmi Note 10 Pro as the physical Android test target.
+- Files changed by CLI 2: `.gitignore`, `BACKLOG.md`, `CODEX_HANDOFF.md`, `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`, `PHASED_ROADMAP.md`, `backend/package.json`, `backend/package-lock.json`, `backend/README.md`, `backend/API_CONTRACT.md`, `backend/DEPLOYMENT_PLAN.md`, `backend/STACK_DECISION.md`, `backend/EMAIL_PROVIDER_OPTIONS.md`, `backend/tsconfig.json`, `backend/drizzle.config.ts`, `backend/src/**/*.ts`, and `backend/test/app.test.ts`.
+- Checks run: `npm run check`, `npm test`, `npm run build`, and `node --check admin-dashboard/app.js`.
+- Results: all checks passed.
+- CLI 2 did not edit Android or Rust implementation files.
+- Next CLI 2 tasks: choose final OTP provider account, connect PostgreSQL/PostGIS through Drizzle, define real seed-data import format, and keep admin dashboard implementation deferred until approved.
+- Blockers: no real campus geofence/building/floor/path/room dataset, OTP sender DNS/account not selected, no production hosting/database target, and no device validation result from the Redmi Note 10 Pro yet.

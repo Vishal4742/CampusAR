@@ -5,8 +5,28 @@
   "type": "module",
   "description": "CampusAR Phase 1 backend scaffold",
   "scripts": {
-    "start": "node src/server.js",
-    "check": "node scripts/check.js",
-    "test": "node --test"
+    "dev": "tsx src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --test test/app.test.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@sinclair/typebox": "^0.34.49",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "fastify": "^5.8.5",
+    "jose": "^6.2.3",
+    "pg": "^8.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "@types/pg": "^8.20.0",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
   }
 }

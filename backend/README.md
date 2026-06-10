@@ -2,11 +2,11 @@
 
 Owner: CLI 2, WSL Codex.
 
-This is the Phase 1 backend scaffold for CampusAR. It is intentionally dependency-free until the backend framework, package manager, ORM/query builder, and migration tooling are approved.
+This is the Phase 1 backend scaffold for CampusAR. It now uses the approved TypeScript/Fastify stack while keeping persistence in-memory until PostgreSQL/PostGIS is provisioned.
 
 ## Scope
 
-- Node.js backend boundary.
+- Node.js + TypeScript backend boundary.
 - Auth and role API skeleton.
 - Map bootstrap and sync API skeleton.
 - Admin API skeleton for future dashboard use.
@@ -14,7 +14,7 @@ This is the Phase 1 backend scaffold for CampusAR. It is intentionally dependenc
 
 ## Current State
 
-The server exposes a dependency-free Phase 1 API using Node.js built-in `http` only. Persistence is in-memory until PostgreSQL tooling is approved.
+The server exposes a Fastify Phase 1 API with TypeBox/Ajv request validation. Persistence is in-memory until PostgreSQL tooling is connected through Drizzle.
 
 Implemented now:
 
@@ -28,11 +28,11 @@ Implemented now:
 
 ## Commands
 
-No dependencies are installed or required for the current scaffold.
-
 ```bash
+npm install
 npm run check
 npm test
+npm run build
 npm start
 ```
 
@@ -40,11 +40,10 @@ Default port: `8080`.
 
 ## Decisions Still Needed
 
-- Backend framework: Fastify, Express, NestJS, or other.
-- TypeScript migration path.
-- ORM/query builder and migration tooling.
-- JWT library and password/OTP hash strategy.
+- PostgreSQL/PostGIS hosting and connection target.
+- Production OTP/email provider account and DNS setup.
+- OTP rate limits, retry limits, and delivery audit retention.
 - PostgreSQL connection and configuration convention.
-- Email/OTP provider.
+- Real OCT campus seed data.
 
-See `API_CONTRACT.md` and `DEPLOYMENT_PLAN.md` for Phase 1 closeout details.
+See `API_CONTRACT.md`, `DEPLOYMENT_PLAN.md`, `EMAIL_PROVIDER_OPTIONS.md`, and `STACK_DECISION.md` for Phase 1 closeout details.
