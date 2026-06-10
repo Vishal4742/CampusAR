@@ -2,7 +2,7 @@
 
 Owner: CLI 2, WSL Codex.
 
-Status: selected for the next production implementation pass. Dependencies are not installed yet.
+Status: implemented for the Phase 1 backend scaffold. PostgreSQL/PostGIS is modeled but not connected yet.
 
 ## Decision
 
@@ -14,7 +14,7 @@ Use:
 - PostgreSQL with PostGIS.
 - Drizzle ORM with `pg` for SQL-first, type-safe database access.
 - Drizzle migrations through `drizzle-kit`.
-- `jose` or a reviewed Fastify JWT plugin for production JWT handling.
+- `jose` for JWT signing and verification.
 - React admin dashboard later through Vite + TypeScript when dashboard implementation starts.
 
 ## Reasoning
@@ -24,11 +24,10 @@ Use:
 - Drizzle keeps SQL visible, which matters for PostGIS queries, spatial indexes, sync cursors, and migration review.
 - `pg` is mature and works cleanly with PostgreSQL/PostGIS.
 - TypeScript gives contracts across backend, admin dashboard, and generated API types.
+- `jose` avoids keeping scaffold-only token signing in production-facing code.
 
-## Deferred Until Dependency Approval
+## Deferred
 
-- Installing packages.
-- Replacing the dependency-free scaffold with TypeScript/Fastify.
-- Adding Drizzle config and generated migrations.
-- Connecting to PostgreSQL.
-- Replacing scaffold token logic with reviewed production auth libraries.
+- Connecting Fastify services to PostgreSQL/PostGIS.
+- Generating reviewed Drizzle migrations from the TypeScript schema.
+- Replacing development OTP responses with a real provider adapter.

@@ -46,22 +46,24 @@ Phase closeout requirement:
 
 CLI 2 backend/data/admin closeout, 2026-06-10:
 
-- Completed dependency-free Node.js Phase 1 backend scaffold for auth, roles, map bootstrap, sync, relay dedupe, and admin contract routes.
+- Completed TypeScript/Fastify Phase 1 backend scaffold for auth, roles, map bootstrap, sync, relay dedupe, and admin contract routes.
 - Completed PostgreSQL/PostGIS Phase 1 schema draft and schema notes.
-- Completed backend API contract and deployment plan.
+- Completed Drizzle schema layout, backend API contract, deployment plan, stack decision, and email provider options.
 - Completed no-build admin dashboard contract console.
-- Verified with `npm run check`, `npm test`, direct `node test/app.test.js`, and `node --check admin-dashboard/app.js`.
-- Exceptions: persistence is in-memory; no dependencies installed; no database migrated; OTP delivery provider is not integrated; seed campus data is placeholder-only.
-- Overall Phase 1 is not closed for the whole project until CLI 1 mobile/native work and the shared git checkpoint are complete.
+- Verified with `npm run check`, `npm test`, `npm run build`, and `node --check admin-dashboard/app.js`.
+- Exceptions: persistence is in-memory; no database migrated; OTP delivery provider is not integrated; seed campus data is placeholder-only.
+- Overall Phase 1 is scaffold/build-complete, but not campus-data-complete or device-validated until the APK is tested on the Redmi Note 10 Pro or another Android 8.0+ device.
 
 CLI 1 mobile/native closeout, 2026-06-10:
 
 - Completed Android Phase 1 scaffold under `android-app/` with Gradle project files, plain Android Views, location permission flow, seed destinations, Kotlin native bridge, and `SurfaceView` compass overlay foundation.
 - Completed Rust Phase 1 scaffold under `native-engine/` with dependency-free distance, bearing, heading delta, proximity scale, arrival logic, primitive JNI exports, release profile settings, and Android NDK build script.
 - Verified Rust host formatting and tests with `cargo fmt --manifest-path native-engine/Cargo.toml -- --check` and `cargo test --manifest-path native-engine/Cargo.toml`.
-- Exceptions: Android build was not run because `gradle` is not installed in this Windows session; no Android SDK env var is set; Android Rust targets are not installed; native `.so` files are not packaged yet.
+- Android SDK, NDK, Gradle, JDK 17, and Rust Android targets were installed locally under `C:\tmp\campusar-toolchain`.
+- Native `.so` files were built for `arm64-v8a` and `armeabi-v7a` using `native-engine/scripts/build-android.ps1`.
+- Android debug build was verified with `gradle -p android-app :app:assembleDebug --stacktrace`.
 - Seed campus coordinates remain temporary placeholders until verified OCT geofence, building, and destination data are available.
-- Overall Phase 1 can be treated as scaffold-complete, but not device-verified, until Android SDK/NDK/Gradle are installed and a debug build is run.
+- Overall Phase 1 can be treated as build-verified for the scaffold. It is not device-validated until the APK is run on an Android device or emulator.
 
 ## Phase 2: Sensor Fusion, Weeks 5-8
 

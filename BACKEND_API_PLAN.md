@@ -2,13 +2,13 @@
 
 Source: `CampusAR_SRS_v1.0.docx`, SRS v1.0.
 
-This is a planning document for the WSL Codex session. It does not create Node.js, PostgreSQL, migration, or build-tool scaffolding.
+This started as a planning document for the WSL Codex session. It now also records the approved Phase 1 backend/data/admin scaffold and TypeScript/Fastify conversion status.
 
 ## Ownership
 
 Primary owner: WSL Codex session.
 
-Reason: backend, PostgreSQL/PostGIS, sync, and API work will be easier to develop and test from WSL once implementation is explicitly approved.
+Reason: backend, PostgreSQL/PostGIS, sync, and API work are easier to develop and test from WSL.
 
 Current scope:
 
@@ -20,7 +20,7 @@ Current scope:
 
 Related Phase 1 implementation plan: `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`.
 
-CLI 2 Phase 1 status: complete for the dependency-free backend/data/admin scaffold. Production stack decision is now Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS, Drizzle, and `pg`. Package installation and provider integrations remain open.
+CLI 2 Phase 1 status: complete for the backend/data/admin scaffold and approved TypeScript/Fastify conversion. Active stack is Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`. Provider integrations and live PostgreSQL connection remain open.
 
 Campus data status: user confirmed there is no existing campus dataset. The backend/data plan must support bootstrapping from two Google Maps pins plus verified mapper walks. See `database/seeds/MAPPING_BOOTSTRAP_PLAN.md`.
 
@@ -179,21 +179,21 @@ Open question: exact conflict policy for delayed offline contributions after map
 
 Open question: minimum aggregation threshold for occupancy zones.
 
-## Phase 1 Backend Planning Deliverables
+## Phase 1 Backend Deliverables
 
-Before implementation, WSL Codex should finish:
+Completed or documented by CLI 2:
 
 - API boundary decisions for auth, map manifest, delta sync, admin approval, and role management.
 - Conceptual database model review against SRS requirements.
 - Backend hosting and provider assumptions list.
-- OTP/email provider decision.
+- OTP/email provider options with Resend recommended for MVP testing.
 - Initial seed data ingestion plan for campus geofence, buildings, floors, locations, and path graph.
-- API security baseline: HTTPS, JWT, admin role checks, cooldown enforcement.
+- API security baseline: HTTPS, JWT through `jose`, admin role checks, and cooldown enforcement.
 
 ## Open Questions
 
 - Official OCT college email domain for student and staff OTP: decided as `oriental.ac.in`.
-- Which OTP/email provider is approved?
+- Which OTP/email provider account is approved? Resend is the current recommendation, but no account or DNS setup exists yet.
 - Backend Node.js framework: decided as Fastify with TypeScript and TypeBox/Ajv validation.
 - What hosting environment, domain, TLS certificate, SMS provider, push provider, and email provider are approved?
 - Current seed campus data: two Google Maps links only, captured in `database/seeds/source-links.json`. User confirmed no other campus data exists.

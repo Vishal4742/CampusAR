@@ -10,6 +10,13 @@ target/
 # Generated native libraries
 android-app/app/src/main/jniLibs/
 
+# Backend
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/.env.local
+*.log
+
 # IDE / OS
 .idea/
 *.iml

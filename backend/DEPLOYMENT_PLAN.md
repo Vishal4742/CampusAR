@@ -2,7 +2,7 @@
 
 Owner: CLI 2, WSL Codex.
 
-Status: Phase 1 planning. No server or database has been provisioned.
+Status: Phase 1 planning. No server or database has been provisioned. Backend dependencies are installed locally for the approved TypeScript/Fastify scaffold.
 
 ## SRS Targets
 
@@ -55,14 +55,14 @@ Status: Phase 1 planning. No server or database has been provisioned.
 - VPS or managed hosting provider.
 - PostgreSQL/PostGIS hosting model.
 - Domain and TLS certificate source.
-- Email/OTP provider.
+- Email/OTP provider. Current recommendation: Resend for development and early MVP; see `EMAIL_PROVIDER_OPTIONS.md`.
 - Push notification provider.
 - SMS provider for mobile SOS path.
 - Backup storage target.
 
 ## Stack Decision
 
-The next production implementation pass should use:
+The approved backend scaffold uses:
 
 - Node.js with TypeScript.
 - Fastify.
@@ -71,4 +71,4 @@ The next production implementation pass should use:
 - Drizzle ORM with `pg`.
 - Drizzle migrations through `drizzle-kit`.
 
-Dependencies are not installed yet.
+Dependencies are installed locally under `backend/`; `backend/node_modules/` is ignored by git.

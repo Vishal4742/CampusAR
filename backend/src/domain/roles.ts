@@ -1,3 +1,5 @@
+import type { User, UserRole } from '../types.js';
+
 export const USER_ROLES = Object.freeze({
   VISITOR: 'visitor',
   STUDENT: 'student',
@@ -5,17 +7,17 @@ export const USER_ROLES = Object.freeze({
   FACULTY: 'faculty',
   VERIFIED_MAPPER: 'verified_mapper',
   ADMIN: 'admin'
-});
+} satisfies Record<string, UserRole>);
 
 export const CONTRIBUTION_COOLDOWN_DAYS = 7;
 
-export const VERIFIED_REGISTRATION_ROLES = Object.freeze([
+export const VERIFIED_REGISTRATION_ROLES = Object.freeze<UserRole[]>([
   USER_ROLES.STUDENT,
   USER_ROLES.STAFF,
   USER_ROLES.FACULTY
 ]);
 
-export const ROLE_CAPABILITIES = Object.freeze({
+export const ROLE_CAPABILITIES: Readonly<Record<UserRole, readonly string[]>> = Object.freeze({
   [USER_ROLES.VISITOR]: ['navigate'],
   [USER_ROLES.STUDENT]: ['navigate', 'confirm_location', 'buddy_tracking'],
   [USER_ROLES.STAFF]: ['navigate', 'confirm_location', 'faculty_status'],
@@ -30,7 +32,17 @@ export const ROLE_CAPABILITIES = Object.freeze({
   [USER_ROLES.ADMIN]: ['admin_all']
 });
 
-export const canContribute = ({ role, verified, createdAt, now = new Date() }) => {
+export const canContribute = ({
+  role,
+  verified,
+  createdAt,
+  now = new Date()
+}: {
+  role: UserRole;
+  verified: boolean;
+  createdAt: string;
+  now?: Date;
+}): boolean => {
   if (role === USER_ROLES.ADMIN) {
     return true;
   }
@@ -46,6 +58,8 @@ export const canContribute = ({ role, verified, createdAt, now = new Date() }) =
   return now >= cooldownEndsAt;
 };
 
-export const isAdmin = (user) => user?.primaryRole === USER_ROLES.ADMIN;
+export const isAdmin = (user: User | null | undefined): boolean => user?.primaryRole === USER_ROLES.ADMIN;
 
-export const isVerifiedRole = (role) => VERIFIED_REGISTRATION_ROLES.includes(role);
+export const isVerifiedRole = (role: string): role is UserRole => {
+  return VERIFIED_REGISTRATION_ROLES.includes(role as UserRole);
+};

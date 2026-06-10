@@ -2,18 +2,25 @@ import { createHash, randomUUID } from 'node:crypto';
 import { config } from '../config.js';
 import { CONTRIBUTION_COOLDOWN_DAYS, USER_ROLES } from '../domain/roles.js';
 import { SYNC_RESULT } from '../domain/sync.js';
+import type { GeoJsonPoint, LocationRecord, PublicUser, SyncChange, User, UserRole, VerificationStatus } from '../types.js';
 
-const nowIso = () => new Date().toISOString();
+const nowIso = (): string => new Date().toISOString();
 
-const addDays = (date, days) => {
+const addDays = (date: string, days: number): string => {
   const next = new Date(date);
   next.setUTCDate(next.getUTCDate() + days);
   return next.toISOString();
 };
 
-const hash = (value) => createHash('sha256').update(String(value)).digest('hex');
+const hash = (value: string): string => createHash('sha256').update(value).digest('hex');
 
-const publicUser = (user) => ({
+const point = (longitude: number, latitude: number, source: string): GeoJsonPoint => ({
+  type: 'Point',
+  coordinates: [longitude, latitude],
+  source
+});
+
+const publicUser = (user: User): PublicUser => ({
   id: user.id,
   email: user.email,
   fullName: user.fullName,
@@ -33,8 +40,33 @@ const seedCampus = () => {
   const buildingId = randomUUID();
   const floorId = randomUUID();
   const zoneId = randomUUID();
-  const octPinId = randomUUID();
-  const oistPinId = randomUUID();
+
+  const locations: LocationRecord[] = [
+    {
+      id: randomUUID(),
+      campusId,
+      buildingId,
+      floorId,
+      zoneId,
+      categoryKey: 'campus_pin',
+      label: 'Oriental College of Technology Google Maps Pin',
+      point: point(77.5019383, 23.2462927, 'https://maps.app.goo.gl/PoESLVac4tegAM489'),
+      status: 'draft',
+      confidenceScore: 0
+    },
+    {
+      id: randomUUID(),
+      campusId,
+      buildingId: null,
+      floorId: null,
+      zoneId,
+      categoryKey: 'campus_pin',
+      label: 'Oriental Institute of Science and Technology Google Maps Pin',
+      point: point(77.5029367, 23.2487036, 'https://maps.app.goo.gl/xUen8Rr4UNMqDgfR6'),
+      status: 'draft',
+      confidenceScore: 0
+    }
+  ];
 
   return {
     campuses: [{
@@ -50,11 +82,7 @@ const seedCampus = () => {
       campusId,
       name: 'Oriental College of Technology Google Maps Pin',
       code: 'OCT',
-      centroid: {
-        type: 'Point',
-        coordinates: [77.5019383, 23.2462927],
-        source: 'https://maps.app.goo.gl/PoESLVac4tegAM489'
-      },
+      centroid: point(77.5019383, 23.2462927, 'https://maps.app.goo.gl/PoESLVac4tegAM489'),
       footprint: null
     }],
     floors: [{
@@ -68,8 +96,8 @@ const seedCampus = () => {
       campusId,
       buildingId,
       floorId,
-      name: 'Seed Zone Placeholder',
-      purpose: 'navigation_seed'
+      name: 'Draft campus bootstrap zone',
+      purpose: 'mapping_bootstrap'
     }],
     categories: [
       { key: 'campus_pin', label: 'Campus Pin', defaultConfirmationThreshold: 3, defaultConfirmationRadiusMeters: 15 },
@@ -79,72 +107,37 @@ const seedCampus = () => {
       { key: 'faculty_room', label: 'Faculty Room', defaultConfirmationThreshold: 3, defaultConfirmationRadiusMeters: 15 },
       { key: 'admin_office', label: 'Admin Office', defaultConfirmationThreshold: 3, defaultConfirmationRadiusMeters: 15 }
     ],
-    locations: [
-      {
-        id: octPinId,
-        campusId,
-        buildingId,
-        floorId,
-        zoneId,
-        categoryKey: 'campus_pin',
-        label: 'Oriental College of Technology Google Maps Pin',
-        point: {
-          type: 'Point',
-          coordinates: [77.5019383, 23.2462927],
-          source: 'https://maps.app.goo.gl/PoESLVac4tegAM489'
-        },
-        status: 'draft',
-        confidenceScore: 0
-      },
-      {
-        id: oistPinId,
-        campusId,
-        buildingId: null,
-        floorId: null,
-        zoneId,
-        categoryKey: 'campus_pin',
-        label: 'Oriental Institute of Science and Technology Google Maps Pin',
-        point: {
-          type: 'Point',
-          coordinates: [77.5029367, 23.2487036],
-          source: 'https://maps.app.goo.gl/xUen8Rr4UNMqDgfR6'
-        },
-        status: 'draft',
-        confidenceScore: 0
-      }
-    ],
-    edges: [],
-    qrAnchors: []
+    locations,
+    edges: [] as unknown[],
+    qrAnchors: [] as unknown[]
   };
 };
 
+interface OtpChallenge {
+  id: string;
+  userId: string;
+  targetEmail: string;
+  purpose: string;
+  codeHash: string;
+  expiresAt: string;
+  consumedAt: string | null;
+  attemptCount: number;
+  createdAt: string;
+}
+
 export const createStore = () => {
   const campus = seedCampus();
-  const users = new Map();
-  const otps = new Map();
-  const syncChanges = [];
-  const relayPackets = new Map();
-  const auditEvents = [];
-  const mapSettings = {
-    mappingLocked: false,
-    updatedAt: nowIso(),
-    updatedBy: null
-  };
-
-  const thresholds = new Map(
-    campus.categories.map((category) => [category.key, { ...category }])
-  );
-
+  const users = new Map<string, User>();
+  const otps = new Map<string, OtpChallenge>();
+  const syncChanges: SyncChange[] = [];
+  const relayPackets = new Map<string, unknown>();
+  const auditEvents: unknown[] = [];
+  const mapSettings = { mappingLocked: false, updatedAt: nowIso(), updatedBy: null as string | null };
+  const thresholds = new Map(campus.categories.map((category) => [category.key, { ...category }]));
   let changeId = 0;
 
-  const appendChange = (recordType, operation, payload) => {
-    const change = {
-      id: ++changeId,
-      recordType,
-      operation,
-      payload,
-      changedAt: nowIso()
-    };
+  const appendChange = (recordType: string, operation: string, payload: unknown): SyncChange => {
+    const change = { id: ++changeId, recordType, operation, payload, changedAt: nowIso() };
     syncChanges.push(change);
     return change;
   };
@@ -157,11 +150,19 @@ export const createStore = () => {
     department = null,
     primaryRole = USER_ROLES.VISITOR,
     verificationStatus = 'not_required'
-  }) => {
+  }: {
+    email?: string | null;
+    fullName: string;
+    rollNumber?: string | null;
+    designation?: string | null;
+    department?: string | null;
+    primaryRole?: UserRole;
+    verificationStatus?: VerificationStatus;
+  }): User => {
     const createdAt = nowIso();
-    const user = {
+    const user: User = {
       id: randomUUID(),
-      email: email ? String(email).toLowerCase() : null,
+      email: email ? email.toLowerCase() : null,
       fullName,
       rollNumber,
       designation,
@@ -192,40 +193,34 @@ export const createStore = () => {
     campus,
     appendChange,
     publicUser,
-
     createUser,
-    findUserById(id) {
+    findUserById(id: string): User | null {
       const user = users.get(id);
-      return user?.accountStatus === 'deleted' ? null : user;
+      return user && user.accountStatus !== 'deleted' ? user : null;
     },
-    findUserByEmail(email) {
-      const normalized = String(email ?? '').toLowerCase();
+    findUserByEmail(email: string): User | null {
+      const normalized = email.toLowerCase();
       return [...users.values()].find((user) => user.email === normalized && user.accountStatus !== 'deleted') ?? null;
     },
-    listUsers() {
+    listUsers(): PublicUser[] {
       return [...users.values()].map(publicUser);
     },
-    updateUser(user, updates) {
+    updateUser(user: User, updates: Partial<User>): User {
       Object.assign(user, updates, { updatedAt: nowIso() });
       appendChange('user', 'updated', publicUser(user));
       return user;
     },
-    deleteUser(user) {
-      Object.assign(user, {
-        accountStatus: 'deleted',
-        deletedAt: nowIso(),
-        updatedAt: nowIso()
-      });
+    deleteUser(user: User): User {
+      Object.assign(user, { accountStatus: 'deleted' as const, deletedAt: nowIso(), updatedAt: nowIso() });
       appendChange('user', 'deleted', { id: user.id });
       return user;
     },
-
-    createOtp({ userId, email, purpose = 'email_verification' }) {
+    createOtp({ userId, email, purpose = 'email_verification' }: { userId: string; email: string; purpose?: string }) {
       const code = String(Math.floor(100000 + Math.random() * 900000));
-      const otp = {
+      const otp: OtpChallenge = {
         id: randomUUID(),
         userId,
-        targetEmail: String(email).toLowerCase(),
+        targetEmail: email.toLowerCase(),
         purpose,
         codeHash: hash(code),
         expiresAt: addDays(nowIso(), 1),
@@ -236,16 +231,15 @@ export const createStore = () => {
       otps.set(otp.id, otp);
       return { otp, code };
     },
-    verifyOtp({ email, code, challengeId }) {
-      const normalized = String(email ?? '').toLowerCase();
-      const candidates = [...otps.values()].filter((otp) => {
-        return !otp.consumedAt
-          && otp.targetEmail === normalized
-          && (!challengeId || otp.id === challengeId)
-          && new Date(otp.expiresAt) > new Date();
-      });
+    verifyOtp({ email, code, challengeId }: { email: string; code: string; challengeId?: string }): OtpChallenge | null {
+      const normalized = email.toLowerCase();
+      const otp = [...otps.values()].filter((candidate) => {
+        return !candidate.consumedAt
+          && candidate.targetEmail === normalized
+          && (!challengeId || candidate.id === challengeId)
+          && new Date(candidate.expiresAt) > new Date();
+      }).at(-1);
 
-      const otp = candidates.at(-1);
       if (!otp) {
         return null;
       }
@@ -258,7 +252,6 @@ export const createStore = () => {
       otp.consumedAt = nowIso();
       return otp;
     },
-
     getManifest() {
       return {
         mapVersion: 1,
@@ -274,47 +267,37 @@ export const createStore = () => {
         }
       };
     },
-    getChangesSince(cursor) {
+    getChangesSince(cursor: number): SyncChange[] {
       return syncChanges.filter((change) => change.id > cursor);
     },
-    acceptClientChanges(changes, actor) {
+    acceptClientChanges(changes: Array<Record<string, unknown>>, actor: User) {
       return changes.map((change) => {
-        const accepted = appendChange(change.recordType ?? 'client_delta', change.operation ?? 'upsert', {
-          ...change.payload,
+        const accepted = appendChange(String(change.recordType ?? 'client_delta'), String(change.operation ?? 'upsert'), {
+          payload: change.payload ?? null,
           submittedBy: actor.id
         });
-        return {
-          clientId: change.clientId ?? null,
-          result: SYNC_RESULT.ACCEPTED,
-          serverChangeId: accepted.id
-        };
+        return { clientId: change.clientId ?? null, result: SYNC_RESULT.ACCEPTED, serverChangeId: accepted.id };
       });
     },
-    acceptRelayPackets(packets, actor) {
+    acceptRelayPackets(packets: Array<Record<string, unknown>>, actor: User) {
       return packets.map((packet) => {
         const packetHash = packet.packetHash ?? packet.hash;
-        if (!packetHash) {
+        if (typeof packetHash !== 'string' || !packetHash) {
           return { result: SYNC_RESULT.REJECTED, reason: 'packetHash is required' };
         }
         if (relayPackets.has(packetHash)) {
           return { packetHash, result: SYNC_RESULT.DUPLICATE };
         }
-        relayPackets.set(packetHash, {
-          packetHash,
-          uploadedByUserId: actor.id,
-          firstSeenAt: nowIso(),
-          payload: packet.payload ?? null
-        });
+        relayPackets.set(packetHash, { packetHash, uploadedByUserId: actor.id, firstSeenAt: nowIso(), payload: packet.payload ?? null });
         appendChange('relay_packet', 'accepted', { packetHash, uploadedByUserId: actor.id });
         return { packetHash, result: SYNC_RESULT.ACCEPTED };
       });
     },
-
     getMapSettings() {
       return { ...mapSettings };
     },
-    setMapLock({ locked, actor }) {
-      mapSettings.mappingLocked = Boolean(locked);
+    setMapLock({ locked, actor }: { locked: boolean; actor: User }) {
+      mapSettings.mappingLocked = locked;
       mapSettings.updatedAt = nowIso();
       mapSettings.updatedBy = actor.id;
       appendChange('map_settings', 'updated', { ...mapSettings });
@@ -323,31 +306,18 @@ export const createStore = () => {
     listThresholds() {
       return [...thresholds.values()];
     },
-    updateThreshold(categoryKey, updates, actor) {
+    updateThreshold(categoryKey: string, updates: Record<string, unknown>, actor: User) {
       const current = thresholds.get(categoryKey);
       if (!current) {
         return null;
       }
-      const next = {
-        ...current,
-        ...updates,
-        key: categoryKey
-      };
+      const next = { ...current, ...updates, key: categoryKey };
       thresholds.set(categoryKey, next);
       appendChange('threshold', 'updated', { ...next, updatedBy: actor.id });
       return next;
     },
-
-    addAudit(actor, action, targetType, targetId, newValue = null) {
-      const event = {
-        id: randomUUID(),
-        actorUserId: actor?.id ?? null,
-        action,
-        targetType,
-        targetId,
-        newValue,
-        createdAt: nowIso()
-      };
+    addAudit(actor: User | null, action: string, targetType: string, targetId: string, newValue: unknown = null) {
+      const event = { id: randomUUID(), actorUserId: actor?.id ?? null, action, targetType, targetId, newValue, createdAt: nowIso() };
       auditEvents.push(event);
       return event;
     },
@@ -355,9 +325,9 @@ export const createStore = () => {
       return auditEvents;
     },
     listPendingLocations() {
-      return campus.locations.filter((location) => {
-        return ['pending_confirmation', 'pending_admin_review'].includes(location.status);
-      });
+      return campus.locations.filter((location) => ['pending_confirmation', 'pending_admin_review'].includes(location.status));
     }
   };
 };
+
+export type Store = ReturnType<typeof createStore>;
