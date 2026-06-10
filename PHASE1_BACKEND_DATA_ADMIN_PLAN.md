@@ -6,7 +6,7 @@ Owner: CLI 2, WSL Codex.
 
 Scope: backend, database, API design, auth and roles, admin dashboard planning, and sync API planning.
 
-This plan tracks CLI 2 Phase 1 implementation. The user approved backend dependency installation and the TypeScript/Fastify conversion after the initial dependency-free scaffold.
+This plan tracks CLI 2 Phase 1 implementation. Status: closed from the CLI 2 backend/data/admin side.
 
 ## CLI 2 Boundary
 
@@ -52,6 +52,8 @@ database/
 No Android or Rust directories should be created or edited by CLI 2.
 
 ## Scaffold Status
+
+CLI 2 Phase 1 is complete for backend/data/admin. Remaining open items are external verification, future implementation phases, or CLI 1/mobile work.
 
 Created by CLI 2:
 
@@ -212,7 +214,7 @@ Completed in this phase:
 - API contract, deployment plan, database schema notes, and no-build admin console.
 - Backend tests, TypeScript checks, and production compile.
 
-Remaining after CLI 2 Phase 1:
+Deferred after CLI 2 Phase 1:
 
 1. Connect services to PostgreSQL/PostGIS through Drizzle.
 2. Review and apply the Phase 1 PostGIS migration through the chosen migration workflow.
@@ -222,7 +224,7 @@ Remaining after CLI 2 Phase 1:
 6. Add a React admin dashboard shell only when dashboard implementation is approved.
 7. Run device validation on the Redmi Note 10 Pro after the mobile CLI installs the APK.
 
-## Blockers Before Implementation
+## Non-CLI-2 Phase 1 Blockers
 
 - Resend sender address/domain verification.
 - Backend hosting target and database hosting target.

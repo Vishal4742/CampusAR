@@ -5,6 +5,7 @@ This file is the shared coordination state for Codex sessions. Read it before ed
 ## Current Instruction Boundary
 
 - CLI 2 Phase 1 backend/data/admin scaffold and the approved TypeScript/Fastify conversion are complete inside `backend/`, `database/`, and `admin-dashboard/`.
+- CLI 2 Phase 1 is closed from the backend/data/admin side. Remaining Phase 1 gaps are external data/provider verification, CLI 1 device validation, or future implementation phases.
 - CLI 1 Phase 1 mobile/native scaffold is approved inside `android-app/` and `native-engine/` and is build-verified, pending physical device validation.
 - Do not install additional dependencies or scaffold new implementation areas without explicit approval.
 - Keep work inside the active CLI ownership boundary unless coordination docs require a careful shared update.
@@ -47,7 +48,7 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - Active backlog IDs: `P1-04` and `P1-09`.
 - Active planning artifacts: `BACKEND_API_PLAN.md` and `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`.
 - CLI 2 must not edit `android-app/` or `native-engine/`.
-- CLI 2 Phase 1 backend/data/admin scaffold is complete. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
+- CLI 2 Phase 1 backend/data/admin work is complete and checkpointed. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
 - CLI 2 must get explicit approval before connecting a real PostgreSQL service or scaffolding the React admin dashboard. Resend OTP provider integration is approved and implemented; real keys must remain in local environment variables or deployment secrets.
 
 ## Source Analyzed
@@ -129,7 +130,7 @@ No dependencies were installed. No Android or Rust implementation files were cre
 
 ## Suggested Next Step
 
-Review the build-verified Phase 1 scaffold and answer the highest-impact open questions:
+Treat CLI 2 Phase 1 as closed and address the remaining non-CLI-2 closeout items:
 
 1. Device-test the debug APK on the Redmi Note 10 Pro.
 2. Configure and verify Resend sender-domain setup without committing API keys.
@@ -323,3 +324,11 @@ Coordinate through this file before editing shared docs.
 - CLI 2 did not edit Android or Rust implementation files.
 - Next CLI 2 tasks: align SQL/Drizzle schema with nullable/provisional map geometry before applying migrations, then implement endpoint response shapes only after approval.
 - Remaining blockers: no verified OCT building/gate/landmark/path dataset, incomplete local visual reference path (`C:` only), production hosting/database target, Resend sender-domain verification, and Redmi Note 10 Pro device validation.
+
+### 2026-06-11 - CLI 2 Phase 1 status resolved
+
+- User asked to resolve whether Phase 1 is complete.
+- Decision: CLI 2 Phase 1 is closed from the backend/data/admin side.
+- Backend/data/admin completion includes TypeScript/Fastify scaffold, Resend OTP adapter, OCT seed contracts, Android-facing map/sync contracts, admin dashboard visual planning, and git checkpoints.
+- Remaining items are explicitly not CLI 2 Phase 1 blockers: physical device validation, verified campus mapping data, production sender/domain verification, production hosting/database provisioning, and future PostgreSQL connection work.
+- CLI 2 should not continue expanding Phase 1 unless the user explicitly approves a new backend implementation slice.

@@ -44,7 +44,7 @@ Phase closeout requirement:
 
 - Update `BACKLOG.md`, `PHASED_ROADMAP.md`, `CODEX_HANDOFF.md`, and git checkpoint state before moving to Phase 2.
 
-CLI 2 backend/data/admin closeout, 2026-06-10:
+CLI 2 backend/data/admin closeout, 2026-06-10 to 2026-06-11:
 
 - Completed TypeScript/Fastify Phase 1 backend scaffold for auth, roles, map bootstrap, sync, relay dedupe, and admin contract routes.
 - Completed PostgreSQL/PostGIS Phase 1 schema draft and schema notes.
@@ -53,6 +53,7 @@ CLI 2 backend/data/admin closeout, 2026-06-10:
 - Completed no-build admin dashboard contract console.
 - Verified with `npm run check`, `npm test`, `npm run build`, and `node --check admin-dashboard/app.js`.
 - Exceptions: persistence is in-memory; no database migrated; Resend sender/domain has not been production-verified in this repo; seed campus data is placeholder-only.
+- Resolution: CLI 2 Phase 1 is closed. Remaining exceptions are external verification, production provisioning, CLI 1/mobile validation, or later-phase implementation work.
 - Overall Phase 1 is scaffold/build-complete, but not campus-data-complete or device-validated until the APK is tested on the Redmi Note 10 Pro or another Android 8.0+ device.
 
 CLI 1 mobile/native closeout, 2026-06-10:
