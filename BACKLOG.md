@@ -10,10 +10,10 @@ This backlog is planning-only. Items are phrased as work packages, not implement
 | --- | --- | --- | --- |
 | P1-01 | Done | Decide final repository layout and module boundaries before scaffolding | Architecture section |
 | P1-02 | Done | Define user roles, permissions, and account lifecycle | User classes, FR-AUTH |
-| P1-03 | Blocked | Select OTP/email provider and confirm college email domain | FR-AUTH-01, FR-AUTH-02 |
+| P1-03 | Blocked | Select OTP/email provider; college email domain decided as `oriental.ac.in` | FR-AUTH-01, FR-AUTH-02 |
 | P1-04 | Done | Define API contracts for auth, roles, map sync, and dashboard access | Backend, admin requirements |
 | P1-05 | Planned | Define initial local data model for cached graph, locations, floors, and settings | FR-NAV-01, FR-SYNC-01 |
-| P1-06 | Planned | Acquire initial campus geofence, building list, floor list, and seed graph source | Navigation scope |
+| P1-06 | Blocked | No existing campus dataset is available; bootstrap from Google Maps pins and verified mapper walks | Navigation scope |
 | P1-07 | Planned | Plan visitor, student, staff, verified mapper, and admin onboarding UX | User classes |
 | P1-08 | Done | Plan outdoor GPS-backed navigation flow | FR-SENS-03, FR-NAV-03 |
 | P1-09 | Done | Plan backend deployment environment and uptime target | NFR-AVAIL-01 |
@@ -41,9 +41,9 @@ This backlog is planning-only. Items are phrased as work packages, not implement
 | ID | Status | Work item | SRS basis |
 | --- | --- | --- | --- |
 | P3-01 | Planned | Define mapping lock behavior and admin controls | FR-MAP-01, FR-MAP-08 |
-| P3-02 | Planned | Define verified mapper provisioning workflow | FR-MAP-02 |
-| P3-03 | Planned | Define location node contribution payload and validation rules | FR-MAP-02 |
-| P3-04 | Planned | Define path edge contribution payload and walk count behavior | FR-MAP-10 |
+| P3-02 | Planned | Define verified mapper provisioning workflow; required because no existing campus dataset is available | FR-MAP-02 |
+| P3-03 | Planned | Define location node contribution payload and validation rules for mapping walks | FR-MAP-02 |
+| P3-04 | Planned | Define path edge contribution payload, walking capture flow, and walk count behavior | FR-MAP-10 |
 | P3-05 | Planned | Define confirmation radius checks and default 15 m threshold | FR-MAP-04 |
 | P3-06 | Planned | Enforce one-confirmation-per-user rule in data model | FR-MAP-05 |
 | P3-07 | Planned | Define threshold plus admin approval state machine | FR-MAP-06 |

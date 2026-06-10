@@ -81,7 +81,7 @@ test('verified registration uses OTP challenge', async () => {
       method: 'POST',
       body: JSON.stringify({
         fullName: 'Student One',
-        email: 'student@example.edu',
+        email: 'student@oriental.ac.in',
         role: 'student',
         rollNumber: 'OCT001'
       })
@@ -94,7 +94,7 @@ test('verified registration uses OTP challenge', async () => {
     const verified = await invoke(app, '/api/v1/auth/otp/verify', {
       method: 'POST',
       body: JSON.stringify({
-        email: 'student@example.edu',
+        email: 'student@oriental.ac.in',
         challengeId: created.body.otp.challengeId,
         code: created.body.otp.devCode
       })

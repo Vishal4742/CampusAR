@@ -1,0 +1,25 @@
+{
+  "status": "source_links_only",
+  "userConfirmedNoCampusDataset": true,
+  "notes": [
+    "User currently has Google Maps links only.",
+    "Do not treat these points as a campus geofence, indoor graph, building footprint, floor plan, or verified route.",
+    "Use them only as draft seed pins until approved campus geometry is available."
+  ],
+  "links": [
+    {
+      "label": "Oriental Institute of Science and Technology oriental campus bhopal",
+      "shortUrl": "https://maps.app.goo.gl/xUen8Rr4UNMqDgfR6",
+      "resolvedName": "Oriental institute of science and technology oriental campus bhopal",
+      "latitude": 23.2487036,
+      "longitude": 77.5029367
+    },
+    {
+      "label": "Oriental College of Technology",
+      "shortUrl": "https://maps.app.goo.gl/PoESLVac4tegAM489",
+      "resolvedName": "Oriental College of Technology",
+      "latitude": 23.2462927,
+      "longitude": 77.5019383
+    }
+  ]
+}

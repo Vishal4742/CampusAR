@@ -212,7 +212,7 @@ Completed in this pass:
 
 Remaining after CLI 2 Phase 1:
 
-1. Confirm backend framework, package manager, TypeScript preference, ORM/query builder, and migration tool.
+1. Install and convert to the selected stack after explicit approval: Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS, Drizzle, and `pg`.
 2. Replace dependency-free scaffold with the approved Node framework and TypeScript path.
 3. Add configuration and PostgreSQL connection layout.
 4. Review and apply the Phase 1 PostGIS migration through the chosen migration tool.
@@ -223,20 +223,16 @@ Remaining after CLI 2 Phase 1:
 
 ## Blockers Before Implementation
 
-- Backend framework decision.
-- Package manager decision.
-- ORM/query builder and migration tool decision.
-- Official college email domain.
+- Package installation approval for TypeScript/Fastify/Drizzle conversion.
 - OTP/email provider.
 - Backend hosting target and database hosting target.
-- Initial campus geofence and seed map data source.
-- Admin seed account policy.
+- Real OCT campus geofence, buildings, floors, rooms, paths, staircases, lifts, QR anchors, and accessibility metadata.
 - Location categories and default confirmation thresholds.
 - Audit and account deletion policy.
 
 ## Next Tasks For CLI 2
 
-- Resolve backend framework and database migration choices.
+- Convert the scaffold to TypeScript/Fastify/Drizzle after dependency approval.
 - Turn the conceptual model into an entity relationship plan.
 - Draft an OpenAPI-style contract once endpoint shapes are approved.
 - Define seed data import format for campus geometry.

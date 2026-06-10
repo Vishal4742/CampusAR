@@ -47,7 +47,8 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - Active backlog IDs: `P1-04` and `P1-09`.
 - Active planning artifacts: `BACKEND_API_PLAN.md` and `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`.
 - CLI 2 must not edit `android-app/` or `native-engine/`.
-- CLI 2 Phase 1 backend/data/admin scaffold is complete. Next CLI 2 work requires decisions on framework, TypeScript, PostgreSQL tooling, providers, and seed data.
+- CLI 2 Phase 1 backend/data/admin scaffold is complete. Backend stack is decided as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS, Drizzle, and `pg`.
+- CLI 2 still needs explicit approval before installing dependencies or converting the scaffold to TypeScript/Fastify.
 
 ## Source Analyzed
 
@@ -113,8 +114,8 @@ No dependencies were installed. No Android or Rust implementation files were cre
 
 ## Open Questions To Resolve Before Implementation
 
-- What is the official college email domain and OTP/email provider?
-- What seed campus data exists: geofence, buildings, floors, paths, rooms, staircases, lifts, QR anchor points, and accessibility metadata?
+- OTP/email provider remains open. College email domain is decided as `oriental.ac.in`.
+- User confirmed no campus dataset exists. Seed campus data currently consists of two Google Maps source links only. Geofence, buildings, floors, paths, rooms, staircases, lifts, QR anchor points, and accessibility metadata must be created through verified mapping/admin workflows.
 - Which offline map renderer should be used for v1.0: OSMDroid or Mapbox SDK?
 - Which Android UI toolkit should own non-AR screens? The SRS only requires the AR overlay not to use Compose.
 - What is the persistence boundary between Room-managed SQLite and Rust `rusqlite`?
@@ -241,3 +242,23 @@ Coordinate through this file before editing shared docs.
 - Files changed by CLI 1: `.gitignore`, `PHASE1_MOBILE_NATIVE_PLAN.md`, `PHASED_ROADMAP.md`, `BACKLOG.md`, `CODEX_HANDOFF.md`, `android-app/`, and `native-engine/`.
 - CLI 1 did not edit `backend/`, `database/`, or `admin-dashboard/`.
 - Next tasks: install/configure Android SDK, Android NDK, Gradle or Gradle wrapper, add Rust Android targets, run `native-engine/scripts/build-android.ps1`, then run an Android debug build.
+
+### 2026-06-10 - User backend decisions recorded
+
+- User provided college email domain: `oriental.ac.in`.
+- User provided seed admin email: `vg8904937@gmail.com`.
+- User requested an extremely fast and optimized backend direction.
+- CLI 2 selected the next production backend stack: Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS, Drizzle, and `pg`.
+- User provided two Google Maps links as the only current campus seed source:
+  - `https://maps.app.goo.gl/xUen8Rr4UNMqDgfR6`, resolved to `23.2487036, 77.5029367`.
+  - `https://maps.app.goo.gl/PoESLVac4tegAM489`, resolved to `23.2462927, 77.5019383`.
+- Updated backend config defaults, API contract, deployment notes, backend stack decision, seed-source notes, and in-memory seed pins.
+- Remaining CLI 2 blockers: OTP/email provider, real campus geofence/floor/building/path data, production hosting, PostgreSQL tooling, and explicit approval to install dependencies for TypeScript/Fastify conversion.
+
+### 2026-06-10 - No campus dataset confirmed
+
+- User confirmed they do not have any campus data beyond the Google Maps links.
+- Added `database/seeds/MAPPING_BOOTSTRAP_PLAN.md`.
+- Updated seed notes to treat the two Google Maps points as draft anchors only.
+- Updated backlog and backend plan to make mapping walks the source of truth for initial graph creation.
+- Key product implication: CampusAR must start with sparse/draft map data and rely on verified mapper/admin workflows before claiming full campus navigation.

@@ -43,6 +43,7 @@ These support SRS requirements for confirmation radius checks, SOS nearby-user q
 
 - Confirm whether indoor floor coordinates should use WGS84 geometry, local projected coordinates, or both.
 - Confirm canonical campus geofence.
+- Convert the current Google Maps pins into approved seed data only after institutional review.
 - Confirm initial location categories and thresholds.
 - Confirm account deletion policy for approved map contributions.
 - Confirm audit retention policy.
