@@ -33,7 +33,7 @@ Verified registration body:
 ```json
 {
   "fullName": "Student One",
-  "email": "student@example.edu",
+  "email": "student@oriental.ac.in",
   "role": "student",
   "rollNumber": "OCT001",
   "department": "AIML"

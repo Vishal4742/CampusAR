@@ -20,7 +20,9 @@ Current scope:
 
 Related Phase 1 implementation plan: `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`.
 
-CLI 2 Phase 1 status: complete for the dependency-free backend/data/admin scaffold. Production framework, TypeScript, PostgreSQL connection, migration tooling, and provider integrations remain open.
+CLI 2 Phase 1 status: complete for the dependency-free backend/data/admin scaffold. Production stack decision is now Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS, Drizzle, and `pg`. Package installation and provider integrations remain open.
+
+Campus data status: user confirmed there is no existing campus dataset. The backend/data plan must support bootstrapping from two Google Maps pins plus verified mapper walks. See `database/seeds/MAPPING_BOOTSTRAP_PLAN.md`.
 
 ## Backend Responsibilities From SRS
 
@@ -190,11 +192,11 @@ Before implementation, WSL Codex should finish:
 
 ## Open Questions
 
-- What is the official OCT college email domain for student and staff OTP?
+- Official OCT college email domain for student and staff OTP: decided as `oriental.ac.in`.
 - Which OTP/email provider is approved?
-- Which backend Node.js framework should be used when implementation begins?
+- Backend Node.js framework: decided as Fastify with TypeScript and TypeBox/Ajv validation.
 - What hosting environment, domain, TLS certificate, SMS provider, push provider, and email provider are approved?
-- What seed campus data exists and what format is it in?
+- Current seed campus data: two Google Maps links only, captured in `database/seeds/source-links.json`. User confirmed no other campus data exists.
 - What are the exact location categories and confirmation thresholds?
 - What audit logs are institutionally required for admin actions?
 - What privacy threshold is required before publishing occupancy heatmap data?

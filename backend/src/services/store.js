@@ -33,8 +33,8 @@ const seedCampus = () => {
   const buildingId = randomUUID();
   const floorId = randomUUID();
   const zoneId = randomUUID();
-  const gateId = randomUUID();
-  const adminBlockId = randomUUID();
+  const octPinId = randomUUID();
+  const oistPinId = randomUUID();
 
   return {
     campuses: [{
@@ -43,14 +43,18 @@ const seedCampus = () => {
       institution: 'Oriental College of Technology, Bhopal',
       geofence: null,
       activeMapVersion: 1,
-      source: 'placeholder_until_seed_data_available'
+      source: 'user_google_maps_links'
     }],
     buildings: [{
       id: buildingId,
       campusId,
-      name: 'Seed Building Placeholder',
-      code: 'SEED',
-      centroid: null,
+      name: 'Oriental College of Technology Google Maps Pin',
+      code: 'OCT',
+      centroid: {
+        type: 'Point',
+        coordinates: [77.5019383, 23.2462927],
+        source: 'https://maps.app.goo.gl/PoESLVac4tegAM489'
+      },
       footprint: null
     }],
     floors: [{
@@ -68,6 +72,7 @@ const seedCampus = () => {
       purpose: 'navigation_seed'
     }],
     categories: [
+      { key: 'campus_pin', label: 'Campus Pin', defaultConfirmationThreshold: 3, defaultConfirmationRadiusMeters: 15 },
       { key: 'gate', label: 'Gate', defaultConfirmationThreshold: 3, defaultConfirmationRadiusMeters: 15 },
       { key: 'classroom', label: 'Classroom', defaultConfirmationThreshold: 3, defaultConfirmationRadiusMeters: 15 },
       { key: 'lab', label: 'Lab', defaultConfirmationThreshold: 3, defaultConfirmationRadiusMeters: 15 },
@@ -76,41 +81,39 @@ const seedCampus = () => {
     ],
     locations: [
       {
-        id: gateId,
-        campusId,
-        buildingId: null,
-        floorId: null,
-        zoneId,
-        categoryKey: 'gate',
-        label: 'Seed Main Gate Placeholder',
-        point: null,
-        status: 'draft',
-        confidenceScore: 0
-      },
-      {
-        id: adminBlockId,
+        id: octPinId,
         campusId,
         buildingId,
         floorId,
         zoneId,
-        categoryKey: 'admin_office',
-        label: 'Seed Admin Block Placeholder',
-        point: null,
+        categoryKey: 'campus_pin',
+        label: 'Oriental College of Technology Google Maps Pin',
+        point: {
+          type: 'Point',
+          coordinates: [77.5019383, 23.2462927],
+          source: 'https://maps.app.goo.gl/PoESLVac4tegAM489'
+        },
+        status: 'draft',
+        confidenceScore: 0
+      },
+      {
+        id: oistPinId,
+        campusId,
+        buildingId: null,
+        floorId: null,
+        zoneId,
+        categoryKey: 'campus_pin',
+        label: 'Oriental Institute of Science and Technology Google Maps Pin',
+        point: {
+          type: 'Point',
+          coordinates: [77.5029367, 23.2487036],
+          source: 'https://maps.app.goo.gl/xUen8Rr4UNMqDgfR6'
+        },
         status: 'draft',
         confidenceScore: 0
       }
     ],
-    edges: [{
-      id: randomUUID(),
-      campusId,
-      fromLocationId: gateId,
-      toLocationId: adminBlockId,
-      path: null,
-      floorTransitionType: null,
-      wheelchairAccessible: true,
-      confidenceScore: 0,
-      walkCount: 0
-    }],
+    edges: [],
     qrAnchors: []
   };
 };

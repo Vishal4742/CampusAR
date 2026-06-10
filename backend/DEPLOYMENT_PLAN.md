@@ -35,8 +35,8 @@ Status: Phase 1 planning. No server or database has been provisioned.
 | `PORT` | Backend port | Defaults to `8080` |
 | `HOST` | Bind host | Defaults to `0.0.0.0` |
 | `CAMPUSAR_JWT_SECRET` | Token signing secret | Required before production |
-| `CAMPUSAR_COLLEGE_EMAIL_DOMAIN` | OTP email domain restriction | Open |
-| `CAMPUSAR_SEED_ADMIN_EMAIL` | Development seed admin | Open |
+| `CAMPUSAR_COLLEGE_EMAIL_DOMAIN` | OTP email domain restriction | Decided: `oriental.ac.in` |
+| `CAMPUSAR_SEED_ADMIN_EMAIL` | Development seed admin | Decided: `vg8904937@gmail.com` |
 | `DATABASE_URL` | PostgreSQL connection string | Open |
 | `EMAIL_PROVIDER_*` | OTP delivery | Open |
 | `PUSH_PROVIDER_*` | Future SOS/push path | Open |
@@ -59,3 +59,16 @@ Status: Phase 1 planning. No server or database has been provisioned.
 - Push notification provider.
 - SMS provider for mobile SOS path.
 - Backup storage target.
+
+## Stack Decision
+
+The next production implementation pass should use:
+
+- Node.js with TypeScript.
+- Fastify.
+- TypeBox with Fastify/Ajv validation.
+- PostgreSQL/PostGIS.
+- Drizzle ORM with `pg`.
+- Drizzle migrations through `drizzle-kit`.
+
+Dependencies are not installed yet.
