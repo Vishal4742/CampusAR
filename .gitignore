@@ -1,0 +1,17 @@
+# Android / Gradle
+.gradle/
+**/build/
+local.properties
+
+# Rust
+target/
+**/target/
+
+# Generated native libraries
+android-app/app/src/main/jniLibs/
+
+# IDE / OS
+.idea/
+*.iml
+.DS_Store
+Thumbs.db

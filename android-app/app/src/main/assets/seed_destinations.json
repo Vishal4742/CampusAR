@@ -1,0 +1,22 @@
+{
+  "destinations": [
+    {
+      "id": "oct_main_gate_placeholder",
+      "label": "OCT Main Gate Placeholder",
+      "category": "gate",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "floor": 0,
+      "temporary": true
+    },
+    {
+      "id": "oct_admin_block_placeholder",
+      "label": "Admin Block Placeholder",
+      "category": "building",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "floor": 0,
+      "temporary": true
+    }
+  ]
+}

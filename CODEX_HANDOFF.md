@@ -5,7 +5,7 @@ This file is the shared coordination state for Codex sessions. Read it before ed
 ## Current Instruction Boundary
 
 - CLI 2 Phase 1 backend/data/admin scaffold is complete inside `backend/`, `database/`, and `admin-dashboard/`.
-- Do not create Android or Rust scaffolding unless explicitly requested later for CLI 1.
+- CLI 1 Phase 1 mobile/native scaffold is approved inside `android-app/` and `native-engine/`.
 - Do not install dependencies.
 - Keep unapproved areas limited to understanding, planning, and coordination documents.
 
@@ -41,7 +41,7 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - Active backlog IDs: `P1-01`, `P1-08`, `P2-01`, and `P2-10`.
 - Active planning artifact: `PHASE1_MOBILE_NATIVE_PLAN.md`.
 - CLI 1 must not edit `backend/`, `database/`, or `admin-dashboard/`.
-- Implementation remains paused for CLI 1 until the user explicitly approves Android/Rust scaffolding or source code.
+- CLI 1 Phase 1 mobile/native scaffold is complete inside `android-app/` and `native-engine/`, pending Android SDK/NDK/Gradle device verification.
 - CLI 2, WSL Codex session owns backend, database, API, auth and roles, admin dashboard planning, and sync API planning.
 - Reason: WSL is the preferred environment for later Node.js and PostgreSQL/PostGIS work.
 - Active backlog IDs: `P1-04` and `P1-09`.
@@ -227,3 +227,17 @@ Coordinate through this file before editing shared docs.
 - Next tasks: choose Android UI toolkit, map renderer, package name, NDK/Rust integration method, JNI return shape, and seed destination source.
 - Blockers: implementation approval, Android package name, OSMDroid versus Mapbox, normal UI toolkit choice, NDK integration method, verified seed coordinates, and git checkpoint preference.
 - No Android source code, Rust source code, package manifests, build scripts, dependency files, or scaffolding directories were created.
+
+### 2026-06-10 - CLI 1 mobile/native Phase 1 scaffold
+
+- User asked to complete Phase 1; CLI 1 completed only its Android/Rust/mobile-native ownership area.
+- Created `android-app/` scaffold with Gradle files, manifest, resources, seed destination asset, plain Android `Activity`, GPS location source, Kotlin native bridge, and `SurfaceView` compass overlay.
+- Created `native-engine/` scaffold with dependency-free Rust navigation math, primitive JNI exports, Cargo release profile settings, README, and Android NDK build script.
+- Added `.gitignore` for Android, Gradle, Rust target output, generated JNI libraries, IDE files, and OS files.
+- Decisions made: package name is `com.campusar.app`; UI uses plain Android Views; map SDK is deferred; JNI uses primitive functions; seed destinations are temporary placeholders until real OCT coordinates are available.
+- Checks run: `cargo fmt --manifest-path native-engine/Cargo.toml -- --check` and `cargo test --manifest-path native-engine/Cargo.toml`.
+- Results: Rust formatting check passed; Rust tests passed with 6 passed, 0 failed.
+- Android verification blocked: `gradle` is not installed, no `ANDROID_HOME` or `ANDROID_SDK_ROOT` is set, and only host Rust targets are installed.
+- Files changed by CLI 1: `.gitignore`, `PHASE1_MOBILE_NATIVE_PLAN.md`, `PHASED_ROADMAP.md`, `BACKLOG.md`, `CODEX_HANDOFF.md`, `android-app/`, and `native-engine/`.
+- CLI 1 did not edit `backend/`, `database/`, or `admin-dashboard/`.
+- Next tasks: install/configure Android SDK, Android NDK, Gradle or Gradle wrapper, add Rust Android targets, run `native-engine/scripts/build-android.ps1`, then run an Android debug build.

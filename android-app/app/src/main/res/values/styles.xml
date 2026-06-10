@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.CampusAR" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/campusar_background</item>
+        <item name="android:navigationBarColor">@color/campusar_background</item>
+    </style>
+</resources>

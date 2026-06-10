@@ -54,6 +54,15 @@ CLI 2 backend/data/admin closeout, 2026-06-10:
 - Exceptions: persistence is in-memory; no dependencies installed; no database migrated; OTP delivery provider is not integrated; seed campus data is placeholder-only.
 - Overall Phase 1 is not closed for the whole project until CLI 1 mobile/native work and the shared git checkpoint are complete.
 
+CLI 1 mobile/native closeout, 2026-06-10:
+
+- Completed Android Phase 1 scaffold under `android-app/` with Gradle project files, plain Android Views, location permission flow, seed destinations, Kotlin native bridge, and `SurfaceView` compass overlay foundation.
+- Completed Rust Phase 1 scaffold under `native-engine/` with dependency-free distance, bearing, heading delta, proximity scale, arrival logic, primitive JNI exports, release profile settings, and Android NDK build script.
+- Verified Rust host formatting and tests with `cargo fmt --manifest-path native-engine/Cargo.toml -- --check` and `cargo test --manifest-path native-engine/Cargo.toml`.
+- Exceptions: Android build was not run because `gradle` is not installed in this Windows session; no Android SDK env var is set; Android Rust targets are not installed; native `.so` files are not packaged yet.
+- Seed campus coordinates remain temporary placeholders until verified OCT geofence, building, and destination data are available.
+- Overall Phase 1 can be treated as scaffold-complete, but not device-verified, until Android SDK/NDK/Gradle are installed and a debug build is run.
+
 ## Phase 2: Sensor Fusion, Weeks 5-8
 
 SRS deliverables: EKF in Rust, PDR, WiFi RSSI, indoor map, floor switching, QR landmark snapping.
