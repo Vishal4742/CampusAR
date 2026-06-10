@@ -59,7 +59,8 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - Workspace: `C:\Users\vg890\OneDrive\Desktop\CampusAR_1`
 - Initial file list contained only `CampusAR_SRS_v1.0.docx`.
 - `.git` initially existed as an empty directory in this environment, and `git status` reported this was not a repository.
-- `git init` was run successfully on 2026-06-10. Current branch is the default `master` branch with no commits yet.
+- `git init` was run successfully on 2026-06-10. Current branch is the default `master` branch.
+- CLI 2 Phase 1 checkpoint commit was created on 2026-06-10: `e52d29e` with message `Complete CLI 2 phase 1 backend scaffold`.
 - No existing planning docs or handoff file were present before this pass.
 
 ## Technical Understanding
@@ -162,7 +163,7 @@ Coordinate through this file before editing shared docs.
 
 - Ran `git init` successfully after sandbox approval because the existing `.git` directory was read-only in the sandbox.
 - Verified `git status --short --branch`: repository has no commits yet on `master`.
-- Current tracked state: all SRS and planning files are still untracked until an initial commit is requested.
+- This note was superseded by the CLI 2 Phase 1 checkpoint commit.
 
 ### 2026-06-10 - WSL backend/API planning ownership
 
@@ -208,6 +209,12 @@ Coordinate through this file before editing shared docs.
 - Next CLI 2 tasks: choose backend framework, TypeScript path, package manager, ORM/query builder, migration tool, OTP provider, hosting target, seed data format, admin seed account policy, and conflict policy.
 - Blockers remain: official college email domain, approved providers, real OCT campus seed data, location categories, confirmation thresholds, audit/account deletion policies, and offline conflict policy.
 - Overall project Phase 1 is not fully closed until CLI 1 mobile/native scope and the shared git checkpoint are complete.
+
+### 2026-06-10 - CLI 2 git checkpoint
+
+- Created git checkpoint commit `e52d29e` with message `Complete CLI 2 phase 1 backend scaffold`.
+- Staged CLI 2 backend/data/admin files and shared planning docs only.
+- Left CLI 1-owned `PHASE1_MOBILE_NATIVE_PLAN.md`, `android-app/`, and `native-engine/` untracked and untouched by CLI 2.
 
 ### 2026-06-10 - CLI 1 mobile/native Phase 1 plan
 
