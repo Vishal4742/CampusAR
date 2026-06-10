@@ -6,6 +6,8 @@ This backlog is planning-only. Items are phrased as work packages, not implement
 
 ## Phase 1: Foundation
 
+CLI 2 backend/data/admin Phase 1 status: closed. Remaining planned or blocked Phase 1 items below are mobile, external data, production provisioning, or future implementation work unless explicitly reassigned.
+
 | ID | Status | Work item | SRS basis |
 | --- | --- | --- | --- |
 | P1-01 | Done | Decide final repository layout and module boundaries before scaffolding | Architecture section |
