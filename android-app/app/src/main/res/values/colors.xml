@@ -1,0 +1,7 @@
+<resources>
+    <color name="campusar_background">#101418</color>
+    <color name="campusar_panel">#182026</color>
+    <color name="campusar_text_primary">#F7FAFC</color>
+    <color name="campusar_text_secondary">#B8C4CC</color>
+    <color name="campusar_cyan">#A8F0E8</color>
+</resources>

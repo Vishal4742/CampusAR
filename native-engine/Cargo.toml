@@ -1,0 +1,17 @@
+[package]
+name = "campusar_native"
+version = "0.1.0"
+edition = "2021"
+description = "Native navigation primitives for CampusAR Phase 1"
+license = "UNLICENSED"
+
+[lib]
+name = "campusar_native"
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
