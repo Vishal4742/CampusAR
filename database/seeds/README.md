@@ -2,7 +2,7 @@
 
 The user confirmed there is no existing campus dataset right now.
 
-Only Google Maps source links are available.
+Only Google Maps source links are available. Oriental College of Technology is the initial campus entity for seed planning.
 
 Current source links are stored in `source-links.json`:
 
@@ -14,11 +14,20 @@ Resolved draft pins:
 - Oriental Institute of Science and Technology oriental campus bhopal: `23.2487036, 77.5029367`
 - Oriental College of Technology: `23.2462927, 77.5019383`
 
-These are seed pins only. They are not a campus geofence, indoor graph, floor plan, building footprint, staircase/lift map, route graph, or verified navigation dataset.
+OCT seed contract:
+
+- stable key: `oct-bhopal`
+- center coordinate: `23.2462927, 77.5019383`
+- coordinate status: `provisional`
+- geofence status: `unknown`
+- initial map version: `1`, status `draft`
+
+These are seed pins only. They are not a campus geofence, indoor graph, floor plan, building footprint, gate coordinate, staircase/lift map, route graph, or verified navigation dataset.
 
 Bootstrap approach:
 
 - Use `MAPPING_BOOTSTRAP_PLAN.md`.
+- Use `OCT_SEED_CONTRACT.md`.
 - Treat all map data as mapper/admin-created until real institutional data appears.
 - Start with a sparse outdoor graph and expand through verified mapping walks.
 

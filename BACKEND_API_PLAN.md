@@ -24,6 +24,8 @@ CLI 2 Phase 1 status: complete for the backend/data/admin scaffold and approved 
 
 Campus data status: user confirmed there is no existing campus dataset. The backend/data plan must support bootstrapping from two Google Maps pins plus verified mapper walks. See `database/seeds/MAPPING_BOOTSTRAP_PLAN.md`.
 
+Initial campus decision: treat Oriental College of Technology as the initial campus entity with stable key `oct-bhopal` and provisional center `23.2462927, 77.5019383`. Unknown building, gate, landmark, path, room, floor, stair, lift, and QR-anchor coordinates must remain unknown/provisional until verified.
+
 ## Backend Responsibilities From SRS
 
 - Authentication and registration for visitor, student, staff/faculty, verified mapper, and admin users.
@@ -168,6 +170,24 @@ Backend sync should plan for:
 - Conflict records visible to admin when user-submitted map data cannot be safely merged.
 
 Open question: exact conflict policy for delayed offline contributions after map lock, admin rejection, or newer edits.
+
+## Android Map Contract
+
+CLI 1 should consume these backend-owned contracts later:
+
+- `GET /api/v1/sync/manifest`
+- `GET /api/v1/map/locations`
+- `GET /api/v1/map/edges`
+
+Contract details are recorded in `backend/MAP_SYNC_CONTRACT.md`.
+
+Important Android assumptions:
+
+- the map can be sparse
+- locations and edges can be empty
+- coordinates can be `null`
+- `coordinateStatus` and `verificationStatus` must be checked before route use
+- Android/Rust computes routes from cached graph data rather than backend live routing
 
 ## Privacy And Safety Rules
 

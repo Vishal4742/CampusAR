@@ -44,6 +44,9 @@ These support SRS requirements for confirmation radius checks, SOS nearby-user q
 - Confirm whether indoor floor coordinates should use WGS84 geometry, local projected coordinates, or both.
 - Confirm canonical campus geofence.
 - Convert the current Google Maps pins into approved seed data only after institutional review.
+- Add or confirm nullable/provisional geometry support before applying the schema. OCT buildings, gates, landmarks, paths, and QR anchors currently have unknown coordinates and must not be forced into fake points or lines.
+- Add `map_versions` or an equivalent version table before publishing offline map snapshots to Android.
+- Add stable keys for campus, map versions, buildings, locations, and edges so Android cache records remain stable across sync.
 - Confirm initial location categories and thresholds.
 - Confirm account deletion policy for approved map contributions.
 - Confirm audit retention policy.

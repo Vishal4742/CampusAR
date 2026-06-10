@@ -49,6 +49,7 @@ CLI 2 backend/data/admin closeout, 2026-06-10:
 - Completed TypeScript/Fastify Phase 1 backend scaffold for auth, roles, map bootstrap, sync, relay dedupe, and admin contract routes.
 - Completed PostgreSQL/PostGIS Phase 1 schema draft and schema notes.
 - Completed Drizzle schema layout, backend API contract, deployment plan, stack decision, email provider options, and Resend OTP adapter.
+- Recorded OCT as the initial campus entity and defined provisional map/sync contracts for Android cache endpoints.
 - Completed no-build admin dashboard contract console.
 - Verified with `npm run check`, `npm test`, `npm run build`, and `node --check admin-dashboard/app.js`.
 - Exceptions: persistence is in-memory; no database migrated; Resend sender/domain has not been production-verified in this repo; seed campus data is placeholder-only.

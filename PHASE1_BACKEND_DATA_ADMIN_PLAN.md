@@ -208,6 +208,7 @@ Completed in this phase:
 - Delta sync and relay packet deduplication route behavior.
 - Admin-only user list, admin creation, role assignment, audit, map lock, threshold, and pending-location route shapes.
 - Drizzle config and TypeScript schema draft for PostgreSQL/PostGIS.
+- OCT initial campus seed contract and Android-facing map/sync contract.
 - API contract, deployment plan, database schema notes, and no-build admin console.
 - Backend tests, TypeScript checks, and production compile.
 
@@ -217,8 +218,9 @@ Remaining after CLI 2 Phase 1:
 2. Review and apply the Phase 1 PostGIS migration through the chosen migration workflow.
 3. Verify Resend delivery with a real key and approved sender address.
 4. Replace placeholder seed data with approved OCT campus seed data.
-5. Add a React admin dashboard shell only when dashboard implementation is approved.
-6. Run device validation on the Redmi Note 10 Pro after the mobile CLI installs the APK.
+5. Align the SQL/Drizzle schema with nullable/provisional coordinates before applying migrations.
+6. Add a React admin dashboard shell only when dashboard implementation is approved.
+7. Run device validation on the Redmi Note 10 Pro after the mobile CLI installs the APK.
 
 ## Blockers Before Implementation
 
