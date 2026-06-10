@@ -63,7 +63,7 @@ Not done:
 
 - No database created or migrated.
 - No PostgreSQL service connected.
-- No production OTP/email provider integrated.
+- Resend OTP provider adapter is integrated; real key and sender address must be supplied through local environment or deployment secrets.
 - No Android or Rust files touched.
 
 ## Phase 1 Work Packages
@@ -201,7 +201,7 @@ Completed in this phase:
 - TypeScript/Fastify server using TypeBox/Ajv validation.
 - In-memory store for Phase 1 behavior until PostgreSQL/PostGIS is connected.
 - Visitor registration.
-- Verified student/staff/faculty OTP challenge and verification flow.
+- Verified student/staff/faculty OTP challenge, Resend delivery adapter, and verification flow.
 - JWT signed access and refresh tokens using `jose`.
 - Current-user and account deletion route.
 - Map manifest and placeholder seed map reads.
@@ -215,14 +215,14 @@ Remaining after CLI 2 Phase 1:
 
 1. Connect services to PostgreSQL/PostGIS through Drizzle.
 2. Review and apply the Phase 1 PostGIS migration through the chosen migration workflow.
-3. Replace development OTP responses with a production email provider adapter.
+3. Verify Resend delivery with a real key and approved sender address.
 4. Replace placeholder seed data with approved OCT campus seed data.
 5. Add a React admin dashboard shell only when dashboard implementation is approved.
 6. Run device validation on the Redmi Note 10 Pro after the mobile CLI installs the APK.
 
 ## Blockers Before Implementation
 
-- Production OTP/email provider account and sender DNS.
+- Resend sender address/domain verification.
 - Backend hosting target and database hosting target.
 - Real OCT campus geofence, buildings, floors, rooms, paths, staircases, lifts, QR anchors, and accessibility metadata.
 - Location categories and default confirmation thresholds.

@@ -41,9 +41,21 @@ Default port: `8080`.
 ## Decisions Still Needed
 
 - PostgreSQL/PostGIS hosting and connection target.
-- Production OTP/email provider account and DNS setup.
+- Resend sender address/domain verification for production.
 - OTP rate limits, retry limits, and delivery audit retention.
 - PostgreSQL connection and configuration convention.
 - Real OCT campus seed data.
+
+## Resend OTP Setup
+
+Keep the API key in `backend/.env`, not in git:
+
+```bash
+EMAIL_PROVIDER=resend
+RESEND_API_KEY=your_resend_key
+RESEND_FROM_EMAIL=CampusAR <your_verified_sender@example.com>
+```
+
+If `EMAIL_PROVIDER` is not `resend`, development mode returns `devCode` for local testing. Production refuses OTP delivery unless an email provider is configured.
 
 See `API_CONTRACT.md`, `DEPLOYMENT_PLAN.md`, `EMAIL_PROVIDER_OPTIONS.md`, and `STACK_DECISION.md` for Phase 1 closeout details.

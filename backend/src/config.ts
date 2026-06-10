@@ -15,5 +15,8 @@ export const config = Object.freeze({
   collegeEmailDomain: process.env.CAMPUSAR_COLLEGE_EMAIL_DOMAIN ?? 'oriental.ac.in',
   seedAdminEmail: process.env.CAMPUSAR_SEED_ADMIN_EMAIL ?? 'vg8904937@gmail.com',
   seedAdminName: process.env.CAMPUSAR_SEED_ADMIN_NAME ?? 'CampusAR Seed Admin',
-  databaseUrl: process.env.DATABASE_URL ?? ''
+  databaseUrl: process.env.DATABASE_URL ?? '',
+  emailProvider: (process.env.EMAIL_PROVIDER ?? 'dev').toLowerCase(),
+  resendApiKey: process.env.RESEND_API_KEY ?? process.env.EMAIL_PROVIDER_API_KEY ?? '',
+  resendFromEmail: process.env.RESEND_FROM_EMAIL ?? process.env.EMAIL_FROM ?? 'CampusAR <onboarding@resend.dev>'
 });
