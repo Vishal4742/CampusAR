@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CampusAR Admin</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>CampusAR Admin</h1>
+        <p>Backend contract console</p>
+      </div>
+      <div class="status" id="status">Disconnected</div>
+    </header>
+
+    <main class="layout">
+      <section class="panel">
+        <h2>API</h2>
+        <label for="apiBase">Base URL</label>
+        <div class="row">
+          <input id="apiBase" value="http://localhost:8080" spellcheck="false">
+          <button id="saveBase">Save</button>
+        </div>
+        <div class="actions">
+          <button id="checkHealth">Health</button>
+          <button id="loadRoutes">Routes</button>
+          <button id="loadManifest">Manifest</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Admin Token</h2>
+        <label for="token">Bearer token</label>
+        <textarea id="token" rows="5" spellcheck="false"></textarea>
+        <div class="actions">
+          <button id="loadUsers">Users</button>
+          <button id="loadThresholds">Thresholds</button>
+          <button id="loadMapLock">Map Lock</button>
+        </div>
+      </section>
+
+      <section class="panel wide">
+        <h2>Response</h2>
+        <pre id="output">{}</pre>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
