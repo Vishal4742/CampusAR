@@ -13,7 +13,7 @@ This backlog is planning-only. Items are phrased as work packages, not implement
 | P1-03 | Done | Select OTP/email provider; college email domain decided as `oriental.ac.in`, Resend selected for OTP delivery | FR-AUTH-01, FR-AUTH-02 |
 | P1-04 | Done | Define API contracts for auth, roles, map sync, and dashboard access | Backend, admin requirements |
 | P1-05 | Planned | Define initial local data model for cached graph, locations, floors, and settings | FR-NAV-01, FR-SYNC-01 |
-| P1-06 | Blocked | No existing campus dataset is available; bootstrap from Google Maps pins and verified mapper walks | Navigation scope |
+| P1-06 | Blocked | OCT initial campus entity and provisional center are recorded; real campus dataset still requires verified mapper walks | Navigation scope |
 | P1-07 | Planned | Plan visitor, student, staff, verified mapper, and admin onboarding UX | User classes |
 | P1-08 | Done | Plan outdoor GPS-backed navigation flow | FR-SENS-03, FR-NAV-03 |
 | P1-09 | Done | Plan backend deployment environment and uptime target | NFR-AVAIL-01 |

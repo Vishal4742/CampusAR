@@ -6,6 +6,22 @@
     "Do not treat these points as a campus geofence, indoor graph, building footprint, floor plan, or verified route.",
     "Use them only as draft seed pins until approved campus geometry is available."
   ],
+  "initialCampus": {
+    "stableKey": "oct-bhopal",
+    "name": "Oriental College of Technology",
+    "institution": "Oriental College of Technology, Bhopal",
+    "center": {
+      "latitude": 23.2462927,
+      "longitude": 77.5019383,
+      "coordinateStatus": "provisional",
+      "sourceUrl": "https://maps.app.goo.gl/PoESLVac4tegAM489"
+    },
+    "geofenceStatus": "unknown",
+    "initialMapVersion": {
+      "version": 1,
+      "status": "draft"
+    }
+  },
   "links": [
     {
       "label": "Oriental Institute of Science and Technology oriental campus bhopal",

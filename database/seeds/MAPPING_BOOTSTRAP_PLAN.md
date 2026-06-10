@@ -23,7 +23,7 @@ The two Google Maps pins are useful only as draft outdoor anchors. They are not 
 
 CampusAR should bootstrap its map through the SRS crowdsourced mapping flow:
 
-1. Start with the two Google Maps pins as draft campus reference points.
+1. Start with Oriental College of Technology as the initial campus entity, using `23.2462927, 77.5019383` only as a provisional center point.
 2. Seed the first admin account: `vg8904937@gmail.com`.
 3. Create verified mapper accounts for trusted AIML Club / The Origin Guild contributors.
 4. Enable mapping mode while the admin map lock is open.
@@ -52,6 +52,7 @@ This lets the Phase 1 navigation slice work without pretending the full campus g
 - Do not invent coordinates.
 - Do not derive indoor rooms from Google Maps.
 - Do not mark draft pins as verified locations.
+- Keep unknown building, gate, landmark, room, path, staircase, lift, and QR-anchor geometry `null` or explicitly `provisional`.
 - Every contributed location needs mapper identity, timestamp, confidence, and admin review state.
 - Indoor locations should become trusted only after confirmation and admin approval.
 - Accessibility tags should remain unknown until verified on site.

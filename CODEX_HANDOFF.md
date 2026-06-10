@@ -146,6 +146,18 @@ After those decisions, move into the next narrow implementation slice rather tha
 
 Coordinate through this file before editing shared docs.
 
+## Active Shared Map Contract Decisions
+
+- Treat Oriental College of Technology as the initial campus entity for backend seed planning.
+- OCT draft center coordinate: latitude `23.2462927`, longitude `77.5019383`; source link: `https://maps.app.goo.gl/PoESLVac4tegAM489`.
+- This coordinate is a provisional campus center only. It is not a campus geofence, building footprint, gate, indoor coordinate, verified route, or final destination coordinate.
+- Unknown building, gate, landmark, path, room, floor, staircase, lift, and QR-anchor coordinates must stay `null` or explicitly marked `provisional` until verified by mapper/admin workflow.
+- Android-facing map API contract remains under base path `/api/v1`; CLI 1 should consume `GET /api/v1/sync/manifest`, `GET /api/v1/map/locations`, and `GET /api/v1/map/edges`.
+- `GET /api/v1/map/locations` must distinguish `campus`, `building`, `gate`, `landmark`, `room`, `qr_anchor`, and other location categories through stable category keys.
+- `GET /api/v1/map/edges` must return path graph edges separately from locations so Rust/Android can build an offline graph without depending on live routing.
+- `GET /api/v1/sync/manifest` must include `campusId`, `mapVersion`, `latestChangeId`, entity counts, and a stale/sparse-map signal while OCT data is incomplete.
+- Admin dashboard direction is dark operational campus signal console: map-first, sparse chrome, dense status language, serif plus mono typography, film grain, warm horizon gradient, coordinate/status labels, subtle amber/orange active accents, no generic SaaS card layout.
+
 ## Change Log
 
 ### 2026-06-10 - Planning pass
@@ -295,3 +307,19 @@ Coordinate through this file before editing shared docs.
 - CLI 2 did not edit Android or Rust implementation files.
 - Next CLI 2 tasks: verify Resend with a real sender address/key in local `.env`, then connect PostgreSQL/PostGIS when approved.
 - Remaining blockers: Resend sender address/domain verification, no real campus dataset, no production hosting/database target, and no Redmi Note 10 Pro device validation result yet.
+
+### 2026-06-11 - CLI 2 OCT seed and admin console planning
+
+- User instructed CLI 2 to stay out of `android-app/` and `native-engine/` and use the provided references for backend/admin planning only.
+- Recorded shared contract decisions before implementation in the `Active Shared Map Contract Decisions` section.
+- Treated Oriental College of Technology as the initial campus entity with stable key `oct-bhopal` and provisional center `23.2462927, 77.5019383`.
+- Added `database/seeds/OCT_SEED_CONTRACT.md` for campuses, map versions, buildings, gates, landmarks, locations, paths, and source-link seed contracts.
+- Added `backend/MAP_SYNC_CONTRACT.md` for Android-facing `GET /api/v1/sync/manifest`, `GET /api/v1/map/locations`, and `GET /api/v1/map/edges`.
+- Added `admin-dashboard/VISUAL_DIRECTION.md` for the dark operational campus signal-console direction.
+- Updated existing backend/database/admin planning docs to require nullable/provisional coordinates until verified.
+- Files changed by CLI 2: `CODEX_HANDOFF.md`, `BACKLOG.md`, `BACKEND_API_PLAN.md`, `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`, `PHASED_ROADMAP.md`, `backend/API_CONTRACT.md`, `backend/MAP_SYNC_CONTRACT.md`, `database/README.md`, `database/SCHEMA_NOTES.md`, `database/seeds/README.md`, `database/seeds/MAPPING_BOOTSTRAP_PLAN.md`, `database/seeds/OCT_SEED_CONTRACT.md`, `database/seeds/source-links.json`, `admin-dashboard/README.md`, and `admin-dashboard/VISUAL_DIRECTION.md`.
+- Checks run: JSON parse for `database/seeds/source-links.json`, Markdown/text diff review, and `git diff --check`.
+- Results: checks passed.
+- CLI 2 did not edit Android or Rust implementation files.
+- Next CLI 2 tasks: align SQL/Drizzle schema with nullable/provisional map geometry before applying migrations, then implement endpoint response shapes only after approval.
+- Remaining blockers: no verified OCT building/gate/landmark/path dataset, incomplete local visual reference path (`C:` only), production hosting/database target, Resend sender-domain verification, and Redmi Note 10 Pro device validation.

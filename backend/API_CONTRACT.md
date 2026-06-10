@@ -6,6 +6,8 @@ Status: CLI 2 Phase 1 TypeScript/Fastify scaffold complete. Paths are implemente
 
 Base path: `/api/v1`
 
+Shared map/sync contract details for Android are in `MAP_SYNC_CONTRACT.md`.
+
 ## Auth
 
 | Method | Path | Purpose | Auth |
@@ -51,7 +53,16 @@ Verified registration body:
 | `GET` | `/map/edges` | Path edge cache payload | None |
 | `GET` | `/map/qr-anchors` | QR anchor cache payload | None |
 
-Current map data is placeholder-only until OCT campus seed data is approved.
+Current map data is placeholder-only until OCT campus seed data is approved. The initial campus is Oriental College of Technology with stable key `oct-bhopal` and provisional center `23.2462927, 77.5019383`.
+
+Android-facing contract notes:
+
+- Full URLs are `/api/v1/sync/manifest`, `/api/v1/map/locations`, and `/api/v1/map/edges`.
+- `/sync/manifest` should include campus identity, map version, latest change id, sparse-map state, mapping lock state, and entity counts.
+- `/map/locations` should return category keys, labels, nullable positions, coordinate status, verification status, confidence, and source metadata.
+- `/map/edges` should return graph edges separately from locations, with nullable geometry, coordinate status, verification status, accessibility state, confidence, and walk count.
+- Android must tolerate empty arrays, `position: null`, `geometry: null`, `coordinateStatus: unknown`, and `sparseMap: true`.
+- Do not treat provisional OCT coordinates as verified navigation destinations.
 
 ## Sync
 

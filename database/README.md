@@ -7,8 +7,9 @@ This folder contains PostgreSQL/PostGIS planning and migration scaffolding for t
 ## Current State
 
 - `migrations/001_phase1_foundation.sql` defines the Phase 1 conceptual foundation schema.
+- `seeds/OCT_SEED_CONTRACT.md` defines the OCT initial campus and seed-data contracts.
 - No database has been created or migrated from this workspace.
-- No migration tool has been selected yet.
+- Drizzle is selected for backend migration tooling, but no migration has been applied to a real database.
 
 ## Phase 1 Database Responsibilities
 
@@ -26,4 +27,4 @@ This folder contains PostgreSQL/PostGIS planning and migration scaffolding for t
 - ORM or query builder.
 - Local development database name and user.
 - Hosting target for production PostgreSQL/PostGIS.
-- Seed data format for campus geometry.
+- Verified seed data format for campus geometry beyond the provisional OCT center.
