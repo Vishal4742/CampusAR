@@ -78,6 +78,14 @@ CLI 2 backend/data/admin preparation, 2026-06-11:
 - CLI 2 does not own Android sensor collection, Rust EKF/PDR, JNI payloads, or native floor detection.
 - Phase 2 backend implementation is not started until explicitly approved.
 
+CLI 2 backend/data implementation slice, 2026-06-11:
+
+- Implemented in-memory Fastify contracts for fingerprint sessions, WiFi RSSI samples, magnetic samples, barometer samples, floor-profile cache reads, QR anchor proposals, and admin review.
+- Public Android cache endpoints expose only approved WiFi fingerprints, approved magnetic fingerprints, and active approved QR anchors.
+- Mapper upload routes require `verified_mapper` or `admin`; admin review routes require `admin`.
+- Verified with backend `npm run check`, `npm test`, `npm run build`, and `git diff --check`.
+- Exceptions: no live PostgreSQL/PostGIS persistence, Phase 2 migration is drafted but not applied, no `since` filtering for fingerprint cache reads, no React admin dashboard implementation, and no real OCT indoor/fingerprint/QR dataset.
+
 Primary outcomes:
 
 - Implement native positioning loop with adaptive sampling.

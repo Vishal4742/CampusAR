@@ -6,6 +6,7 @@ This file is the shared coordination state for Codex sessions. Read it before ed
 
 - CLI 2 Phase 1 backend/data/admin scaffold and the approved TypeScript/Fastify conversion are complete inside `backend/`, `database/`, and `admin-dashboard/`.
 - CLI 2 Phase 1 is closed from the backend/data/admin side. Remaining Phase 1 gaps are external data/provider verification, CLI 1 device validation, or future implementation phases.
+- CLI 2 Phase 2 backend/data support slice is implemented in-memory inside `backend/` with a draft persistence migration in `database/`; live PostgreSQL/PostGIS and React admin dashboard remain deferred.
 - CLI 1 Phase 1 mobile/native scaffold is approved inside `android-app/` and `native-engine/` and is build-verified, pending physical device validation.
 - Do not install additional dependencies or scaffold new implementation areas without explicit approval.
 - Keep work inside the active CLI ownership boundary unless coordination docs require a careful shared update.
@@ -50,7 +51,7 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - CLI 2 must not edit `android-app/` or `native-engine/`.
 - CLI 2 Phase 1 backend/data/admin work is complete and checkpointed. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
 - CLI 2 must get explicit approval before connecting a real PostgreSQL service or scaffolding the React admin dashboard. Resend OTP provider integration is approved and implemented; real keys must remain in local environment variables or deployment secrets.
-- CLI 2 is preparing Phase 2 backend/data/admin support only. Active Phase 2 support IDs: `P2-04`, `P2-05`, `P2-06`, `P2-07`, and `P2-11`. CLI 2 must not implement Android sensors, Rust EKF/PDR, or native floor detection.
+- CLI 2 has completed the Phase 2 backend/data/admin support slice for `P2-04`, `P2-05`, `P2-06`, and `P2-07` in the in-memory Fastify scaffold, with docs/git coordination still tracked under `P2-11`. CLI 2 must not implement Android sensors, Rust EKF/PDR, or native floor detection.
 
 ## Source Analyzed
 
@@ -343,3 +344,24 @@ Coordinate through this file before editing shared docs.
 - Created `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md`.
 - Assumptions: OCT is still sparse/provisional, Phase 2 backend work must tolerate missing indoor data, and no new dependencies/database service/admin React scaffold are approved.
 - Blockers: no verified OCT floor plans, no QR anchor placement list, no WiFi/magnetic collection procedure, unresolved BSSID privacy policy, unresolved local indoor coordinate system, and no production PostgreSQL/PostGIS target.
+
+### 2026-06-11 - CLI 2 Phase 2 backend/data implementation started
+
+- User said "start completing"; CLI 2 treats this as approval to implement the previously planned backend/data/admin Phase 2 support slice only.
+- Scope: in-memory Fastify endpoints and contracts for fingerprint sessions, WiFi RSSI fingerprints, magnetic fingerprints, barometer floor samples/profiles, QR anchor proposals, and admin review routes.
+- Out of scope: Android sensor collection, Rust EKF/PDR, JNI contracts, native floor detection, PostgreSQL connection, React admin scaffold, and dependency installation.
+- CLI 2 must not edit `android-app/` or `native-engine/`.
+
+### 2026-06-11 - CLI 2 Phase 2 backend/data support slice complete
+
+- Implemented Phase 2 in-memory Fastify contracts for mapper fingerprint sessions, WiFi RSSI uploads, magnetic uploads, barometer samples, floor-profile cache reads, QR anchor proposals, and admin approvals.
+- Added admin review behavior: approved fingerprint sessions publish attached WiFi/magnetic samples, rejected sessions hide attached samples, and approved barometer samples update floor-profile cache records.
+- Added QR anchor review behavior: proposed QR anchors remain hidden from public map cache reads until admin approval marks them active and verified.
+- Added draft PostgreSQL/PostGIS persistence target in `database/migrations/002_phase2_sensor_support.sql` and matching Drizzle schema definitions; no database was started or migrated.
+- Updated docs/contracts: `BACKEND_API_PLAN.md`, `BACKLOG.md`, `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md`, `PHASED_ROADMAP.md`, `backend/API_CONTRACT.md`, `backend/MAP_SYNC_CONTRACT.md`, `database/README.md`, `database/SCHEMA_NOTES.md`, and this handoff.
+- Backend files changed: `backend/src/handlers/mapping.ts`, `backend/src/routes/index.ts`, `backend/src/services/store.ts`, `backend/src/types.ts`, `backend/src/db/schema.ts`, and `backend/test/app.test.ts`.
+- Checks run: `npm run check`, `npm test`, `npm run build`, and `git diff --check`.
+- Results: all checks passed.
+- CLI 2 did not edit `android-app/` or `native-engine/`.
+- Next CLI 2 tasks: connect PostgreSQL/PostGIS and apply/review migrations when approved; add real OCT indoor/fingerprint/QR data after mapper collection; then plan React admin implementation only after explicit approval.
+- Remaining blockers: no verified OCT floor/building/path dataset, no QR anchor placement list, unresolved BSSID hashing/salt policy, unresolved indoor coordinate system, no production PostgreSQL/PostGIS target, and Resend sender-domain verification remains external.

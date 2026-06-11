@@ -175,7 +175,7 @@ Edge handling rules:
 
 ## Phase 2 Extension Points
 
-Phase 2 backend/data support should extend the same cache model with:
+Phase 2 backend/data support extends the same cache model with in-memory endpoints:
 
 - `GET /api/v1/map/floors`
 - `GET /api/v1/map/qr-anchors`
@@ -190,3 +190,4 @@ These payloads must follow the same sparse-data rules:
 - records must expose `coordinateStatus`
 - records must expose `verificationStatus`
 - Android must be able to navigate with no fingerprint data and degrade to GPS/PDR/QR where available
+- Only admin-approved fingerprints and active QR anchors are visible through public map cache reads.

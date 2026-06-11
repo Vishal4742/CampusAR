@@ -18,6 +18,8 @@ export const locationStatus = pgEnum('location_status', [
   'rejected',
   'expired'
 ]);
+export const coordinateStatus = pgEnum('coordinate_status', ['unknown', 'provisional', 'verified', 'rejected']);
+export const fingerprintKind = pgEnum('fingerprint_kind', ['wifi_rssi', 'magnetic', 'barometer', 'qr_anchor', 'mixed']);
 
 export const appUsers = pgTable('app_users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -77,5 +79,103 @@ export const mapSettings = pgTable('map_settings', {
   mappingLocked: boolean('mapping_locked').notNull().default(false),
   lockedBy: uuid('locked_by').references(() => appUsers.id),
   lockedAt: timestamp('locked_at', { withTimezone: true }),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+});
+
+export const fingerprintSessions = pgTable('fingerprint_sessions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  campusId: uuid('campus_id').references(() => campuses.id).notNull(),
+  buildingId: uuid('building_id'),
+  floorId: uuid('floor_id'),
+  locationId: uuid('location_id').references(() => locations.id),
+  position: geometry('position'),
+  coordinateStatus: coordinateStatus('coordinate_status').notNull().default('unknown'),
+  kind: fingerprintKind('kind').notNull().default('mixed'),
+  deviceModel: text('device_model'),
+  androidSdk: text('android_sdk'),
+  verificationStatus: locationStatus('verification_status').notNull().default('pending_admin_review'),
+  wifiSampleCount: integer('wifi_sample_count').notNull().default(0),
+  magneticSampleCount: integer('magnetic_sample_count').notNull().default(0),
+  barometerSampleCount: integer('barometer_sample_count').notNull().default(0),
+  submittedByUserId: uuid('submitted_by_user_id').references(() => appUsers.id),
+  reviewedByUserId: uuid('reviewed_by_user_id').references(() => appUsers.id),
+  reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+});
+
+export const wifiFingerprints = pgTable('wifi_fingerprints', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  sessionId: uuid('session_id').references(() => fingerprintSessions.id).notNull(),
+  campusId: uuid('campus_id').references(() => campuses.id).notNull(),
+  buildingId: uuid('building_id'),
+  floorId: uuid('floor_id'),
+  locationId: uuid('location_id').references(() => locations.id),
+  position: geometry('position'),
+  coordinateStatus: coordinateStatus('coordinate_status').notNull().default('unknown'),
+  verificationStatus: locationStatus('verification_status').notNull().default('pending_admin_review'),
+  readings: jsonb('readings').notNull(),
+  collectedAt: timestamp('collected_at', { withTimezone: true }).notNull(),
+  submittedByUserId: uuid('submitted_by_user_id').references(() => appUsers.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+});
+
+export const magneticFingerprints = pgTable('magnetic_fingerprints', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  sessionId: uuid('session_id').references(() => fingerprintSessions.id).notNull(),
+  campusId: uuid('campus_id').references(() => campuses.id).notNull(),
+  buildingId: uuid('building_id'),
+  floorId: uuid('floor_id'),
+  locationId: uuid('location_id').references(() => locations.id),
+  position: geometry('position'),
+  coordinateStatus: coordinateStatus('coordinate_status').notNull().default('unknown'),
+  verificationStatus: locationStatus('verification_status').notNull().default('pending_admin_review'),
+  samples: jsonb('samples').notNull(),
+  collectedAt: timestamp('collected_at', { withTimezone: true }).notNull(),
+  submittedByUserId: uuid('submitted_by_user_id').references(() => appUsers.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+});
+
+export const barometerSamples = pgTable('barometer_samples', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  sessionId: uuid('session_id').references(() => fingerprintSessions.id).notNull(),
+  campusId: uuid('campus_id').references(() => campuses.id).notNull(),
+  buildingId: uuid('building_id'),
+  floorId: uuid('floor_id'),
+  pressureHpa: numeric('pressure_hpa', { precision: 8, scale: 3 }),
+  relativeAltitudeMeters: numeric('relative_altitude_meters', { precision: 8, scale: 3 }),
+  verificationStatus: locationStatus('verification_status').notNull().default('pending_admin_review'),
+  collectedAt: timestamp('collected_at', { withTimezone: true }).notNull(),
+  submittedByUserId: uuid('submitted_by_user_id').references(() => appUsers.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+});
+
+export const floorProfiles = pgTable('floor_profiles', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  campusId: uuid('campus_id').references(() => campuses.id).notNull(),
+  buildingId: uuid('building_id'),
+  floorId: uuid('floor_id'),
+  referencePressureHpa: numeric('reference_pressure_hpa', { precision: 8, scale: 3 }),
+  relativeAltitudeMeters: numeric('relative_altitude_meters', { precision: 8, scale: 3 }),
+  sampleCount: integer('sample_count').notNull().default(0),
+  verificationStatus: locationStatus('verification_status').notNull().default('pending_admin_review'),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+});
+
+export const qrAnchors = pgTable('qr_anchors', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  campusId: uuid('campus_id').references(() => campuses.id),
+  buildingId: uuid('building_id'),
+  floorId: uuid('floor_id'),
+  locationId: uuid('location_id').references(() => locations.id),
+  codeKey: text('code_key').notNull(),
+  snapPoint: geometry('snap_point'),
+  coordinateStatus: coordinateStatus('coordinate_status').notNull().default('unknown'),
+  verificationStatus: locationStatus('verification_status').notNull().default('pending_admin_review'),
+  active: boolean('active').notNull().default(false),
+  proposedByUserId: uuid('proposed_by_user_id').references(() => appUsers.id),
+  approvedByUserId: uuid('approved_by_user_id').references(() => appUsers.id),
+  approvedAt: timestamp('approved_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
 });
