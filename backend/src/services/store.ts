@@ -11,8 +11,10 @@ import type {
   GeoJsonPoint,
   LocationRecord,
   MagneticFingerprint,
+  PathEdgeRecord,
   PublicUser,
   QrAnchorRecord,
+  SurveyImportSummary,
   SyncChange,
   User,
   UserRole,
@@ -44,6 +46,8 @@ const numberOrNull = (value: unknown): number | null => {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 };
 
+const numberFromRecord = (record: Record<string, unknown>, key: string): number | null => numberOrNull(record[key]);
+
 const averageOrNull = (values: Array<number | null>): number | null => {
   const numbers = values.filter((value): value is number => value !== null);
   if (numbers.length === 0) {
@@ -58,6 +62,54 @@ const coordinateStatus = (value: unknown): CoordinateStatus => {
 
 const fingerprintKind = (value: unknown): FingerprintKind => {
   return value === 'wifi_rssi' || value === 'magnetic' || value === 'barometer' || value === 'qr_anchor' ? value : 'mixed';
+};
+
+const surveyString = (record: Record<string, unknown>, key: string): string | null => {
+  const value = record[key];
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+};
+
+const surveyArray = (record: Record<string, unknown>, key: string): Array<Record<string, unknown>> => {
+  const value = record[key];
+  return Array.isArray(value) ? value.filter(isRecord) : [];
+};
+
+const surveyPoint = (value: unknown, source: string): GeoJsonPoint | null => {
+  if (!isRecord(value)) {
+    return null;
+  }
+  const latitude = numberFromRecord(value, 'latitude');
+  const longitude = numberFromRecord(value, 'longitude');
+  if (latitude === null || longitude === null) {
+    return null;
+  }
+  return point(longitude, latitude, source);
+};
+
+const edgeDistanceMeters = (geometry: GeoJsonPoint[]): number | null => {
+  if (geometry.length < 2) {
+    return null;
+  }
+  const earthRadiusMeters = 6_371_000;
+  let total = 0;
+  for (let index = 1; index < geometry.length; index += 1) {
+    const previous = geometry[index - 1];
+    const current = geometry[index];
+    if (!previous || !current) {
+      continue;
+    }
+    const [lon1, lat1] = previous.coordinates;
+    const [lon2, lat2] = current.coordinates;
+    const phi1 = lat1 * Math.PI / 180;
+    const phi2 = lat2 * Math.PI / 180;
+    const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+    const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+    const sinPhi = Math.sin(deltaPhi / 2);
+    const sinLambda = Math.sin(deltaLambda / 2);
+    const h = sinPhi * sinPhi + Math.cos(phi1) * Math.cos(phi2) * sinLambda * sinLambda;
+    total += 2 * earthRadiusMeters * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+  }
+  return Math.round(total * 100) / 100;
 };
 
 const point = (longitude: number, latitude: number, source: string): GeoJsonPoint => ({
@@ -97,8 +149,10 @@ const seedCampus = () => {
       categoryKey: 'campus_pin',
       label: 'Oriental College of Technology Google Maps Pin',
       point: point(77.5019383, 23.2462927, 'https://maps.app.goo.gl/PoESLVac4tegAM489'),
+      coordinateStatus: 'provisional',
       status: 'draft',
-      confidenceScore: 0
+      confidenceScore: 0,
+      source: { type: 'google_maps_link', url: 'https://maps.app.goo.gl/PoESLVac4tegAM489' }
     },
     {
       id: randomUUID(),
@@ -109,8 +163,10 @@ const seedCampus = () => {
       categoryKey: 'campus_pin',
       label: 'Oriental Institute of Science and Technology Google Maps Pin',
       point: point(77.5029367, 23.2487036, 'https://maps.app.goo.gl/xUen8Rr4UNMqDgfR6'),
+      coordinateStatus: 'provisional',
       status: 'draft',
-      confidenceScore: 0
+      confidenceScore: 0,
+      source: { type: 'google_maps_link', url: 'https://maps.app.goo.gl/xUen8Rr4UNMqDgfR6' }
     }
   ];
 
@@ -154,7 +210,7 @@ const seedCampus = () => {
       { key: 'admin_office', label: 'Admin Office', defaultConfirmationThreshold: 3, defaultConfirmationRadiusMeters: 15 }
     ],
     locations,
-    edges: [] as unknown[],
+    edges: [] as PathEdgeRecord[],
     qrAnchors: [] as unknown[]
   };
 };
@@ -188,6 +244,7 @@ export const createStore = () => {
   const thresholds = new Map(campus.categories.map((category) => [category.key, { ...category }]));
   let changeId = 0;
   const defaultCampusId = campus.campuses[0]?.id ?? 'oct-bhopal';
+  const defaultZoneId = campus.zones[0]?.id ?? 'oct-bootstrap-zone';
 
   const appendChange = (recordType: string, operation: string, payload: unknown): SyncChange => {
     const change = { id: ++changeId, recordType, operation, payload, changedAt: nowIso() };
@@ -234,6 +291,56 @@ export const createStore = () => {
     }
     appendChange('floor_profile', existing ? 'updated' : 'created', profile);
     return profile;
+  };
+
+  const summarizeSurveyExport = (body: Record<string, unknown>): SurveyImportSummary => {
+    const warnings: string[] = [];
+    const errors: string[] = [];
+    const campusStableKey = stringOrNull(body.campusStableKey);
+    const points = surveyArray(body, 'points');
+    const routes = surveyArray(body, 'routes');
+
+    if (campusStableKey && campusStableKey !== 'oct-bhopal') {
+      warnings.push(`campusStableKey ${campusStableKey} does not match oct-bhopal`);
+    }
+    if (!campusStableKey) {
+      warnings.push('campusStableKey is missing; import will target oct-bhopal');
+    }
+    if (points.length === 0 && routes.length === 0) {
+      warnings.push('survey export has no points or routes');
+    }
+
+    let importablePointCount = 0;
+    points.forEach((item, index) => {
+      if (surveyPoint(item.position, `survey:point:${surveyString(item, 'localId') ?? index + 1}`)) {
+        importablePointCount += 1;
+      } else {
+        errors.push(`points[${index}] is missing numeric position.latitude or position.longitude`);
+      }
+    });
+
+    let importableRouteCount = 0;
+    routes.forEach((item, index) => {
+      const geometry = surveyArray(item, 'geometry')
+        .map((sample, sampleIndex) => surveyPoint(sample, `survey:route:${surveyString(item, 'localId') ?? index + 1}:${sampleIndex + 1}`))
+        .filter((sample): sample is GeoJsonPoint => sample !== null);
+      if (geometry.length >= 2) {
+        importableRouteCount += 1;
+      } else {
+        errors.push(`routes[${index}] must contain at least two geometry samples with numeric latitude and longitude`);
+      }
+    });
+
+    return {
+      valid: errors.length === 0,
+      campusStableKey,
+      pointCount: points.length,
+      routeCount: routes.length,
+      importablePointCount,
+      importableRouteCount,
+      warnings,
+      errors
+    };
   };
 
   const createUser = ({
@@ -423,6 +530,104 @@ export const createStore = () => {
     },
     listPendingLocations() {
       return campus.locations.filter((location) => ['pending_confirmation', 'pending_admin_review'].includes(location.status));
+    },
+    validateSurveyImport(body: Record<string, unknown>): SurveyImportSummary {
+      return summarizeSurveyExport(body);
+    },
+    importSurveyExport(body: Record<string, unknown>, actor: User) {
+      const summary = summarizeSurveyExport(body);
+      if (!summary.valid) {
+        return { summary, importedLocations: [] as LocationRecord[], importedEdges: [] as PathEdgeRecord[] };
+      }
+
+      const points = surveyArray(body, 'points');
+      const routes = surveyArray(body, 'routes');
+      const locationByLocalId = new Map<string, string>();
+      const importedLocations: LocationRecord[] = [];
+      const importedEdges: PathEdgeRecord[] = [];
+
+      points.forEach((item, index) => {
+        const localId = surveyString(item, 'localId') ?? `P${String(index + 1).padStart(3, '0')}`;
+        const positionRecord = isRecord(item.position) ? item.position : {};
+        const geoPoint = surveyPoint(positionRecord, `survey:point:${localId}`);
+        if (!geoPoint) {
+          return;
+        }
+
+        const location: LocationRecord = {
+          id: randomUUID(),
+          campusId: defaultCampusId,
+          buildingId: null,
+          floorId: null,
+          zoneId: defaultZoneId,
+          categoryKey: stringOrFallback(item.categoryKey, 'other'),
+          label: stringOrFallback(item.label, `Survey Point ${index + 1}`),
+          point: geoPoint,
+          coordinateStatus: 'provisional',
+          status: 'pending_admin_review',
+          confidenceScore: 0,
+          source: {
+            type: 'field_survey_export',
+            localId,
+            collectedBy: stringOrNull(body.collectedBy),
+            accuracyMeters: numberFromRecord(positionRecord, 'accuracyMeters'),
+            capturedAt: surveyString(item, 'capturedAt'),
+            notes: surveyString(item, 'notes'),
+            importedByUserId: actor.id
+          }
+        };
+        campus.locations.push(location);
+        locationByLocalId.set(localId, location.id);
+        importedLocations.push(location);
+        appendChange('location', 'created_from_survey_import', location);
+      });
+
+      routes.forEach((item, index) => {
+        const localId = surveyString(item, 'localId') ?? `R${String(index + 1).padStart(3, '0')}`;
+        const geometry = surveyArray(item, 'geometry')
+          .map((sample, sampleIndex) => surveyPoint(sample, `survey:route:${localId}:${sampleIndex + 1}`))
+          .filter((sample): sample is GeoJsonPoint => sample !== null);
+        if (geometry.length < 2) {
+          return;
+        }
+
+        const edge: PathEdgeRecord = {
+          id: randomUUID(),
+          campusId: defaultCampusId,
+          fromLocationId: locationByLocalId.get(surveyString(item, 'fromLocalPointId') ?? '') ?? null,
+          toLocationId: locationByLocalId.get(surveyString(item, 'toLocalPointId') ?? '') ?? null,
+          geometry,
+          coordinateStatus: 'provisional',
+          verificationStatus: 'pending_admin_review',
+          edgeType: stringOrFallback(item.edgeType, 'outdoor_walkway'),
+          bidirectional: true,
+          distanceMeters: edgeDistanceMeters(geometry),
+          floorTransitionType: null,
+          wheelchairAccessible: 'unknown',
+          confidenceScore: 0,
+          walkCount: 1,
+          source: {
+            type: 'field_survey_export',
+            localId,
+            label: surveyString(item, 'label'),
+            collectedBy: stringOrNull(body.collectedBy),
+            capturedAt: surveyString(item, 'capturedAt'),
+            notes: surveyString(item, 'notes'),
+            importedByUserId: actor.id
+          }
+        };
+        campus.edges.push(edge);
+        importedEdges.push(edge);
+        appendChange('path_edge', 'created_from_survey_import', edge);
+      });
+
+      appendChange('survey_import', 'accepted', {
+        campusStableKey: summary.campusStableKey,
+        importedLocationCount: importedLocations.length,
+        importedEdgeCount: importedEdges.length,
+        importedByUserId: actor.id
+      });
+      return { summary, importedLocations, importedEdges };
     },
     listFloorProfiles({ buildingId }: { buildingId?: string | null } = {}) {
       return floorProfiles.filter((profile) => !buildingId || profile.buildingId === buildingId);

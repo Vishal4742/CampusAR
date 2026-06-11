@@ -149,6 +149,15 @@ WiFi fingerprint body:
 
 QR anchors proposed through `/mapping/qr-anchors` are hidden from `/map/qr-anchors` until approved by admin.
 
+Field survey import endpoints for OCT bootstrap data:
+
+| Method | Path | Purpose | Auth |
+| --- | --- | --- | --- |
+| `POST` | `/admin/survey-imports/validate` | Validate CLI 1 field-survey JSON before import | Admin bearer token |
+| `POST` | `/admin/survey-imports` | Import field-survey JSON as provisional `pending_admin_review` map locations and path edges | Admin bearer token |
+
+Survey import accepts the mobile export shape from `PHASE2_MOBILE_NATIVE_PLAN.md`. Input `coordinateStatus: "field_collected"` is normalized into backend records as `coordinateStatus: "provisional"` and `verificationStatus/status: "pending_admin_review"`.
+
 Admin review endpoints for Phase 2:
 
 | Method | Path | Purpose | Auth |
@@ -174,6 +183,8 @@ See `../PHASE2_BACKEND_DATA_SUPPORT_PLAN.md` for field-level planning.
 | `GET` | `/admin/thresholds` | List location confirmation thresholds | Admin bearer token |
 | `PUT` | `/admin/thresholds/:category` | Update a category threshold | Admin bearer token |
 | `GET` | `/admin/pending-locations` | Pending-location queue shape for Phase 3 | Admin bearer token |
+| `POST` | `/admin/survey-imports/validate` | Validate Phase 2 field survey JSON | Admin bearer token |
+| `POST` | `/admin/survey-imports` | Import Phase 2 field survey JSON as provisional map data | Admin bearer token |
 
 Admin creation is intentionally admin-only. For local development, set `CAMPUSAR_SEED_ADMIN_EMAIL` before starting the backend to create an in-memory seed admin.
 

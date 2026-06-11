@@ -3,6 +3,7 @@ import { Type } from '@sinclair/typebox';
 import * as admin from '../handlers/admin.js';
 import * as auth from '../handlers/auth.js';
 import * as mapping from '../handlers/mapping.js';
+import * as survey from '../handlers/survey.js';
 import { ROLE_CAPABILITIES, USER_ROLES } from '../domain/roles.js';
 import { normalizeCursor, SYNC_CONTRACT_NOTES } from '../domain/sync.js';
 import { requireUser } from '../handlers/auth.js';
@@ -225,6 +226,17 @@ export const createRoutes = (app: FastifyInstance, services: Services) => {
   });
   record('GET', '/api/v1/admin/pending-locations', 'Future admin dashboard queue for pending location review.', 'Phase 3 contract implemented as Phase 1 data shape');
   app.get('/api/v1/admin/pending-locations', async (request) => admin.pendingLocations(request, services));
+
+  record('POST', '/api/v1/admin/survey-imports/validate', 'Admin validates Phase 2 field survey JSON before import.', 'Phase 2');
+  app.post('/api/v1/admin/survey-imports/validate', { schema: { body: survey.surveyImportSchema } }, async (request) => {
+    return survey.validateSurveyImport(request, services, request.body as Record<string, unknown>);
+  });
+
+  record('POST', '/api/v1/admin/survey-imports', 'Admin imports Phase 2 field survey JSON as provisional map data.', 'Phase 2');
+  app.post('/api/v1/admin/survey-imports', { schema: { body: survey.surveyImportSchema } }, async (request, reply) => {
+    reply.status(201);
+    return survey.importSurvey(request, services, request.body as Record<string, unknown>);
+  });
 
   record('GET', '/api/v1/admin/fingerprint-sessions', 'Admin reviews Phase 2 fingerprint collection sessions.', 'Phase 2');
   app.get('/api/v1/admin/fingerprint-sessions', async (request) => mapping.adminFingerprintSessions(request, services));

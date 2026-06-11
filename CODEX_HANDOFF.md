@@ -6,7 +6,7 @@ This file is the shared coordination state for Codex sessions. Read it before ed
 
 - CLI 2 Phase 1 backend/data/admin scaffold and the approved TypeScript/Fastify conversion are complete inside `backend/`, `database/`, and `admin-dashboard/`.
 - CLI 2 Phase 1 is closed from the backend/data/admin side. Remaining Phase 1 gaps are external data/provider verification, CLI 1 device validation, or future implementation phases.
-- CLI 2 Phase 2 backend/data support slice is implemented in-memory inside `backend/` with a draft persistence migration in `database/`; live PostgreSQL/PostGIS and React admin dashboard remain deferred.
+- CLI 2 Phase 2 backend/data support slice is implemented in-memory inside `backend/`, including field-survey JSON validate/import and a draft persistence migration in `database/`; live PostgreSQL/PostGIS and React admin dashboard remain deferred.
 - CLI 1 Phase 1 mobile/native scaffold is approved inside `android-app/` and `native-engine/` and is build-verified, pending physical device validation.
 - Do not install additional dependencies or scaffold new implementation areas without explicit approval.
 - Keep work inside the active CLI ownership boundary unless coordination docs require a careful shared update.
@@ -51,7 +51,7 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - CLI 2 must not edit `android-app/` or `native-engine/`.
 - CLI 2 Phase 1 backend/data/admin work is complete and checkpointed. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
 - CLI 2 must get explicit approval before connecting a real PostgreSQL service or scaffolding the React admin dashboard. Resend OTP provider integration is approved and implemented; real keys must remain in local environment variables or deployment secrets.
-- CLI 2 has completed the Phase 2 backend/data/admin support slice for `P2-04`, `P2-05`, `P2-06`, and `P2-07` in the in-memory Fastify scaffold, with docs/git coordination still tracked under `P2-11`. CLI 2 must not implement Android sensors, Rust EKF/PDR, or native floor detection.
+- CLI 2 has completed the Phase 2 backend/data/admin support slice for field-survey import, `P2-04`, `P2-05`, `P2-06`, and `P2-07` in the in-memory Fastify scaffold, with docs/git coordination still tracked under `P2-11`. CLI 2 must not implement Android sensors, Rust EKF/PDR, or native floor detection.
 
 ## Source Analyzed
 
@@ -365,3 +365,17 @@ Coordinate through this file before editing shared docs.
 - CLI 2 did not edit `android-app/` or `native-engine/`.
 - Next CLI 2 tasks: connect PostgreSQL/PostGIS and apply/review migrations when approved; add real OCT indoor/fingerprint/QR data after mapper collection; then plan React admin implementation only after explicit approval.
 - Remaining blockers: no verified OCT floor/building/path dataset, no QR anchor placement list, unresolved BSSID hashing/salt policy, unresolved indoor coordinate system, no production PostgreSQL/PostGIS target, and Resend sender-domain verification remains external.
+
+### 2026-06-11 - CLI 2 Phase 2 field-survey import support complete
+
+- User asked to complete Phase 2. CLI 2 closed the remaining backend/data support gap it can safely own without editing CLI 1 Android/Rust files.
+- Added admin-only survey import validation at `POST /api/v1/admin/survey-imports/validate`.
+- Added admin-only survey import at `POST /api/v1/admin/survey-imports`.
+- Import behavior: CLI 1 mobile survey `field_collected` points/routes become backend `provisional` records with `pending_admin_review` status, never verified navigation truth.
+- Updated map location/edge in-memory models to expose `coordinateStatus`, source metadata, and provisional path-edge records.
+- Files changed by CLI 2: `BACKEND_API_PLAN.md`, `BACKLOG.md`, `CODEX_HANDOFF.md`, `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md`, `PHASED_ROADMAP.md`, `backend/API_CONTRACT.md`, `backend/MAP_SYNC_CONTRACT.md`, `backend/src/handlers/survey.ts`, `backend/src/routes/index.ts`, `backend/src/services/store.ts`, `backend/src/types.ts`, `backend/test/app.test.ts`, and `database/SCHEMA_NOTES.md`.
+- Checks run: `npm run check`, `npm test`, and `npm run build`.
+- Results: all checks passed.
+- CLI 2 did not edit `android-app/` or `native-engine/`.
+- Project-level Phase 2 is not fully closed in this CLI because `P2-01`, `P2-02`, `P2-03`, `P2-08`, `P2-09`, and `P2-10` are Android/Rust/mobile-native responsibilities and there are uncommitted CLI 1 files in `android-app/`.
+- Next step for full Phase 2 closure: CLI 1 should finish, test, and checkpoint the Android/Rust mobile-native Phase 2 work, or the user must explicitly reassign Android/Rust ownership before CLI 2 touches those files.
