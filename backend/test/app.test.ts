@@ -161,6 +161,116 @@ test('visitor users cannot submit Phase 2 mapping fingerprints', async () => {
   assert.equal(response.statusCode, 403);
 });
 
+test('admin validates and imports Phase 2 field survey JSON as provisional map data', async () => {
+  const app = await createApp();
+  const login = await app.inject({
+    method: 'POST',
+    url: '/api/v1/auth/login',
+    payload: { email: 'vg8904937@gmail.com' }
+  });
+  assert.equal(login.statusCode, 200);
+  const token = login.json().tokens.accessToken;
+  const surveyExport = {
+    schemaVersion: 1,
+    campusStableKey: 'oct-bhopal',
+    collectedBy: 'manual-field-survey',
+    deviceTimeZone: 'Asia/Kolkata',
+    exportedAt: '2026-06-11T10:30:00.000Z',
+    points: [{
+      localId: 'P001',
+      label: 'Main Gate Draft',
+      categoryKey: 'gate',
+      position: {
+        latitude: 23.2462927,
+        longitude: 77.5019383,
+        accuracyMeters: 8
+      },
+      coordinateStatus: 'field_collected',
+      notes: 'Draft point from Redmi Note 10 Pro',
+      capturedAt: '2026-06-11T10:20:00.000Z'
+    }],
+    routes: [{
+      localId: 'R001',
+      label: 'Main Gate Walk Draft',
+      edgeType: 'outdoor_walkway',
+      fromLocalPointId: 'P001',
+      toLocalPointId: null,
+      geometry: [
+        {
+          latitude: 23.2462927,
+          longitude: 77.5019383,
+          accuracyMeters: 8,
+          capturedAt: '2026-06-11T10:20:00.000Z'
+        },
+        {
+          latitude: 23.2464000,
+          longitude: 77.5020000,
+          accuracyMeters: 9,
+          capturedAt: '2026-06-11T10:21:00.000Z'
+        }
+      ],
+      coordinateStatus: 'field_collected',
+      notes: 'Draft walked route',
+      capturedAt: '2026-06-11T10:21:00.000Z'
+    }]
+  };
+
+  const validated = await app.inject({
+    method: 'POST',
+    url: '/api/v1/admin/survey-imports/validate',
+    headers: { authorization: `Bearer ${token}` },
+    payload: surveyExport
+  });
+  assert.equal(validated.statusCode, 200);
+  assert.equal(validated.json().summary.valid, true);
+  assert.equal(validated.json().summary.importablePointCount, 1);
+  assert.equal(validated.json().summary.importableRouteCount, 1);
+
+  const imported = await app.inject({
+    method: 'POST',
+    url: '/api/v1/admin/survey-imports',
+    headers: { authorization: `Bearer ${token}` },
+    payload: surveyExport
+  });
+  assert.equal(imported.statusCode, 201);
+  assert.equal(imported.json().importedLocations.length, 1);
+  assert.equal(imported.json().importedLocations[0].coordinateStatus, 'provisional');
+  assert.equal(imported.json().importedLocations[0].status, 'pending_admin_review');
+  assert.equal(imported.json().importedEdges.length, 1);
+  assert.equal(imported.json().importedEdges[0].verificationStatus, 'pending_admin_review');
+  assert.ok(imported.json().importedEdges[0].distanceMeters > 0);
+
+  const locations = await app.inject({ method: 'GET', url: '/api/v1/map/locations' });
+  assert.equal(locations.statusCode, 200);
+  assert.ok(locations.json().locations.some((location: { label: string }) => location.label === 'Main Gate Draft'));
+
+  const edges = await app.inject({ method: 'GET', url: '/api/v1/map/edges' });
+  assert.equal(edges.statusCode, 200);
+  assert.equal(edges.json().edges.length, 1);
+});
+
+test('visitor users cannot import field survey JSON', async () => {
+  const app = await createApp();
+  const created = await app.inject({
+    method: 'POST',
+    url: '/api/v1/auth/register/visitor',
+    payload: { fullName: 'Visitor Import Attempt' }
+  });
+
+  const response = await app.inject({
+    method: 'POST',
+    url: '/api/v1/admin/survey-imports',
+    headers: { authorization: `Bearer ${created.json().tokens.accessToken}` },
+    payload: {
+      campusStableKey: 'oct-bhopal',
+      points: [],
+      routes: []
+    }
+  });
+
+  assert.equal(response.statusCode, 403);
+});
+
 test('admin approves Phase 2 sensor fingerprints for Android cache reads', async () => {
   const app = await createApp();
   const login = await app.inject({

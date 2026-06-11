@@ -115,6 +115,7 @@ Android handling rules:
 
 - `position` may be `null`.
 - `coordinateStatus` must be checked before using a location for navigation.
+- Field survey imports are exposed as `coordinateStatus: "provisional"` and `verificationStatus/status: "pending_admin_review"` until admin review.
 - `verificationStatus` may be `draft`, `pending_confirmation`, `pending_admin_review`, `verified`, `suspended`, `rejected`, or `expired`.
 - Search and UI may show draft/provisional records with a clear status, but route computation should prefer verified graph nodes when available.
 
@@ -191,3 +192,4 @@ These payloads must follow the same sparse-data rules:
 - records must expose `verificationStatus`
 - Android must be able to navigate with no fingerprint data and degrade to GPS/PDR/QR where available
 - Only admin-approved fingerprints and active QR anchors are visible through public map cache reads.
+- Admin-imported field survey locations/routes may appear in map cache reads as provisional pending-review records so internal mapping builds can inspect them. Student-facing navigation should not treat them as verified route truth.

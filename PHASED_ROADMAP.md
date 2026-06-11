@@ -81,6 +81,7 @@ CLI 2 backend/data/admin preparation, 2026-06-11:
 CLI 2 backend/data implementation slice, 2026-06-11:
 
 - Implemented in-memory Fastify contracts for fingerprint sessions, WiFi RSSI samples, magnetic samples, barometer samples, floor-profile cache reads, QR anchor proposals, and admin review.
+- Implemented admin-only field-survey JSON validate/import endpoints so CLI 1 mobile survey exports can become provisional pending-review map locations and path edges.
 - Public Android cache endpoints expose only approved WiFi fingerprints, approved magnetic fingerprints, and active approved QR anchors.
 - Mapper upload routes require `verified_mapper` or `admin`; admin review routes require `admin`.
 - Verified with backend `npm run check`, `npm test`, `npm run build`, and `git diff --check`.

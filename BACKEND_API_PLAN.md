@@ -213,6 +213,8 @@ Verified mapper uploads:
 
 Admin review:
 
+- `POST /api/v1/admin/survey-imports/validate`
+- `POST /api/v1/admin/survey-imports`
 - `GET /api/v1/admin/fingerprint-sessions`
 - `POST /api/v1/admin/fingerprint-sessions/:id/approve`
 - `POST /api/v1/admin/fingerprint-sessions/:id/reject`
@@ -220,6 +222,8 @@ Admin review:
 - `POST /api/v1/admin/qr-anchors/:id/approve`
 
 See `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md` for field-level planning.
+
+Survey import decision: CLI 1 field-survey exports are admin-only imports. Imported points and walked routes are stored as provisional, pending admin review map data. They are not verified navigation truth.
 
 ## Privacy And Safety Rules
 

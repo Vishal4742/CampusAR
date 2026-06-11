@@ -10,6 +10,7 @@ Status: CLI 2 backend/data support slice implemented in the Fastify in-memory sc
 
 CLI 2 owns backend/data/admin support contracts for Phase 2:
 
+- Field survey JSON validate/import contract for controlled OCT bootstrap mapping data from CLI 1.
 - WiFi RSSI fingerprint storage and sync contracts.
 - Magnetic fingerprint storage and sync contracts.
 - QR anchor metadata contracts.
@@ -201,6 +202,8 @@ Mapper upload endpoints:
 
 Admin endpoints to plan:
 
+- `POST /api/v1/admin/survey-imports/validate`
+- `POST /api/v1/admin/survey-imports`
 - `GET /api/v1/admin/fingerprint-sessions`
 - `POST /api/v1/admin/fingerprint-sessions/:id/approve`
 - `POST /api/v1/admin/fingerprint-sessions/:id/reject`
@@ -213,6 +216,7 @@ Implementation notes:
 - Public map reads expose only approved/verified WiFi fingerprints, magnetic fingerprints, and active QR anchors.
 - Mapper upload routes require `verified_mapper` or `admin`.
 - Admin review routes require `admin`.
+- Survey imports normalize mobile `field_collected` coordinates into backend `provisional` records with `pending_admin_review` status.
 - `since` filtering is intentionally deferred until the PostgreSQL/PostGIS sync model is connected.
 
 ## Admin Dashboard Phase 2 Preparation

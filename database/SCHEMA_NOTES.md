@@ -82,6 +82,7 @@ The backend now has in-memory Phase 2 contract support for these domains, and `0
 - Magnetic fingerprint collection sessions and samples.
 - Barometer floor profiles by building/floor.
 - Admin review state for fingerprint sessions and QR anchor placements.
+- Field survey imports currently target existing `locations` and `path_edges` records as provisional pending-review map data. A separate import batch table can be added later if admin audit/reporting needs it.
 
 Open schema decisions:
 

@@ -45,8 +45,28 @@ export interface LocationRecord {
   categoryKey: string;
   label: string;
   point: GeoJsonPoint | null;
+  coordinateStatus: CoordinateStatus;
   status: LocationStatus;
   confidenceScore: number;
+  source?: Record<string, unknown>;
+}
+
+export interface PathEdgeRecord {
+  id: string;
+  campusId: string;
+  fromLocationId: string | null;
+  toLocationId: string | null;
+  geometry: GeoJsonPoint[] | null;
+  coordinateStatus: CoordinateStatus;
+  verificationStatus: LocationStatus;
+  edgeType: string;
+  bidirectional: boolean;
+  distanceMeters: number | null;
+  floorTransitionType: FloorTransitionType | null;
+  wheelchairAccessible: WheelchairAccessible;
+  confidenceScore: number;
+  walkCount: number;
+  source?: Record<string, unknown>;
 }
 
 export interface SyncChange {
@@ -159,4 +179,15 @@ export interface QrAnchorRecord {
   approvedAt: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SurveyImportSummary {
+  valid: boolean;
+  campusStableKey: string | null;
+  pointCount: number;
+  routeCount: number;
+  importablePointCount: number;
+  importableRouteCount: number;
+  warnings: string[];
+  errors: string[];
 }
