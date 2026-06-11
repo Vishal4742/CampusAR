@@ -191,9 +191,9 @@ Important Android assumptions:
 - `coordinateStatus` and `verificationStatus` must be checked before route use
 - Android/Rust computes routes from cached graph data rather than backend live routing
 
-## Phase 2 Sensor-Support API Planning
+## Phase 2 Sensor-Support API Support
 
-Phase 2 backend/data support should plan, but not yet implement, these contracts:
+Phase 2 backend/data support is implemented in the in-memory Fastify scaffold for contract validation. PostgreSQL/PostGIS persistence, `since` filtering, spatial review queries, and React admin screens remain deferred.
 
 Android cache reads:
 

@@ -2,7 +2,23 @@ import { createHash, randomUUID } from 'node:crypto';
 import { config } from '../config.js';
 import { CONTRIBUTION_COOLDOWN_DAYS, USER_ROLES } from '../domain/roles.js';
 import { SYNC_RESULT } from '../domain/sync.js';
-import type { GeoJsonPoint, LocationRecord, PublicUser, SyncChange, User, UserRole, VerificationStatus } from '../types.js';
+import type {
+  BarometerSample,
+  CoordinateStatus,
+  FingerprintKind,
+  FingerprintSession,
+  FloorProfile,
+  GeoJsonPoint,
+  LocationRecord,
+  MagneticFingerprint,
+  PublicUser,
+  QrAnchorRecord,
+  SyncChange,
+  User,
+  UserRole,
+  VerificationStatus,
+  WifiFingerprint
+} from '../types.js';
 
 const nowIso = (): string => new Date().toISOString();
 
@@ -13,6 +29,36 @@ const addDays = (date: string, days: number): string => {
 };
 
 const hash = (value: string): string => createHash('sha256').update(value).digest('hex');
+
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
+const stringOrNull = (value: unknown): string | null => {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+};
+
+const stringOrFallback = (value: unknown, fallback: string): string => stringOrNull(value) ?? fallback;
+
+const numberOrNull = (value: unknown): number | null => {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+};
+
+const averageOrNull = (values: Array<number | null>): number | null => {
+  const numbers = values.filter((value): value is number => value !== null);
+  if (numbers.length === 0) {
+    return null;
+  }
+  return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
+};
+
+const coordinateStatus = (value: unknown): CoordinateStatus => {
+  return value === 'provisional' || value === 'verified' || value === 'rejected' ? value : 'unknown';
+};
+
+const fingerprintKind = (value: unknown): FingerprintKind => {
+  return value === 'wifi_rssi' || value === 'magnetic' || value === 'barometer' || value === 'qr_anchor' ? value : 'mixed';
+};
 
 const point = (longitude: number, latitude: number, source: string): GeoJsonPoint => ({
   type: 'Point',
@@ -132,14 +178,62 @@ export const createStore = () => {
   const syncChanges: SyncChange[] = [];
   const relayPackets = new Map<string, unknown>();
   const auditEvents: unknown[] = [];
+  const fingerprintSessions: FingerprintSession[] = [];
+  const wifiFingerprints: WifiFingerprint[] = [];
+  const magneticFingerprints: MagneticFingerprint[] = [];
+  const barometerSamples: BarometerSample[] = [];
+  const floorProfiles: FloorProfile[] = [];
+  const qrAnchors: QrAnchorRecord[] = [];
   const mapSettings = { mappingLocked: false, updatedAt: nowIso(), updatedBy: null as string | null };
   const thresholds = new Map(campus.categories.map((category) => [category.key, { ...category }]));
   let changeId = 0;
+  const defaultCampusId = campus.campuses[0]?.id ?? 'oct-bhopal';
 
   const appendChange = (recordType: string, operation: string, payload: unknown): SyncChange => {
     const change = { id: ++changeId, recordType, operation, payload, changedAt: nowIso() };
     syncChanges.push(change);
     return change;
+  };
+
+  const upsertFloorProfile = (session: FingerprintSession, updatedAt: string): FloorProfile | null => {
+    const samples = barometerSamples.filter((sample) => {
+      return sample.verificationStatus === 'verified'
+        && sample.campusId === session.campusId
+        && sample.buildingId === session.buildingId
+        && sample.floorId === session.floorId;
+    });
+    if (samples.length === 0) {
+      return null;
+    }
+
+    const existing = floorProfiles.find((profile) => {
+      return profile.campusId === session.campusId
+        && profile.buildingId === session.buildingId
+        && profile.floorId === session.floorId;
+    });
+    const profile = existing ?? {
+      id: randomUUID(),
+      campusId: session.campusId,
+      buildingId: session.buildingId,
+      floorId: session.floorId,
+      referencePressureHpa: null,
+      relativeAltitudeMeters: null,
+      sampleCount: 0,
+      verificationStatus: 'verified' as const,
+      updatedAt
+    };
+
+    profile.referencePressureHpa = averageOrNull(samples.map((sample) => sample.pressureHpa));
+    profile.relativeAltitudeMeters = averageOrNull(samples.map((sample) => sample.relativeAltitudeMeters));
+    profile.sampleCount = samples.length;
+    profile.verificationStatus = 'verified';
+    profile.updatedAt = updatedAt;
+
+    if (!existing) {
+      floorProfiles.push(profile);
+    }
+    appendChange('floor_profile', existing ? 'updated' : 'created', profile);
+    return profile;
   };
 
   const createUser = ({
@@ -263,7 +357,10 @@ export const createStore = () => {
           zones: campus.zones.length,
           locations: campus.locations.length,
           edges: campus.edges.length,
-          qrAnchors: campus.qrAnchors.length
+          qrAnchors: qrAnchors.filter((anchor) => anchor.active && anchor.verificationStatus === 'verified').length,
+          wifiFingerprints: wifiFingerprints.filter((fingerprint) => fingerprint.verificationStatus === 'verified').length,
+          magneticFingerprints: magneticFingerprints.filter((fingerprint) => fingerprint.verificationStatus === 'verified').length,
+          floorProfiles: floorProfiles.filter((profile) => profile.verificationStatus === 'verified').length
         }
       };
     },
@@ -326,6 +423,213 @@ export const createStore = () => {
     },
     listPendingLocations() {
       return campus.locations.filter((location) => ['pending_confirmation', 'pending_admin_review'].includes(location.status));
+    },
+    listFloorProfiles({ buildingId }: { buildingId?: string | null } = {}) {
+      return floorProfiles.filter((profile) => !buildingId || profile.buildingId === buildingId);
+    },
+    listWifiFingerprints({ campusId, buildingId, floorId, approvedOnly = true }: {
+      campusId?: string | null;
+      buildingId?: string | null;
+      floorId?: string | null;
+      approvedOnly?: boolean;
+    } = {}) {
+      return wifiFingerprints.filter((fingerprint) => {
+        return (!approvedOnly || fingerprint.verificationStatus === 'verified')
+          && (!campusId || fingerprint.campusId === campusId)
+          && (!buildingId || fingerprint.buildingId === buildingId)
+          && (!floorId || fingerprint.floorId === floorId);
+      });
+    },
+    listMagneticFingerprints({ campusId, buildingId, floorId, approvedOnly = true }: {
+      campusId?: string | null;
+      buildingId?: string | null;
+      floorId?: string | null;
+      approvedOnly?: boolean;
+    } = {}) {
+      return magneticFingerprints.filter((fingerprint) => {
+        return (!approvedOnly || fingerprint.verificationStatus === 'verified')
+          && (!campusId || fingerprint.campusId === campusId)
+          && (!buildingId || fingerprint.buildingId === buildingId)
+          && (!floorId || fingerprint.floorId === floorId);
+      });
+    },
+    createFingerprintSession(body: Record<string, unknown>, actor: User): FingerprintSession {
+      const createdAt = nowIso();
+      const session: FingerprintSession = {
+        id: randomUUID(),
+        campusId: stringOrFallback(body.campusId, defaultCampusId),
+        buildingId: stringOrNull(body.buildingId),
+        floorId: stringOrNull(body.floorId),
+        locationId: stringOrNull(body.locationId),
+        position: isRecord(body.position) ? body.position as unknown as GeoJsonPoint : null,
+        coordinateStatus: coordinateStatus(body.coordinateStatus),
+        kind: fingerprintKind(body.kind),
+        deviceModel: stringOrNull(body.deviceModel),
+        androidSdk: stringOrNull(body.androidSdk),
+        verificationStatus: 'pending_admin_review',
+        sampleCounts: { wifi: 0, magnetic: 0, barometer: 0 },
+        submittedByUserId: actor.id,
+        reviewedByUserId: null,
+        reviewedAt: null,
+        createdAt,
+        updatedAt: createdAt
+      };
+      fingerprintSessions.push(session);
+      appendChange('fingerprint_session', 'created', session);
+      return session;
+    },
+    findFingerprintSession(id: string): FingerprintSession | null {
+      return fingerprintSessions.find((session) => session.id === id) ?? null;
+    },
+    listFingerprintSessions() {
+      return fingerprintSessions;
+    },
+    addWifiFingerprints({ session, readings, actor, body }: {
+      session: FingerprintSession;
+      readings: Array<Record<string, unknown>>;
+      actor: User;
+      body: Record<string, unknown>;
+    }): WifiFingerprint {
+      const createdAt = nowIso();
+      const record: WifiFingerprint = {
+        id: randomUUID(),
+        sessionId: session.id,
+        campusId: session.campusId,
+        buildingId: session.buildingId,
+        floorId: session.floorId,
+        locationId: session.locationId,
+        position: session.position,
+        coordinateStatus: session.coordinateStatus,
+        verificationStatus: 'pending_admin_review',
+        readings,
+        collectedAt: stringOrFallback(body.collectedAt, createdAt),
+        submittedByUserId: actor.id,
+        createdAt
+      };
+      wifiFingerprints.push(record);
+      session.sampleCounts.wifi += readings.length;
+      session.updatedAt = createdAt;
+      appendChange('wifi_fingerprint', 'created', record);
+      return record;
+    },
+    addMagneticFingerprints({ session, samples, actor, body }: {
+      session: FingerprintSession;
+      samples: Array<Record<string, unknown>>;
+      actor: User;
+      body: Record<string, unknown>;
+    }): MagneticFingerprint {
+      const createdAt = nowIso();
+      const record: MagneticFingerprint = {
+        id: randomUUID(),
+        sessionId: session.id,
+        campusId: session.campusId,
+        buildingId: session.buildingId,
+        floorId: session.floorId,
+        locationId: session.locationId,
+        position: session.position,
+        coordinateStatus: session.coordinateStatus,
+        verificationStatus: 'pending_admin_review',
+        samples,
+        collectedAt: stringOrFallback(body.collectedAt, createdAt),
+        submittedByUserId: actor.id,
+        createdAt
+      };
+      magneticFingerprints.push(record);
+      session.sampleCounts.magnetic += samples.length;
+      session.updatedAt = createdAt;
+      appendChange('magnetic_fingerprint', 'created', record);
+      return record;
+    },
+    addBarometerSample({ session, actor, body }: {
+      session: FingerprintSession;
+      actor: User;
+      body: Record<string, unknown>;
+    }): BarometerSample {
+      const createdAt = nowIso();
+      const record: BarometerSample = {
+        id: randomUUID(),
+        sessionId: session.id,
+        campusId: session.campusId,
+        buildingId: session.buildingId,
+        floorId: session.floorId,
+        pressureHpa: numberOrNull(body.pressureHpa),
+        relativeAltitudeMeters: numberOrNull(body.relativeAltitudeMeters),
+        verificationStatus: 'pending_admin_review',
+        collectedAt: stringOrFallback(body.collectedAt, createdAt),
+        submittedByUserId: actor.id,
+        createdAt
+      };
+      barometerSamples.push(record);
+      session.sampleCounts.barometer += 1;
+      session.updatedAt = createdAt;
+      appendChange('barometer_sample', 'created', record);
+      return record;
+    },
+    reviewFingerprintSession({ id, actor, approved }: { id: string; actor: User; approved: boolean }) {
+      const session = fingerprintSessions.find((candidate) => candidate.id === id);
+      if (!session) {
+        return null;
+      }
+      const status = approved ? 'verified' : 'rejected';
+      const reviewedAt = nowIso();
+      session.verificationStatus = status;
+      session.reviewedByUserId = actor.id;
+      session.reviewedAt = reviewedAt;
+      session.updatedAt = reviewedAt;
+      wifiFingerprints.filter((record) => record.sessionId === id).forEach((record) => {
+        record.verificationStatus = status;
+      });
+      magneticFingerprints.filter((record) => record.sessionId === id).forEach((record) => {
+        record.verificationStatus = status;
+      });
+      barometerSamples.filter((record) => record.sessionId === id).forEach((record) => {
+        record.verificationStatus = status;
+      });
+      if (approved) {
+        upsertFloorProfile(session, reviewedAt);
+      }
+      appendChange('fingerprint_session', approved ? 'approved' : 'rejected', session);
+      return session;
+    },
+    listQrAnchors({ approvedOnly = false }: { approvedOnly?: boolean } = {}) {
+      return qrAnchors.filter((anchor) => !approvedOnly || (anchor.active && anchor.verificationStatus === 'verified'));
+    },
+    proposeQrAnchor(body: Record<string, unknown>, actor: User): QrAnchorRecord {
+      const createdAt = nowIso();
+      const anchor: QrAnchorRecord = {
+        id: randomUUID(),
+        campusId: stringOrFallback(body.campusId, defaultCampusId),
+        buildingId: stringOrNull(body.buildingId),
+        floorId: stringOrNull(body.floorId),
+        locationId: stringOrNull(body.locationId),
+        codeKey: stringOrFallback(body.codeKey, `qr-${randomUUID()}`),
+        snapPoint: isRecord(body.snapPoint) ? body.snapPoint as unknown as GeoJsonPoint : null,
+        coordinateStatus: coordinateStatus(body.coordinateStatus),
+        verificationStatus: 'pending_admin_review',
+        active: false,
+        proposedByUserId: actor.id,
+        approvedByUserId: null,
+        approvedAt: null,
+        createdAt,
+        updatedAt: createdAt
+      };
+      qrAnchors.push(anchor);
+      appendChange('qr_anchor', 'created', anchor);
+      return anchor;
+    },
+    approveQrAnchor({ id, actor }: { id: string; actor: User }) {
+      const anchor = qrAnchors.find((candidate) => candidate.id === id);
+      if (!anchor) {
+        return null;
+      }
+      const approvedAt = nowIso();
+      anchor.verificationStatus = 'verified';
+      anchor.active = true;
+      anchor.approvedByUserId = actor.id;
+      anchor.approvedAt = approvedAt;
+      anchor.updatedAt = approvedAt;
+      appendChange('qr_anchor', 'approved', anchor);
+      return anchor;
     }
   };
 };

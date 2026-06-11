@@ -7,6 +7,7 @@ This folder contains PostgreSQL/PostGIS planning and migration scaffolding for t
 ## Current State
 
 - `migrations/001_phase1_foundation.sql` defines the Phase 1 conceptual foundation schema.
+- `migrations/002_phase2_sensor_support.sql` defines the Phase 2 sensor-support persistence target.
 - `seeds/OCT_SEED_CONTRACT.md` defines the OCT initial campus and seed-data contracts.
 - No database has been created or migrated from this workspace.
 - Drizzle is selected for backend migration tooling, but no migration has been applied to a real database.
@@ -27,4 +28,4 @@ This folder contains PostgreSQL/PostGIS planning and migration scaffolding for t
 - Local development database name and user.
 - Hosting target for production PostgreSQL/PostGIS.
 - Verified seed data format for campus geometry beyond the provisional OCT center.
-- Phase 2 fingerprint, QR-anchor, and floor-profile schema details.
+- Exact application timeline for the Phase 2 sensor-support migration.

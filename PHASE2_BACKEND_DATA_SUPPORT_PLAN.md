@@ -4,7 +4,7 @@ Source: `CampusAR_SRS_v1.0.docx`, SRS v1.0.
 
 Owner: CLI 2, WSL Codex.
 
-Status: Phase 2 preparation only. No Android, Rust, PostgreSQL connection, migrations, or admin dashboard implementation are approved by this document.
+Status: CLI 2 backend/data support slice implemented in the Fastify in-memory scaffold, with a draft Phase 2 persistence migration recorded. No Android, Rust, PostgreSQL connection, applied database migration, or React admin dashboard implementation is included.
 
 ## Boundary
 
@@ -181,17 +181,17 @@ Contract fields:
 
 Barometer data must be treated as calibration support, not as an authoritative floor result by itself.
 
-## API Contracts To Plan
+## Implemented API Contracts
 
 Read endpoints for Android cache:
 
 - `GET /api/v1/map/floors`
 - `GET /api/v1/map/qr-anchors`
-- `GET /api/v1/map/fingerprints/wifi?campusId=&buildingId=&floorId=&since=`
-- `GET /api/v1/map/fingerprints/magnetic?campusId=&buildingId=&floorId=&since=`
+- `GET /api/v1/map/fingerprints/wifi?campusId=&buildingId=&floorId=`
+- `GET /api/v1/map/fingerprints/magnetic?campusId=&buildingId=&floorId=`
 - `GET /api/v1/map/floor-profiles?buildingId=`
 
-Mapper upload endpoints to plan:
+Mapper upload endpoints:
 
 - `POST /api/v1/mapping/fingerprint-sessions`
 - `POST /api/v1/mapping/fingerprints/wifi`
@@ -207,7 +207,13 @@ Admin endpoints to plan:
 - `GET /api/v1/admin/qr-anchors`
 - `POST /api/v1/admin/qr-anchors/:id/approve`
 
-No endpoint above should be implemented until the user approves the Phase 2 backend implementation slice.
+Implementation notes:
+
+- Storage is in-memory and exists to lock the contracts for CLI 1 Android/Rust consumption.
+- Public map reads expose only approved/verified WiFi fingerprints, magnetic fingerprints, and active QR anchors.
+- Mapper upload routes require `verified_mapper` or `admin`.
+- Admin review routes require `admin`.
+- `since` filtering is intentionally deferred until the PostgreSQL/PostGIS sync model is connected.
 
 ## Admin Dashboard Phase 2 Preparation
 
@@ -222,13 +228,14 @@ The admin dashboard should extend the signal-console direction with:
 
 Do not use generic dashboard cards. Keep the map-first operational console language from `admin-dashboard/VISUAL_DIRECTION.md`.
 
-## Acceptance Criteria For Preparation
+## Acceptance Criteria For CLI 2 Backend Slice
 
 - Phase 2 backend/data scope is recorded in `CODEX_HANDOFF.md`.
-- Backlog shows CLI 2-owned Phase 2 support items as active.
+- Backlog shows CLI 2-owned Phase 2 support items as implemented or closed for backend/data.
 - Database notes identify required Phase 2 domains.
 - API plan lists Android-facing and admin-facing contracts.
-- No Android or Rust files are edited.
+- Backend check/test/build commands pass.
+- No Android or Rust files are edited by CLI 2.
 
 ## Blockers
 
@@ -239,3 +246,4 @@ Do not use generic dashboard cards. Keep the map-first operational console langu
 - No decision on raw versus hashed BSSID storage.
 - No decision on local coordinate system versus WGS84-only indoor geometry.
 - No production PostgreSQL/PostGIS target.
+- Phase 2 persistence migration is drafted but not reviewed or applied to a real database.

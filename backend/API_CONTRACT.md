@@ -2,7 +2,7 @@
 
 Owner: CLI 2, WSL Codex.
 
-Status: CLI 2 Phase 1 TypeScript/Fastify scaffold complete. Paths are implemented with in-memory storage until PostgreSQL/PostGIS is connected.
+Status: CLI 2 Phase 1 scaffold and CLI 2 Phase 2 backend/data support slice are implemented with in-memory storage until PostgreSQL/PostGIS is connected.
 
 Base path: `/api/v1`
 
@@ -96,18 +96,68 @@ Relay result values:
 
 ## Phase 2 Sensor-Support Contracts
 
-These endpoints are planned for Phase 2 backend/data support but are not implemented yet:
+These endpoints are implemented in the in-memory Fastify scaffold to lock contracts for Android/Rust integration. Persistence, `since` filtering, and PostGIS-backed review queries remain deferred.
 
 | Method | Path | Purpose | Auth |
 | --- | --- | --- | --- |
-| `GET` | `/map/fingerprints/wifi` | Download approved WiFi RSSI fingerprints for offline cache | None or bearer, pending policy |
-| `GET` | `/map/fingerprints/magnetic` | Download approved magnetic fingerprints for offline cache | None or bearer, pending policy |
+| `GET` | `/map/fingerprints/wifi?campusId=&buildingId=&floorId=` | Download approved WiFi RSSI fingerprints for offline cache | None |
+| `GET` | `/map/fingerprints/magnetic?campusId=&buildingId=&floorId=` | Download approved magnetic fingerprints for offline cache | None |
 | `GET` | `/map/floor-profiles` | Download barometer/floor support metadata | None |
-| `POST` | `/mapping/fingerprint-sessions` | Start or submit a verified mapper collection session | Verified mapper/admin |
+| `POST` | `/mapping/fingerprint-sessions` | Start a verified mapper collection session | Verified mapper/admin |
 | `POST` | `/mapping/fingerprints/wifi` | Submit WiFi RSSI fingerprint samples | Verified mapper/admin |
 | `POST` | `/mapping/fingerprints/magnetic` | Submit magnetic fingerprint samples | Verified mapper/admin |
 | `POST` | `/mapping/barometer-samples` | Submit barometer floor profile samples | Verified mapper/admin |
 | `POST` | `/mapping/qr-anchors` | Submit proposed QR anchor placement | Verified mapper/admin |
+
+Fingerprint session body:
+
+```json
+{
+  "campusId": "oct-bhopal",
+  "buildingId": "provisional-main-block",
+  "floorId": "ground",
+  "locationId": null,
+  "coordinateStatus": "provisional",
+  "kind": "wifi_rssi",
+  "deviceModel": "Redmi Note 10 Pro",
+  "androidSdk": "35",
+  "position": {
+    "type": "Point",
+    "coordinates": [77.5019383, 23.2462927],
+    "source": "provisional_google_maps_pin"
+  }
+}
+```
+
+WiFi fingerprint body:
+
+```json
+{
+  "sessionId": "uuid",
+  "collectedAt": "2026-06-11T10:00:00.000Z",
+  "readings": [
+    {
+      "bssidHash": "sha256:hash-only",
+      "ssidLabel": "redacted",
+      "rssiDbm": -58,
+      "frequencyMhz": 2412,
+      "scanAgeMs": 120
+    }
+  ]
+}
+```
+
+QR anchors proposed through `/mapping/qr-anchors` are hidden from `/map/qr-anchors` until approved by admin.
+
+Admin review endpoints for Phase 2:
+
+| Method | Path | Purpose | Auth |
+| --- | --- | --- | --- |
+| `GET` | `/admin/fingerprint-sessions` | List mapper fingerprint sessions and sample counts | Admin bearer token |
+| `POST` | `/admin/fingerprint-sessions/:id/approve` | Mark session and attached samples verified | Admin bearer token |
+| `POST` | `/admin/fingerprint-sessions/:id/reject` | Mark session and attached samples rejected | Admin bearer token |
+| `GET` | `/admin/qr-anchors` | List proposed and approved QR anchors | Admin bearer token |
+| `POST` | `/admin/qr-anchors/:id/approve` | Publish QR anchor for Android cache reads | Admin bearer token |
 
 See `../PHASE2_BACKEND_DATA_SUPPORT_PLAN.md` for field-level planning.
 

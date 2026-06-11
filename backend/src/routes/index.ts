@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { Type } from '@sinclair/typebox';
 import * as admin from '../handlers/admin.js';
 import * as auth from '../handlers/auth.js';
+import * as mapping from '../handlers/mapping.js';
 import { ROLE_CAPABILITIES, USER_ROLES } from '../domain/roles.js';
 import { normalizeCursor, SYNC_CONTRACT_NOTES } from '../domain/sync.js';
 import { requireUser } from '../handlers/auth.js';
@@ -11,6 +12,14 @@ const routeInfo: Array<{ method: string; path: string; phase: string; owner: str
 
 const record = (method: string, path: string, description: string, phase = 'Phase 1') => {
   routeInfo.push({ method, path, phase, owner: 'CLI 2', description });
+};
+
+const queryString = (query: unknown, key: string): string | null => {
+  if (typeof query !== 'object' || query === null) {
+    return null;
+  }
+  const value = (query as Record<string, unknown>)[key];
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
 };
 
 export const createRoutes = (app: FastifyInstance, services: Services) => {
@@ -125,7 +134,64 @@ export const createRoutes = (app: FastifyInstance, services: Services) => {
   record('GET', '/api/v1/map/edges', 'Fetch path graph edges for local A* navigation.');
   app.get('/api/v1/map/edges', async () => ({ edges: services.store.campus.edges }));
   record('GET', '/api/v1/map/qr-anchors', 'Fetch QR snap anchors for PDR drift reset.');
-  app.get('/api/v1/map/qr-anchors', async () => ({ qrAnchors: services.store.campus.qrAnchors }));
+  app.get('/api/v1/map/qr-anchors', async () => ({ qrAnchors: services.store.listQrAnchors({ approvedOnly: true }) }));
+
+  record('GET', '/api/v1/map/fingerprints/wifi', 'Fetch approved WiFi RSSI fingerprints for offline cache.', 'Phase 2');
+  app.get('/api/v1/map/fingerprints/wifi', async (request) => {
+    return {
+      fingerprints: services.store.listWifiFingerprints({
+        campusId: queryString(request.query, 'campusId'),
+        buildingId: queryString(request.query, 'buildingId'),
+        floorId: queryString(request.query, 'floorId')
+      })
+    };
+  });
+
+  record('GET', '/api/v1/map/fingerprints/magnetic', 'Fetch approved magnetic fingerprints for offline cache.', 'Phase 2');
+  app.get('/api/v1/map/fingerprints/magnetic', async (request) => {
+    return {
+      fingerprints: services.store.listMagneticFingerprints({
+        campusId: queryString(request.query, 'campusId'),
+        buildingId: queryString(request.query, 'buildingId'),
+        floorId: queryString(request.query, 'floorId')
+      })
+    };
+  });
+
+  record('GET', '/api/v1/map/floor-profiles', 'Fetch barometer/floor support profiles for offline cache.', 'Phase 2');
+  app.get('/api/v1/map/floor-profiles', async (request) => {
+    return { floorProfiles: services.store.listFloorProfiles({ buildingId: queryString(request.query, 'buildingId') }) };
+  });
+
+  record('POST', '/api/v1/mapping/fingerprint-sessions', 'Verified mapper starts a Phase 2 fingerprint collection session.', 'Phase 2');
+  app.post('/api/v1/mapping/fingerprint-sessions', { schema: { body: mapping.fingerprintSessionSchema } }, async (request, reply) => {
+    reply.status(201);
+    return mapping.createFingerprintSession(request, services, request.body as Record<string, unknown>);
+  });
+
+  record('POST', '/api/v1/mapping/fingerprints/wifi', 'Verified mapper submits WiFi RSSI fingerprint samples.', 'Phase 2');
+  app.post('/api/v1/mapping/fingerprints/wifi', { schema: { body: mapping.wifiFingerprintSchema } }, async (request, reply) => {
+    reply.status(202);
+    return mapping.submitWifiFingerprints(request, services, request.body as Record<string, unknown>);
+  });
+
+  record('POST', '/api/v1/mapping/fingerprints/magnetic', 'Verified mapper submits magnetic fingerprint samples.', 'Phase 2');
+  app.post('/api/v1/mapping/fingerprints/magnetic', { schema: { body: mapping.magneticFingerprintSchema } }, async (request, reply) => {
+    reply.status(202);
+    return mapping.submitMagneticFingerprints(request, services, request.body as Record<string, unknown>);
+  });
+
+  record('POST', '/api/v1/mapping/barometer-samples', 'Verified mapper submits barometer support sample.', 'Phase 2');
+  app.post('/api/v1/mapping/barometer-samples', { schema: { body: mapping.barometerSampleSchema } }, async (request, reply) => {
+    reply.status(202);
+    return mapping.submitBarometerSample(request, services, request.body as Record<string, unknown>);
+  });
+
+  record('POST', '/api/v1/mapping/qr-anchors', 'Verified mapper proposes a QR snap anchor.', 'Phase 2');
+  app.post('/api/v1/mapping/qr-anchors', { schema: { body: mapping.qrAnchorSchema } }, async (request, reply) => {
+    reply.status(201);
+    return mapping.proposeQrAnchor(request, services, request.body as Record<string, unknown>);
+  });
 
   record('GET', '/api/v1/admin/users', 'Admin list and role management entrypoint.');
   app.get('/api/v1/admin/users', async (request) => admin.users(request, services));
@@ -159,4 +225,21 @@ export const createRoutes = (app: FastifyInstance, services: Services) => {
   });
   record('GET', '/api/v1/admin/pending-locations', 'Future admin dashboard queue for pending location review.', 'Phase 3 contract implemented as Phase 1 data shape');
   app.get('/api/v1/admin/pending-locations', async (request) => admin.pendingLocations(request, services));
+
+  record('GET', '/api/v1/admin/fingerprint-sessions', 'Admin reviews Phase 2 fingerprint collection sessions.', 'Phase 2');
+  app.get('/api/v1/admin/fingerprint-sessions', async (request) => mapping.adminFingerprintSessions(request, services));
+  record('POST', '/api/v1/admin/fingerprint-sessions/:id/approve', 'Admin approves a Phase 2 fingerprint session.', 'Phase 2');
+  app.post('/api/v1/admin/fingerprint-sessions/:id/approve', async (request) => {
+    return mapping.approveFingerprintSession(request, services, (request.params as { id: string }).id);
+  });
+  record('POST', '/api/v1/admin/fingerprint-sessions/:id/reject', 'Admin rejects a Phase 2 fingerprint session.', 'Phase 2');
+  app.post('/api/v1/admin/fingerprint-sessions/:id/reject', async (request) => {
+    return mapping.rejectFingerprintSession(request, services, (request.params as { id: string }).id);
+  });
+  record('GET', '/api/v1/admin/qr-anchors', 'Admin reviews proposed QR anchors.', 'Phase 2');
+  app.get('/api/v1/admin/qr-anchors', async (request) => mapping.adminQrAnchors(request, services));
+  record('POST', '/api/v1/admin/qr-anchors/:id/approve', 'Admin approves a proposed QR anchor.', 'Phase 2');
+  app.post('/api/v1/admin/qr-anchors/:id/approve', async (request) => {
+    return mapping.approveQrAnchor(request, services, (request.params as { id: string }).id);
+  });
 };

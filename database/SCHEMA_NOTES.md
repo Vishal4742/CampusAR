@@ -2,7 +2,7 @@
 
 Owner: CLI 2, WSL Codex.
 
-Status: Phase 1 schema draft in `migrations/001_phase1_foundation.sql`.
+Status: Phase 1 schema draft in `migrations/001_phase1_foundation.sql`; Phase 2 sensor-support persistence target in `migrations/002_phase2_sensor_support.sql`.
 
 ## Current Coverage
 
@@ -25,6 +25,17 @@ The Phase 1 SQL migration covers:
 - `sync_cursors`
 - `relay_packet_hashes`
 - `admin_audit_events`
+
+The Phase 2 SQL migration adds or extends:
+
+- `coordinate_status`
+- `fingerprint_kind`
+- `fingerprint_sessions`
+- `wifi_fingerprints`
+- `magnetic_fingerprints`
+- `barometer_samples`
+- `floor_profiles`
+- `qr_anchors` proposal/review metadata
 
 ## PostGIS Usage
 
@@ -60,9 +71,9 @@ These support SRS requirements for confirmation radius checks, SOS nearby-user q
 - Gamification ledger is deferred to Phase 6.
 - Full dispute and approval workflow tables are expanded in Phase 3.
 
-## Phase 2 Data Domains To Add Before Implementation
+## Phase 2 Data Domains To Add Before Persistence
 
-Phase 2 backend/data preparation should model these domains before migrations are applied:
+The backend now has in-memory Phase 2 contract support for these domains, and `002_phase2_sensor_support.sql` records the proposed PostgreSQL/PostGIS persistence target. It still needs review before migrations are applied:
 
 - Indoor floor metadata with nullable altitude hints and stable floor IDs.
 - Floor transitions for stairs, lifts, ramps, and cross-floor graph links.
