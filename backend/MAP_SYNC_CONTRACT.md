@@ -172,3 +172,21 @@ Edge handling rules:
 - Whether Android wants GeoJSON points/LineStrings or the explicit `{ latitude, longitude }` arrays shown here.
 - Whether `mapVersion` should be numeric only or include a stable UUID in every payload.
 - Whether draft/provisional records should be hidden by default in student-facing navigation.
+
+## Phase 2 Extension Points
+
+Phase 2 backend/data support should extend the same cache model with:
+
+- `GET /api/v1/map/floors`
+- `GET /api/v1/map/qr-anchors`
+- `GET /api/v1/map/fingerprints/wifi`
+- `GET /api/v1/map/fingerprints/magnetic`
+- `GET /api/v1/map/floor-profiles`
+
+These payloads must follow the same sparse-data rules:
+
+- arrays may be empty
+- coordinates may be `null`
+- records must expose `coordinateStatus`
+- records must expose `verificationStatus`
+- Android must be able to navigate with no fingerprint data and degrade to GPS/PDR/QR where available

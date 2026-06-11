@@ -94,6 +94,23 @@ Relay result values:
 - `rejected`
 - `conflict`
 
+## Phase 2 Sensor-Support Contracts
+
+These endpoints are planned for Phase 2 backend/data support but are not implemented yet:
+
+| Method | Path | Purpose | Auth |
+| --- | --- | --- | --- |
+| `GET` | `/map/fingerprints/wifi` | Download approved WiFi RSSI fingerprints for offline cache | None or bearer, pending policy |
+| `GET` | `/map/fingerprints/magnetic` | Download approved magnetic fingerprints for offline cache | None or bearer, pending policy |
+| `GET` | `/map/floor-profiles` | Download barometer/floor support metadata | None |
+| `POST` | `/mapping/fingerprint-sessions` | Start or submit a verified mapper collection session | Verified mapper/admin |
+| `POST` | `/mapping/fingerprints/wifi` | Submit WiFi RSSI fingerprint samples | Verified mapper/admin |
+| `POST` | `/mapping/fingerprints/magnetic` | Submit magnetic fingerprint samples | Verified mapper/admin |
+| `POST` | `/mapping/barometer-samples` | Submit barometer floor profile samples | Verified mapper/admin |
+| `POST` | `/mapping/qr-anchors` | Submit proposed QR anchor placement | Verified mapper/admin |
+
+See `../PHASE2_BACKEND_DATA_SUPPORT_PLAN.md` for field-level planning.
+
 ## Admin
 
 | Method | Path | Purpose | Auth |

@@ -59,3 +59,22 @@ These support SRS requirements for confirmation radius checks, SOS nearby-user q
 - Faculty availability is deferred to Phase 6.
 - Gamification ledger is deferred to Phase 6.
 - Full dispute and approval workflow tables are expanded in Phase 3.
+
+## Phase 2 Data Domains To Add Before Implementation
+
+Phase 2 backend/data preparation should model these domains before migrations are applied:
+
+- Indoor floor metadata with nullable altitude hints and stable floor IDs.
+- Floor transitions for stairs, lifts, ramps, and cross-floor graph links.
+- QR anchor placement and approval state.
+- WiFi RSSI fingerprint collection sessions and readings.
+- Magnetic fingerprint collection sessions and samples.
+- Barometer floor profiles by building/floor.
+- Admin review state for fingerprint sessions and QR anchor placements.
+
+Open schema decisions:
+
+- Raw BSSID storage versus salted/keyed BSSID hashes.
+- WGS84-only indoor geometry versus local building coordinate system plus WGS84 anchors.
+- Whether fingerprint datasets are published by map version or by independent calibration version.
+- Minimum sample density before fingerprints are exposed to Android.

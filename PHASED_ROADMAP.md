@@ -71,6 +71,13 @@ CLI 1 mobile/native closeout, 2026-06-10:
 
 SRS deliverables: EKF in Rust, PDR, WiFi RSSI, indoor map, floor switching, QR landmark snapping.
 
+CLI 2 backend/data/admin preparation, 2026-06-11:
+
+- Added `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md` for backend support contracts.
+- CLI 2 Phase 2 support scope is WiFi RSSI fingerprints, magnetic fingerprints, QR anchors, floor metadata, barometer support metadata, and admin review contracts.
+- CLI 2 does not own Android sensor collection, Rust EKF/PDR, JNI payloads, or native floor detection.
+- Phase 2 backend implementation is not started until explicitly approved.
+
 Primary outcomes:
 
 - Implement native positioning loop with adaptive sampling.

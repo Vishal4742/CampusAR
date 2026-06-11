@@ -20,6 +20,8 @@ Current scope:
 
 Related Phase 1 implementation plan: `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`.
 
+Related Phase 2 backend/data support plan: `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md`.
+
 CLI 2 Phase 1 status: complete for the backend/data/admin scaffold and approved TypeScript/Fastify conversion. Active stack is Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`. Provider integrations and live PostgreSQL connection remain open.
 
 Campus data status: user confirmed there is no existing campus dataset. The backend/data plan must support bootstrapping from two Google Maps pins plus verified mapper walks. See `database/seeds/MAPPING_BOOTSTRAP_PLAN.md`.
@@ -188,6 +190,36 @@ Important Android assumptions:
 - coordinates can be `null`
 - `coordinateStatus` and `verificationStatus` must be checked before route use
 - Android/Rust computes routes from cached graph data rather than backend live routing
+
+## Phase 2 Sensor-Support API Planning
+
+Phase 2 backend/data support should plan, but not yet implement, these contracts:
+
+Android cache reads:
+
+- `GET /api/v1/map/floors`
+- `GET /api/v1/map/qr-anchors`
+- `GET /api/v1/map/fingerprints/wifi?campusId=&buildingId=&floorId=&since=`
+- `GET /api/v1/map/fingerprints/magnetic?campusId=&buildingId=&floorId=&since=`
+- `GET /api/v1/map/floor-profiles?buildingId=`
+
+Verified mapper uploads:
+
+- `POST /api/v1/mapping/fingerprint-sessions`
+- `POST /api/v1/mapping/fingerprints/wifi`
+- `POST /api/v1/mapping/fingerprints/magnetic`
+- `POST /api/v1/mapping/barometer-samples`
+- `POST /api/v1/mapping/qr-anchors`
+
+Admin review:
+
+- `GET /api/v1/admin/fingerprint-sessions`
+- `POST /api/v1/admin/fingerprint-sessions/:id/approve`
+- `POST /api/v1/admin/fingerprint-sessions/:id/reject`
+- `GET /api/v1/admin/qr-anchors`
+- `POST /api/v1/admin/qr-anchors/:id/approve`
+
+See `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md` for field-level planning.
 
 ## Privacy And Safety Rules
 
