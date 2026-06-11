@@ -87,6 +87,13 @@ CLI 2 backend/data implementation slice, 2026-06-11:
 - Verified with backend `npm run check`, `npm test`, `npm run build`, and `git diff --check`.
 - Exceptions: no live PostgreSQL/PostGIS persistence, Phase 2 migration is drafted but not applied, no `since` filtering for fingerprint cache reads, no React admin dashboard implementation, and no real OCT indoor/fingerprint/QR dataset.
 
+CLI 2 backend/data closeout, 2026-06-11:
+
+- CLI 2 Phase 2 is complete at the backend/data/admin end.
+- Checkpoint commits: `ccbadeb feat(backend): add phase 2 sensor data support` and `18f2c6a feat(backend): add survey import support`.
+- No further CLI 2 Phase 2 work remains unless PostgreSQL/PostGIS connection, real campus data import, or React admin implementation is explicitly approved.
+- Overall project Phase 2 still depends on CLI 1 mobile/native ownership for Android sensor collection, Rust EKF/PDR, graceful degradation, adaptive sampling, and AR bearing outputs.
+
 Primary outcomes:
 
 - Implement native positioning loop with adaptive sampling.
