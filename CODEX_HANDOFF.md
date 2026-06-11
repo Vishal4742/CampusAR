@@ -51,7 +51,7 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - CLI 2 must not edit `android-app/` or `native-engine/`.
 - CLI 2 Phase 1 backend/data/admin work is complete and checkpointed. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
 - CLI 2 must get explicit approval before connecting a real PostgreSQL service or scaffolding the React admin dashboard. Resend OTP provider integration is approved and implemented; real keys must remain in local environment variables or deployment secrets.
-- CLI 2 has completed the Phase 2 backend/data/admin support slice for field-survey import, `P2-04`, `P2-05`, `P2-06`, and `P2-07` in the in-memory Fastify scaffold, with docs/git coordination still tracked under `P2-11`. CLI 2 must not implement Android sensors, Rust EKF/PDR, or native floor detection.
+- CLI 2 has completed Phase 2 at the backend/data/admin end: field-survey import, `P2-04`, `P2-05`, `P2-06`, `P2-07`, and CLI 2 `P2-11` docs/git closeout are done. CLI 2 must not implement Android sensors, Rust EKF/PDR, or native floor detection.
 
 ## Source Analyzed
 
@@ -379,3 +379,12 @@ Coordinate through this file before editing shared docs.
 - CLI 2 did not edit `android-app/` or `native-engine/`.
 - Project-level Phase 2 is not fully closed in this CLI because `P2-01`, `P2-02`, `P2-03`, `P2-08`, `P2-09`, and `P2-10` are Android/Rust/mobile-native responsibilities and there are uncommitted CLI 1 files in `android-app/`.
 - Next step for full Phase 2 closure: CLI 1 should finish, test, and checkpoint the Android/Rust mobile-native Phase 2 work, or the user must explicitly reassign Android/Rust ownership before CLI 2 touches those files.
+
+### 2026-06-11 - CLI 2 Phase 2 backend/data closeout confirmed
+
+- User clarified: "complete at you end."
+- CLI 2 Phase 2 is complete at the backend/data/admin end.
+- Completed checkpoint commits: `ccbadeb feat(backend): add phase 2 sensor data support` and `18f2c6a feat(backend): add survey import support`.
+- Updated `BACKLOG.md`, `PHASED_ROADMAP.md`, and this handoff to mark CLI 2 `P2-11` docs/git closeout done.
+- No Android, Rust, or CLI 1-owned files were edited.
+- Remaining Phase 2 work is explicitly CLI 1/mobile-native unless reassigned by the user.

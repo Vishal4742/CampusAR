@@ -24,7 +24,7 @@ CLI 2 backend/data/admin Phase 1 status: closed. Remaining planned or blocked Ph
 
 ## Phase 2: Sensor Fusion
 
-CLI 2 status: backend/data/admin support endpoints are implemented in-memory for field-survey import, fingerprint sessions, WiFi RSSI samples, magnetic samples, barometer samples/floor profiles, QR anchors, and admin approval. Android/Rust sensor fusion remains CLI 1-owned.
+CLI 2 status: complete at the backend/data/admin end. In-memory support endpoints are implemented for field-survey import, fingerprint sessions, WiFi RSSI samples, magnetic samples, barometer samples/floor profiles, QR anchors, and admin approval. Android/Rust sensor fusion remains CLI 1-owned.
 
 | ID | Status | Work item | SRS basis |
 | --- | --- | --- | --- |
@@ -38,7 +38,7 @@ CLI 2 status: backend/data/admin support endpoints are implemented in-memory for
 | P2-08 | Planned | Define graceful degradation matrix for missing optional sensors | FR-SENS-07 |
 | P2-09 | Planned | Define adaptive sampling policy and motion-state detection | FR-SENS-08 |
 | P2-10 | In Progress | Define bearing smoothing, turn anticipation, and AR state outputs | FR-NAV-05 to FR-NAV-12 |
-| P2-11 | In Progress | Update planning docs and git checkpoint state at Phase 2 closeout; CLI 2 backend/data checkpoints are current, CLI 1 mobile/native closure remains separate | Coordination rule |
+| P2-11 | Done | Update planning docs and git checkpoint state for CLI 2 Phase 2 backend/data closeout; CLI 1 mobile/native closure remains separate | Coordination rule |
 
 ## Phase 3: Crowdsourced Mapping
 
