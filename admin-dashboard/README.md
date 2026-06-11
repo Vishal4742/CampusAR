@@ -43,6 +43,7 @@ It is not the final React dashboard. It exists to smoke-test backend contracts u
 - User and role management.
 - Occupancy heatmap.
 - Map version console for draft/published state, sparse-map state, latest change id, and sync health.
+- Phase 2 fingerprint coverage view for WiFi RSSI, magnetic samples, QR anchors, and floor profiles.
 
 ## Visual Planning Rules
 

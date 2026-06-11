@@ -45,11 +45,12 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 - CLI 1 Phase 1 mobile/native scaffold is complete and debug-build verified inside `android-app/` and `native-engine/`, pending only device or emulator validation.
 - CLI 2, WSL Codex session owns backend, database, API, auth and roles, admin dashboard planning, and sync API planning.
 - Reason: WSL is the preferred environment for later Node.js and PostgreSQL/PostGIS work.
-- Active backlog IDs: `P1-04` and `P1-09`.
-- Active planning artifacts: `BACKEND_API_PLAN.md` and `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`.
+- Active backlog IDs: `P2-04`, `P2-05`, `P2-06`, `P2-07`, and `P2-11`.
+- Active planning artifacts: `BACKEND_API_PLAN.md`, `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`, and `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md`.
 - CLI 2 must not edit `android-app/` or `native-engine/`.
 - CLI 2 Phase 1 backend/data/admin work is complete and checkpointed. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
 - CLI 2 must get explicit approval before connecting a real PostgreSQL service or scaffolding the React admin dashboard. Resend OTP provider integration is approved and implemented; real keys must remain in local environment variables or deployment secrets.
+- CLI 2 is preparing Phase 2 backend/data/admin support only. Active Phase 2 support IDs: `P2-04`, `P2-05`, `P2-06`, `P2-07`, and `P2-11`. CLI 2 must not implement Android sensors, Rust EKF/PDR, or native floor detection.
 
 ## Source Analyzed
 
@@ -332,3 +333,13 @@ Coordinate through this file before editing shared docs.
 - Backend/data/admin completion includes TypeScript/Fastify scaffold, Resend OTP adapter, OCT seed contracts, Android-facing map/sync contracts, admin dashboard visual planning, and git checkpoints.
 - Remaining items are explicitly not CLI 2 Phase 1 blockers: physical device validation, verified campus mapping data, production sender/domain verification, production hosting/database provisioning, and future PostgreSQL connection work.
 - CLI 2 should not continue expanding Phase 1 unless the user explicitly approves a new backend implementation slice.
+
+### 2026-06-11 - CLI 2 Phase 2 backend/data preparation started
+
+- User asked to prepare for Phase 2.
+- CLI 2 scope is backend/data/admin support only: WiFi RSSI fingerprints, magnetic fingerprints, QR anchor metadata, floor metadata, barometer support metadata, and admin review contracts.
+- CLI 2 does not own Android sensor implementation, Rust EKF/PDR, JNI payloads, or native floor detection.
+- Active backlog IDs: `P2-04`, `P2-05`, `P2-06`, `P2-07`, and `P2-11`.
+- Created `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md`.
+- Assumptions: OCT is still sparse/provisional, Phase 2 backend work must tolerate missing indoor data, and no new dependencies/database service/admin React scaffold are approved.
+- Blockers: no verified OCT floor plans, no QR anchor placement list, no WiFi/magnetic collection procedure, unresolved BSSID privacy policy, unresolved local indoor coordinate system, and no production PostgreSQL/PostGIS target.

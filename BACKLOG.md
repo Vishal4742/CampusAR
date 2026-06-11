@@ -24,19 +24,21 @@ CLI 2 backend/data/admin Phase 1 status: closed. Remaining planned or blocked Ph
 
 ## Phase 2: Sensor Fusion
 
+CLI 2 preparation status: backend/data/admin support is active for fingerprint, QR-anchor, floor metadata, and Phase 2 documentation contracts. Android/Rust sensor fusion remains CLI 1-owned.
+
 | ID | Status | Work item | SRS basis |
 | --- | --- | --- | --- |
 | P2-01 | In Progress | Define sensor data contract between Kotlin and Rust | FR-SENS-01, FR-SENS-02 |
 | P2-02 | Planned | Specify EKF state vector, update rates, and GPS anchor behavior | FR-SENS-02, FR-SENS-03 |
 | P2-03 | Planned | Specify PDR step detection and drift behavior | FR-SENS-04 |
-| P2-04 | Planned | Define WiFi RSSI fingerprint format and collection workflow | FR-SENS-04 |
-| P2-05 | Planned | Define magnetic fingerprint format and fallback behavior | FR-SENS-04 |
-| P2-06 | Planned | Define barometer and no-barometer floor detection strategy | FR-SENS-05 |
-| P2-07 | Planned | Identify QR code anchor locations and snap/reset behavior | FR-SENS-06 |
+| P2-04 | In Progress | Define WiFi RSSI fingerprint format and collection workflow | FR-SENS-04 |
+| P2-05 | In Progress | Define magnetic fingerprint format and fallback behavior | FR-SENS-04 |
+| P2-06 | In Progress | Define barometer and no-barometer floor detection strategy | FR-SENS-05 |
+| P2-07 | In Progress | Identify QR code anchor locations and snap/reset behavior | FR-SENS-06 |
 | P2-08 | Planned | Define graceful degradation matrix for missing optional sensors | FR-SENS-07 |
 | P2-09 | Planned | Define adaptive sampling policy and motion-state detection | FR-SENS-08 |
 | P2-10 | In Progress | Define bearing smoothing, turn anticipation, and AR state outputs | FR-NAV-05 to FR-NAV-12 |
-| P2-11 | Planned | Update planning docs and git checkpoint state at Phase 2 closeout | Coordination rule |
+| P2-11 | In Progress | Update planning docs and git checkpoint state at Phase 2 closeout | Coordination rule |
 
 ## Phase 3: Crowdsourced Mapping
 

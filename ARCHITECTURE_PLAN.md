@@ -103,6 +103,7 @@ Detailed Phase 1 mobile/native planning is tracked in `PHASE1_MOBILE_NATIVE_PLAN
   - Admin notices pinned to locations.
 
 Detailed backend, database, and API planning is tracked in `BACKEND_API_PLAN.md`.
+Phase 2 backend/data support planning is tracked in `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md`.
 
 ## Admin Dashboard Responsibilities
 
