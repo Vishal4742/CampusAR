@@ -87,7 +87,12 @@ class GpsLocationSource(private val context: Context) {
     }
 
     private fun Location.toGeoPoint(): GeoPoint {
-        return GeoPoint(latitude = latitude, longitude = longitude)
+        return GeoPoint(
+            latitude = latitude,
+            longitude = longitude,
+            accuracyMeters = if (hasAccuracy()) accuracy else null,
+            capturedAtEpochMillis = System.currentTimeMillis(),
+        )
     }
 
     private companion object {

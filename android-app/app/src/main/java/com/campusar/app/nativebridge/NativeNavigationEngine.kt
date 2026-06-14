@@ -31,6 +31,32 @@ class NativeNavigationEngine {
 
     external fun nativeProximityScale(distanceMeters: Double): Double
     external fun nativeArrivalReached(distanceMeters: Double): Boolean
+    external fun nativeSmoothHeadingDegrees(
+        previousHeadingDegrees: Double,
+        measuredHeadingDegrees: Double,
+        responsiveness: Double,
+    ): Double
+
+    external fun nativeHeadingConfidence(sensorAccuracy: Int): Double
+    external fun nativeAccelerationDeltaFromGravity(x: Double, y: Double, z: Double): Double
+    external fun nativeGyroMagnitude(x: Double, y: Double, z: Double): Double
+    external fun nativeMotionState(
+        accelerationDeltaFromGravity: Double,
+        gyroMagnitudeRadiansPerSecond: Double,
+    ): Int
+
+    external fun nativeEstimatedStepLengthMeters(userHeightMeters: Double, motionState: Int): Double
+    external fun nativeDeadReckonNorthMeters(
+        headingDegrees: Double,
+        stepLengthMeters: Double,
+        stepCount: Int,
+    ): Double
+
+    external fun nativeDeadReckonEastMeters(
+        headingDegrees: Double,
+        stepLengthMeters: Double,
+        stepCount: Int,
+    ): Double
 
     fun engineVersionCodeOrNull(): Int? {
         return callNative { nativeEngineVersionCode() }
@@ -67,6 +93,68 @@ class NativeNavigationEngine {
         )
     }
 
+    fun smoothHeadingOrFallback(
+        previousHeadingDegrees: Double,
+        measuredHeadingDegrees: Double,
+        responsiveness: Double,
+    ): Double {
+        return callNative {
+            nativeSmoothHeadingDegrees(
+                previousHeadingDegrees,
+                measuredHeadingDegrees,
+                responsiveness,
+            )
+        } ?: measuredHeadingDegrees
+    }
+
+    fun headingConfidenceOrZero(sensorAccuracy: Int): Double {
+        return callNative { nativeHeadingConfidence(sensorAccuracy) } ?: 0.0
+    }
+
+    fun accelerationDeltaFromGravityOrNull(x: Float, y: Float, z: Float): Double? {
+        return callNative {
+            nativeAccelerationDeltaFromGravity(x.toDouble(), y.toDouble(), z.toDouble())
+        }
+    }
+
+    fun gyroMagnitudeOrNull(x: Float, y: Float, z: Float): Double? {
+        return callNative {
+            nativeGyroMagnitude(x.toDouble(), y.toDouble(), z.toDouble())
+        }
+    }
+
+    fun motionStateOrUnknown(
+        accelerationDeltaFromGravity: Double,
+        gyroMagnitudeRadiansPerSecond: Double,
+    ): Int {
+        return callNative {
+            nativeMotionState(accelerationDeltaFromGravity, gyroMagnitudeRadiansPerSecond)
+        } ?: MOTION_STATE_UNKNOWN
+    }
+
+    fun estimatedStepLengthMetersOrDefault(userHeightMeters: Double, motionState: Int): Double {
+        return callNative {
+            nativeEstimatedStepLengthMeters(userHeightMeters, motionState)
+        } ?: DEFAULT_STEP_LENGTH_METERS
+    }
+
+    fun deadReckonDeltaOrNull(
+        headingDegrees: Double,
+        stepLengthMeters: Double,
+        stepCount: Int,
+    ): Pair<Double, Double>? {
+        val north = callNative {
+            nativeDeadReckonNorthMeters(headingDegrees, stepLengthMeters, stepCount)
+        }
+        val east = callNative {
+            nativeDeadReckonEastMeters(headingDegrees, stepLengthMeters, stepCount)
+        }
+        if (north == null || east == null) {
+            return null
+        }
+        return north to east
+    }
+
     private inline fun <T> callNative(block: () -> T): T? {
         if (!nativeReady) {
             return null
@@ -77,5 +165,7 @@ class NativeNavigationEngine {
 
     private companion object {
         const val LIBRARY_NAME = "campusar_native"
+        const val MOTION_STATE_UNKNOWN = 0
+        const val DEFAULT_STEP_LENGTH_METERS = 0.72
     }
 }

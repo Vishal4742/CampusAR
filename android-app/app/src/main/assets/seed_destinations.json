@@ -2,19 +2,46 @@
   "destinations": [
     {
       "id": "oct_main_gate_placeholder",
-      "label": "OCT Main Gate Placeholder",
+      "label": "OCT Main Gate",
       "category": "gate",
-      "latitude": 0.0,
-      "longitude": 0.0,
+      "latitude": 23.2455,
+      "longitude": 77.5019,
       "floor": 0,
       "temporary": true
     },
     {
       "id": "oct_admin_block_placeholder",
-      "label": "Admin Block Placeholder",
+      "label": "Admin Block",
       "category": "building",
-      "latitude": 0.0,
-      "longitude": 0.0,
+      "latitude": 23.2463,
+      "longitude": 77.5015,
+      "floor": 0,
+      "temporary": true
+    },
+    {
+      "id": "oct_library_placeholder",
+      "label": "Library",
+      "category": "building",
+      "latitude": 23.2468,
+      "longitude": 77.5024,
+      "floor": 0,
+      "temporary": true
+    },
+    {
+      "id": "oct_academic_block_a_placeholder",
+      "label": "Academic Block A",
+      "category": "building",
+      "latitude": 23.247,
+      "longitude": 77.501,
+      "floor": 0,
+      "temporary": true
+    },
+    {
+      "id": "oct_canteen_placeholder",
+      "label": "Canteen",
+      "category": "landmark",
+      "latitude": 23.246,
+      "longitude": 77.5025,
       "floor": 0,
       "temporary": true
     }

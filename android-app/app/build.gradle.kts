@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -24,6 +25,12 @@ android {
 
 kotlin {
     jvmToolchain(17)
+}
+
+dependencies {
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 }
 
 tasks.register<Exec>("cargoTestNative") {
