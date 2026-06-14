@@ -161,6 +161,19 @@ After those decisions, move into the next narrow implementation slice rather tha
 
 ## Change Log
 
+### 2026-06-14 - Linux node_modules reinstall and full validation
+
+- Environment: Linux (native/WSL, x64).
+- Reinstalled `backend/node_modules` with `npm install` to replace Windows-installed esbuild binaries with correct Linux platform binaries. No source files or package versions were changed.
+- Backend typecheck (`cd backend; npm run check`): **passed**.
+- Backend tests (`cd backend; npm test`): **passed** — all 10 tests passing, 0 failures.
+- Backend build (`cd backend; npm run build`): **passed**.
+- Admin JS syntax (`node --check admin-dashboard/app.js`): **passed**.
+- Rust format check (`cargo fmt --manifest-path native-engine/Cargo.toml -- --check`): **passed**.
+- Rust tests (`cargo test --manifest-path native-engine/Cargo.toml`): **passed** — 16 passed, 0 failed.
+- `backend/package-lock.json` did not change; only in-tree `node_modules` was replaced.
+- Previous failure mode (esbuild Linux binary on Windows) is resolved on this Linux environment.
+
 ### 2026-06-14 - Phase 1 Room closeout and validation
 
 - Closeout pass touched `android-app/gradle.properties`, `CODEX_HANDOFF.md`, and `PHASED_ROADMAP.md`; the checkpoint also includes the already prepared P1-05 Android Room files under `android-app/`, `BACKLOG.md`, `CODEX_HANDOFF.md`, and `PHASED_ROADMAP.md`.
