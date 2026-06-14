@@ -37,8 +37,10 @@ Backend/data/admin status: complete for Phase 2 support endpoints. In-memory sup
 | P2-07 | Done | Define and implement backend contract for QR anchor proposal, approval, and public cache reads; physical placement remains open | FR-SENS-06 |
 | P2-08 | Done | Define graceful degradation matrix for missing optional sensors | FR-SENS-07 |
 | P2-09 | Done | Define adaptive sampling policy and motion-state detection | FR-SENS-08 |
-| P2-10 | In Progress | Define bearing smoothing, turn anticipation, and AR state outputs; foundation exists | FR-NAV-05 to FR-NAV-12 |
+| P2-10 | Done | Bearing smoothing, turn anticipation, AR state outputs | FR-NAV-05 to FR-NAV-12 |
 | P2-11 | Done | Update planning docs and git checkpoint state for Phase 2 backend/data closeout; mobile/native closure remains separate | Coordination rule |
+| P2-12 | Done | A* pathfinding on CampusGraph with wheelchair filter | FR-NAV-01, FR-NAV-04 |
+| P2-13 | Done | First-launch backend sync wired into MainActivity | FR-SYNC-01, FR-NAV-01 |
 
 ## Phase 3: Crowdsourced Mapping
 

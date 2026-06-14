@@ -18,7 +18,9 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Spinner
 import android.widget.TextView
+import com.campusar.app.data.BackendSyncRepository
 import com.campusar.app.data.DestinationRepository
+import com.campusar.app.data.MapCacheRepository
 import com.campusar.app.data.SurveyRepository
 import com.campusar.app.location.DeviceSensorSource
 import com.campusar.app.location.GpsLocationSource
@@ -36,6 +38,7 @@ class MainActivity : Activity() {
     private lateinit var locationSource: GpsLocationSource
     private lateinit var sensorSource: DeviceSensorSource
     private lateinit var nativeEngine: NativeNavigationEngine
+    private lateinit var mapCache: MapCacheRepository
     private lateinit var surveyRepository: SurveyRepository
     private lateinit var compassOverlay: CompassOverlaySurfaceView
     private lateinit var statusText: TextView
@@ -71,6 +74,7 @@ class MainActivity : Activity() {
         locationSource = GpsLocationSource(this)
         sensorSource = DeviceSensorSource(this)
         sensorAvailability = sensorSource.availability()
+        mapCache = MapCacheRepository(this)
         surveyRepository = SurveyRepository(this)
         surveyExport = surveyRepository.loadExport()
         destinations = DestinationRepository(this).loadDestinations()
@@ -83,6 +87,10 @@ class MainActivity : Activity() {
         updateSensorStatus()
         updateNavigationState()
         updateSurveySummary()
+
+        if (mapCache.locationCount() == 0) {
+            triggerFirstLaunchSync()
+        }
     }
 
     override fun onStart() {
@@ -527,6 +535,24 @@ class MainActivity : Activity() {
     private fun updateSurveySummary() {
         val current = surveyExport ?: surveyRepository.loadExport().also { surveyExport = it }
         surveySummaryText.text = "Survey: ${current.points.size} points, ${current.routes.size} routes"
+    }
+
+    private fun triggerFirstLaunchSync() {
+        val backendUrl = getString(R.string.backend_base_url)
+        if (backendUrl.isBlank()) return
+        Thread {
+            val repo = BackendSyncRepository(this, backendUrl)
+            val result = repo.fullSync()
+            runOnUiThread {
+                if (result.success) {
+                    destinations = DestinationRepository(this).loadDestinations()
+                    selectedDestination = destinations.firstOrNull()
+                    bindDestinationSpinner()
+                    statusText.text =
+                        "Synced ${result.locationCount} locations, ${result.edgeCount} edges."
+                }
+            }
+        }.start()
     }
 
     private fun GeoPoint.toLocationText(): String {

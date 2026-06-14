@@ -161,6 +161,18 @@ After those decisions, move into the next narrow implementation slice rather tha
 
 ## Change Log
 
+### 2026-06-14 - Phase 2 A* pathfinding and first-launch sync
+
+- Added `native-engine/src/navigation/pathfinding.rs` with A* pathfinding on `CampusGraph`, wheelchair filtering, and 5 tests.
+- Added graph JNI bridge in `native-engine/src/ffi/mod.rs`: clear, addNode, addEdge, nodeCount, edgeCount, findPath, pathNodeAt, and pathDistance.
+- Added `NativeNavigationEngine.kt` graph bridge declarations.
+- Wired `BackendSyncRepository` into `MainActivity` first-launch sync when the Room location cache is empty.
+- `backend_base_url` string resource is present as an empty placeholder for later deployment configuration.
+- Checks run: `cargo fmt --manifest-path native-engine/Cargo.toml -- --check` PASS; `cargo test --manifest-path native-engine/Cargo.toml` PASS with 30 tests; `native-engine/scripts/build-android.ps1` PASS after dot-sourcing `scripts/use-android-toolchain.ps1`; `gradle -p android-app :app:assembleDebug --stacktrace` PASS; `cd backend; npm run check` PASS; `cd backend; npm run build` PASS; `node --check admin-dashboard/app.js` PASS.
+- Note: running `powershell -ExecutionPolicy Bypass -File scripts/use-android-toolchain.ps1` prints toolchain values but does not persist environment variables into the parent PowerShell session; Gradle, Cargo, and NDK commands were run after dot-sourcing `. .\scripts\use-android-toolchain.ps1`.
+- Phase 2 mobile/native is feature-complete for the planned scope except the deferred full matrix EKF.
+- Remaining open: full matrix EKF (`P2-02`) deferred, real OCT backend URL, NDK `.so` redistribution to device, and device validation.
+
 ### 2026-06-14 - Phase 2 Round 2 validation and closeout
 
 - Environment requested: WSL / Linux. Environment observed for this run: Windows PowerShell with the local Android toolchain under `C:\tmp\campusar-toolchain`.

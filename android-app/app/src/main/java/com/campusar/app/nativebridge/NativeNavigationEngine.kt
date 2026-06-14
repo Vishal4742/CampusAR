@@ -143,6 +143,22 @@ class NativeNavigationEngine {
     external fun nativePositionUpdatePdr(headingDegrees: Double, stepLengthMeters: Double, stepCount: Int)
     external fun nativePositionLatitude(): Double
     external fun nativePositionLongitude(): Double
+    external fun nativeGraphClear()
+    external fun nativeGraphAddNode(lat: Double, lon: Double, floor: Int): Int
+    external fun nativeGraphAddEdge(
+        from: Int,
+        to: Int,
+        distance: Double,
+        bidirectional: Boolean,
+        wheelchair: Boolean,
+        floorTransition: Boolean,
+    )
+
+    external fun nativeGraphNodeCount(): Int
+    external fun nativeGraphEdgeCount(): Int
+    external fun nativeGraphFindPath(start: Int, goal: Int, wheelchairOnly: Boolean): Int
+    external fun nativeGraphPathNodeAt(index: Int): Int
+    external fun nativeGraphPathDistance(): Double
 
     fun initPosition(lat: Double, lon: Double, heading: Double) {
         callNative { nativePositionInit(lat, lon, heading) }
