@@ -679,10 +679,7 @@ CampusAR combines several well-studied techniques into a system with unique prop
 1. Read [`AGENTS.md`](AGENTS.md) for module boundaries and commit rules
 2. Check [`CODEX_HANDOFF.md`](CODEX_HANDOFF.md) before cross-module work
 3. Follow the verification matrix above before pushing
-4. AI-authored commits must include a `Co-Authored-By:` trailer
+4. AI-authored commits must include a `Co-Authored-By:` vishal
 
 ---
 
-<p align="center">
-  <sub>Built for Oriental College of Technology, Bhopal · SRS v1.0 · June 2026</sub>
-</p>
