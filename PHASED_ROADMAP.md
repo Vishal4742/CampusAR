@@ -44,7 +44,7 @@ Phase closeout requirement:
 
 - Update `BACKLOG.md`, `PHASED_ROADMAP.md`, `CODEX_HANDOFF.md`, and git checkpoint state before moving to Phase 2.
 
-CLI 2 backend/data/admin closeout, 2026-06-10 to 2026-06-11:
+Backend/data/admin closeout, 2026-06-10 to 2026-06-11:
 
 - Completed TypeScript/Fastify Phase 1 backend scaffold for auth, roles, map bootstrap, sync, relay dedupe, and admin contract routes.
 - Completed PostgreSQL/PostGIS Phase 1 schema draft and schema notes.
@@ -53,10 +53,10 @@ CLI 2 backend/data/admin closeout, 2026-06-10 to 2026-06-11:
 - Completed no-build admin dashboard contract console.
 - Verified with `npm run check`, `npm test`, `npm run build`, and `node --check admin-dashboard/app.js`.
 - Exceptions: persistence is in-memory; no database migrated; Resend sender/domain has not been production-verified in this repo; seed campus data is placeholder-only.
-- Resolution: CLI 2 Phase 1 is closed. Remaining exceptions are external verification, production provisioning, CLI 1/mobile validation, or later-phase implementation work.
+- Resolution: backend/data/admin Phase 1 is closed. Remaining exceptions are external verification, production provisioning, mobile validation, or later-phase implementation work.
 - Overall Phase 1 is scaffold/build-complete, but not campus-data-complete or device-validated until the APK is tested on the Redmi Note 10 Pro or another Android 8.0+ device.
 
-CLI 1 mobile/native closeout, 2026-06-10:
+Mobile/native closeout, 2026-06-10:
 
 - Completed Android Phase 1 scaffold under `android-app/` with Gradle project files, plain Android Views, location permission flow, seed destinations, Kotlin native bridge, and `SurfaceView` compass overlay foundation.
 - Completed Rust Phase 1 scaffold under `native-engine/` with dependency-free distance, bearing, heading delta, proximity scale, arrival logic, primitive JNI exports, release profile settings, and Android NDK build script.
@@ -67,32 +67,40 @@ CLI 1 mobile/native closeout, 2026-06-10:
 - Seed campus coordinates remain temporary placeholders until verified OCT geofence, building, and destination data are available.
 - Overall Phase 1 can be treated as build-verified for the scaffold. It is not device-validated until the APK is run on an Android device or emulator.
 
+Final Phase 1 completion note, 2026-06-14:
+
+- Implemented P1-05 Room/SQLite local data model: `CampusDatabase`, three entities, three DAOs, and `MapCacheRepository`.
+- `DestinationRepository` now checks the Room cache before falling back to bundled seed JSON.
+- `seed_destinations.json` now uses OCT provisional center coordinates instead of `0.0,0.0`.
+- All Phase 1 code-completable items are now done across backend, mobile, and native.
+- Remaining exceptions: PostgreSQL is not connected, Resend is not production-verified, real OCT campus data is pending mapper walks, and APK device validation is pending.
+
 ## Phase 2: Sensor Fusion, Weeks 5-8
 
 SRS deliverables: EKF in Rust, PDR, WiFi RSSI, indoor map, floor switching, QR landmark snapping.
 
-CLI 2 backend/data/admin preparation, 2026-06-11:
+Backend/data/admin preparation, 2026-06-11:
 
 - Added `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md` for backend support contracts.
-- CLI 2 Phase 2 support scope is WiFi RSSI fingerprints, magnetic fingerprints, QR anchors, floor metadata, barometer support metadata, and admin review contracts.
-- CLI 2 does not own Android sensor collection, Rust EKF/PDR, JNI payloads, or native floor detection.
+- Phase 2 backend support scope is WiFi RSSI fingerprints, magnetic fingerprints, QR anchors, floor metadata, barometer support metadata, and admin review contracts.
+- Backend/data/admin work does not include Android sensor collection, Rust EKF/PDR, JNI payloads, or native floor detection.
 - Phase 2 backend implementation is not started until explicitly approved.
 
-CLI 2 backend/data implementation slice, 2026-06-11:
+Backend/data implementation slice, 2026-06-11:
 
 - Implemented in-memory Fastify contracts for fingerprint sessions, WiFi RSSI samples, magnetic samples, barometer samples, floor-profile cache reads, QR anchor proposals, and admin review.
-- Implemented admin-only field-survey JSON validate/import endpoints so CLI 1 mobile survey exports can become provisional pending-review map locations and path edges.
+- Implemented admin-only field-survey JSON validate/import endpoints so Android mobile survey exports can become provisional pending-review map locations and path edges.
 - Public Android cache endpoints expose only approved WiFi fingerprints, approved magnetic fingerprints, and active approved QR anchors.
 - Mapper upload routes require `verified_mapper` or `admin`; admin review routes require `admin`.
 - Verified with backend `npm run check`, `npm test`, `npm run build`, and `git diff --check`.
 - Exceptions: no live PostgreSQL/PostGIS persistence, Phase 2 migration is drafted but not applied, no `since` filtering for fingerprint cache reads, no React admin dashboard implementation, and no real OCT indoor/fingerprint/QR dataset.
 
-CLI 2 backend/data closeout, 2026-06-11:
+Backend/data closeout, 2026-06-11:
 
-- CLI 2 Phase 2 is complete at the backend/data/admin end.
+- Phase 2 is complete at the backend/data/admin end.
 - Checkpoint commits: `ccbadeb feat(backend): add phase 2 sensor data support` and `18f2c6a feat(backend): add survey import support`.
-- No further CLI 2 Phase 2 work remains unless PostgreSQL/PostGIS connection, real campus data import, or React admin implementation is explicitly approved.
-- Overall project Phase 2 still depends on CLI 1 mobile/native ownership for Android sensor collection, Rust EKF/PDR, graceful degradation, adaptive sampling, and AR bearing outputs.
+- No further backend/data/admin Phase 2 work remains unless PostgreSQL/PostGIS connection, real campus data import, or React admin implementation is explicitly approved.
+- Overall project Phase 2 still depends on mobile/native work for Android sensor collection, Rust EKF/PDR, graceful degradation, adaptive sampling, and AR bearing outputs.
 
 Primary outcomes:
 

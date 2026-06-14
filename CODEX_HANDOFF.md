@@ -4,30 +4,30 @@ This file is the shared coordination state for Codex sessions. Read it before ed
 
 ## Current Instruction Boundary
 
-- CLI 2 Phase 1 backend/data/admin scaffold and the approved TypeScript/Fastify conversion are complete inside `backend/`, `database/`, and `admin-dashboard/`.
-- CLI 2 Phase 1 is closed from the backend/data/admin side. Remaining Phase 1 gaps are external data/provider verification, CLI 1 device validation, or future implementation phases.
-- CLI 2 Phase 2 backend/data support slice is implemented in-memory inside `backend/`, including field-survey JSON validate/import and a draft persistence migration in `database/`; live PostgreSQL/PostGIS and React admin dashboard remain deferred.
-- CLI 1 Phase 1 mobile/native scaffold is approved inside `android-app/` and `native-engine/` and is build-verified, pending physical device validation.
+- This repo now uses one active Codex CLI/session. Historical `CLI 1` and `CLI 2` labels in dated logs refer only to the earlier split workflow.
+- Phase 1 backend/data/admin scaffold and the approved TypeScript/Fastify conversion are complete inside `backend/`, `database/`, and `admin-dashboard/`.
+- Phase 1 is fully closed from the backend, mobile, and native code-completable sides. Remaining Phase 1 gaps are external data/provider verification and device validation.
+- Phase 2 backend/data support slice is implemented in-memory inside `backend/`, including field-survey JSON validate/import and a draft persistence migration in `database/`; live PostgreSQL/PostGIS and React admin dashboard remain deferred.
+- Phase 1 mobile/native scaffold and Room/SQLite local cache layer are approved inside `android-app/` and `native-engine/` and are build-verified, pending physical device validation.
 - Do not install additional dependencies or scaffold new implementation areas without explicit approval.
-- Keep work inside the active CLI ownership boundary unless coordination docs require a careful shared update.
+- Keep work inside the active module and phase boundary unless coordination docs require a careful shared update.
 
-## Dual Codex CLI Coordination Rules
+## Single Codex CLI Coordination Rules
 
-These rules apply to both Codex CLI sessions working in this workspace:
+These rules apply to the active Codex CLI session working in this workspace:
 
 - Read `CODEX_HANDOFF.md` before making changes.
-- Check the current file list before editing so new files from the other session are not missed.
 - Work only in the files owned by the active task unless the handoff says coordination is needed.
-- Do not overwrite or delete another session's work. If a touched file changed unexpectedly, read it and merge carefully.
+- Do not overwrite or delete existing work. If a touched file changed unexpectedly, read it and merge carefully.
 - Keep source implementation paused until the user explicitly approves scaffolding or code.
 - After every meaningful planning change, update this handoff with files touched, decisions made, and open questions.
 - Prefer small, reviewable document updates over broad rewrites.
 - Mark uncertain decisions as open questions instead of inventing requirements beyond the SRS.
-- If implementation begins later, each session must state the phase and work item it is handling before editing files.
+- If implementation begins later, state the phase, module, and work item before editing files.
 
 ## Per-Phase Documentation And Git Rule
 
-At the start and end of each phase, the responsible Codex CLI session must update the planning docs and git state:
+At the start and end of each phase, the active Codex session must update the planning docs and git state:
 
 - Start of phase: update `CODEX_HANDOFF.md` with phase owner, active backlog IDs, assumptions, and blockers.
 - During phase: update `BACKLOG.md` statuses as work moves from `Planned` to `In Progress`, `Blocked`, or `Done`.
@@ -38,20 +38,19 @@ At the start and end of each phase, the responsible Codex CLI session must updat
 
 ## Active Session Ownership
 
-- CLI 1, Windows Codex session owns Android app foundation, Rust NDK native engine foundation, JNI bridge planning, outdoor GPS navigation planning, and AR compass overlay planning.
-- Reason: Windows session is focused on Android/mobile/native integration and the highest-risk Kotlin/Rust boundary.
-- Active backlog IDs: `P1-01`, `P1-08`, `P2-01`, and `P2-10`.
-- Active planning artifact: `PHASE1_MOBILE_NATIVE_PLAN.md`.
-- CLI 1 must not edit `backend/`, `database/`, or `admin-dashboard/`.
-- CLI 1 Phase 1 mobile/native scaffold is complete and debug-build verified inside `android-app/` and `native-engine/`, pending only device or emulator validation.
-- CLI 2, WSL Codex session owns backend, database, API, auth and roles, admin dashboard planning, and sync API planning.
-- Reason: WSL is the preferred environment for later Node.js and PostgreSQL/PostGIS work.
-- Active backlog IDs: `P2-04`, `P2-05`, `P2-06`, `P2-07`, and `P2-11`.
-- Active planning artifacts: `BACKEND_API_PLAN.md`, `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`, and `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md`.
-- CLI 2 must not edit `android-app/` or `native-engine/`.
-- CLI 2 Phase 1 backend/data/admin work is complete and checkpointed. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
-- CLI 2 must get explicit approval before connecting a real PostgreSQL service or scaffolding the React admin dashboard. Resend OTP provider integration is approved and implemented; real keys must remain in local environment variables or deployment secrets.
-- CLI 2 has completed Phase 2 at the backend/data/admin end: field-survey import, `P2-04`, `P2-05`, `P2-06`, `P2-07`, and CLI 2 `P2-11` docs/git closeout are done. CLI 2 must not implement Android sensors, Rust EKF/PDR, or native floor detection.
+- Active session: one Codex CLI owns the next user-approved task.
+- Scope is assigned by module and phase:
+  - Android/mobile/native: `android-app/`, `native-engine/`, `PHASE1_MOBILE_NATIVE_PLAN.md`, and `PHASE2_MOBILE_NATIVE_PLAN.md`.
+  - Backend/data/admin: `backend/`, `database/`, `admin-dashboard/`, `BACKEND_API_PLAN.md`, `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`, and `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md`.
+  - Shared planning: `PROJECT_BRIEF.md`, `ARCHITECTURE_PLAN.md`, `PHASED_ROADMAP.md`, `BACKLOG.md`, and this handoff.
+- Active backlog IDs for the next mobile/native slice: `P2-01`, `P2-02`, `P2-03`, `P2-08`, `P2-09`, and `P2-10`.
+- Active backlog IDs for the next backend/data/admin slice remain deferred until PostgreSQL/PostGIS connection, real campus data import, or React admin implementation is explicitly approved.
+- Phase 1 is fully closed from the backend, mobile, and native code-completable sides.
+- Remaining Phase 1 external blockers: PostgreSQL is not connected, Resend key is not deployed or production-verified, real OCT campus data is pending mapper walks, and APK device testing is pending.
+- Phase 1 mobile/native scaffold and P1-05 Room/SQLite local data model are complete and debug-build verified inside `android-app/` and `native-engine/`, pending only device or emulator validation.
+- Phase 1 backend/data/admin work is complete and checkpointed. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
+- Explicit approval is required before connecting a real PostgreSQL service or scaffolding the React admin dashboard. Resend OTP provider integration is approved and implemented; real keys must remain in local environment variables or deployment secrets.
+- Phase 2 is complete at the backend/data/admin end: field-survey import, `P2-04`, `P2-05`, `P2-06`, `P2-07`, and backend/data docs/git closeout are done. Remaining Phase 2 work is Android sensor collection, Rust EKF/PDR planning/implementation, graceful degradation, adaptive sampling, and AR bearing outputs.
 
 ## Source Analyzed
 
@@ -132,7 +131,7 @@ No dependencies were installed. No Android or Rust implementation files were cre
 
 ## Suggested Next Step
 
-Treat CLI 2 Phase 1 as closed and address the remaining non-CLI-2 closeout items:
+Treat Phase 1 backend/data/admin as closed and address the remaining closeout items:
 
 1. Device-test the debug APK on the Redmi Note 10 Pro.
 2. Configure and verify Resend sender-domain setup without committing API keys.
@@ -142,12 +141,11 @@ Treat CLI 2 Phase 1 as closed and address the remaining non-CLI-2 closeout items
 
 After those decisions, move into the next narrow implementation slice rather than broad Phase 2 work.
 
-## Suggested Split Between Two Codex Sessions
+## Single-Session Work Queue
 
-- Session A: architecture review and decision-making. Own `ARCHITECTURE_PLAN.md`, technical open questions, API boundaries, persistence boundaries, and FFI strategy.
-- Session B: documentation and backlog refinement. Own `PROJECT_BRIEF.md`, `PHASED_ROADMAP.md`, `BACKLOG.md`, acceptance criteria, and traceability to SRS requirements.
-
-Coordinate through this file before editing shared docs.
+- Choose one narrow module/phase slice before editing.
+- Update shared planning docs before crossing from Android/native into backend/data/admin work, or the reverse.
+- Keep dated change-log entries historical; do not use old `CLI 1` or `CLI 2` labels for new assignments.
 
 ## Active Shared Map Contract Decisions
 
@@ -155,13 +153,30 @@ Coordinate through this file before editing shared docs.
 - OCT draft center coordinate: latitude `23.2462927`, longitude `77.5019383`; source link: `https://maps.app.goo.gl/PoESLVac4tegAM489`.
 - This coordinate is a provisional campus center only. It is not a campus geofence, building footprint, gate, indoor coordinate, verified route, or final destination coordinate.
 - Unknown building, gate, landmark, path, room, floor, staircase, lift, and QR-anchor coordinates must stay `null` or explicitly marked `provisional` until verified by mapper/admin workflow.
-- Android-facing map API contract remains under base path `/api/v1`; CLI 1 should consume `GET /api/v1/sync/manifest`, `GET /api/v1/map/locations`, and `GET /api/v1/map/edges`.
+- Android-facing map API contract remains under base path `/api/v1`; Android should consume `GET /api/v1/sync/manifest`, `GET /api/v1/map/locations`, and `GET /api/v1/map/edges`.
 - `GET /api/v1/map/locations` must distinguish `campus`, `building`, `gate`, `landmark`, `room`, `qr_anchor`, and other location categories through stable category keys.
 - `GET /api/v1/map/edges` must return path graph edges separately from locations so Rust/Android can build an offline graph without depending on live routing.
 - `GET /api/v1/sync/manifest` must include `campusId`, `mapVersion`, `latestChangeId`, entity counts, and a stale/sparse-map signal while OCT data is incomplete.
 - Admin dashboard direction is dark operational campus signal console: map-first, sparse chrome, dense status language, serif plus mono typography, film grain, warm horizon gradient, coordinate/status labels, subtle amber/orange active accents, no generic SaaS card layout.
 
 ## Change Log
+
+### 2026-06-14 - Phase 1 Room closeout and validation
+
+- Closeout pass touched `android-app/gradle.properties`, `CODEX_HANDOFF.md`, and `PHASED_ROADMAP.md`; the checkpoint also includes the already prepared P1-05 Android Room files under `android-app/`, `BACKLOG.md`, `CODEX_HANDOFF.md`, and `PHASED_ROADMAP.md`.
+- P1-05 is now Done: Room/SQLite local cache layer includes `CampusDatabase`, cached location and edge entities, app settings entity, DAOs for locations, edges, and settings, and `MapCacheRepository`.
+- `DestinationRepository` now checks the Room cache before falling back to seed JSON, and `seed_destinations.json` uses OCT provisional center coordinates instead of `0.0,0.0`.
+- Phase 1 is fully closed from all code-completable sides: backend, mobile, and native.
+- Checks run: `cd backend; npm run check` passed; `cd backend; npm test` failed before test execution because Windows loaded a Linux `esbuild` package from `backend/node_modules`; `cd backend; npm run build` passed; `node --check admin-dashboard/app.js` passed; `cargo fmt --manifest-path native-engine/Cargo.toml -- --check` passed; `cargo test --manifest-path native-engine/Cargo.toml` passed; `gradle -p android-app :app:assembleDebug --stacktrace` first failed because `gradle` was not on `PATH`, then failed with the local toolchain because Room's AndroidX dependencies required `android.useAndroidX=true`, and passed after adding that property.
+- Remaining Phase 1 external blockers: PostgreSQL not connected, Resend key not deployed or production-verified, real OCT campus data pending mapper walks, and APK device test pending.
+- Next active backlog IDs are Phase 2 mobile/native items: `P2-01`, `P2-02`, `P2-03`, `P2-08`, `P2-09`, and `P2-10`.
+
+### 2026-06-14 - Single Codex CLI consolidation
+
+- User confirmed this project should now operate with one Codex CLI instead of the earlier two-CLI split.
+- Added `AGENTS.md` with single-session module boundaries and common verification commands.
+- Updated active handoff, backlog, roadmap, and phase-plan ownership language to assign work by module and phase.
+- Historical dated log entries may still mention `CLI 1` or `CLI 2`; those labels are no longer active assignment rules.
 
 ### 2026-06-10 - Planning pass
 
