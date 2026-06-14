@@ -5,10 +5,13 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -16,6 +19,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import android.widget.Space
 import android.widget.Spinner
 import android.widget.TextView
 import com.campusar.app.data.BackendSyncRepository
@@ -47,6 +51,9 @@ class MainActivity : Activity() {
     private lateinit var sensorText: TextView
     private lateinit var surveySummaryText: TextView
     private lateinit var routeStatusText: TextView
+    private lateinit var destinationMetaText: TextView
+    private lateinit var navigationMetricText: TextView
+    private lateinit var mapCacheText: TextView
     private lateinit var destinationSpinner: Spinner
     private lateinit var pointCategorySpinner: Spinner
     private lateinit var pointLabelInput: EditText
@@ -87,6 +94,7 @@ class MainActivity : Activity() {
         updateSensorStatus()
         updateNavigationState()
         updateSurveySummary()
+        updateMapCacheText()
 
         if (mapCache.locationCount() == 0) {
             triggerFirstLaunchSync()
@@ -136,7 +144,7 @@ class MainActivity : Activity() {
         compassOverlay = CompassOverlaySurfaceView(this)
 
         val root = FrameLayout(this).apply {
-            setBackgroundColor(Color.rgb(8, 10, 12))
+            setBackgroundColor(COLOR_GRAPHITE)
         }
 
         root.addView(
@@ -147,39 +155,94 @@ class MainActivity : Activity() {
             ),
         )
 
+        val shell = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(16), dp(16), dp(14))
+            clipToPadding = false
+        }
+
+        root.addView(
+            shell,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
+            ),
+        )
+
+        shell.addView(topBar())
+
+        nativeText = telemetryLabel()
+        sensorText = telemetryLabel()
+        mapCacheText = telemetryLabel("cache seed / loc -- / edges --")
+
+        val telemetryStrip = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            background = panelBackground(Color.argb(174, 12, 17, 18), COLOR_AMBER_DIM)
+            addView(nativeText)
+            addView(sensorText)
+            addView(mapCacheText)
+        }
+
+        shell.addView(
+            telemetryStrip,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply {
+                topMargin = dp(10)
+            },
+        )
+
+        shell.addView(
+            Space(this),
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                0.72f,
+            ),
+        )
+
         val panel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(28, 28, 28, 28)
-            setBackgroundColor(Color.argb(215, 15, 22, 26))
+            setPadding(dp(16), dp(14), dp(16), dp(16))
         }
 
         val scrollView = ScrollView(this).apply {
-            addView(panel)
+            isVerticalScrollBarEnabled = false
+            overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
+            background = consoleBackground()
+            addView(
+                panel,
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                ),
+            )
         }
 
-        val title = TextView(this).apply {
-            text = "CampusAR Field Survey"
-            textSize = 22f
-            setTextColor(Color.WHITE)
-        }
-
-        nativeText = statusLabel()
-        sensorText = statusLabel()
         locationText = statusLabel("Current location: waiting")
         statusText = statusLabel("Select a destination and grant location permission.")
         surveySummaryText = statusLabel()
         routeStatusText = statusLabel("Route recorder: idle")
+        destinationMetaText = metadataLabel("target none / coord unknown")
+        navigationMetricText = metricLabel("gps pending / bearing --")
 
-        destinationSpinner = Spinner(this)
-        pointCategorySpinner = Spinner(this)
+        destinationSpinner = Spinner(this).apply {
+            background = inputBackground()
+            setPadding(dp(10), 0, dp(10), 0)
+        }
+        pointCategorySpinner = Spinner(this).apply {
+            background = inputBackground()
+            setPadding(dp(10), 0, dp(10), 0)
+        }
 
         pointLabelInput = textInput("Point label, e.g. Main Gate")
         pointNotesInput = textInput("Point notes")
         routeLabelInput = textInput("Route label, e.g. Gate to Library")
         routeNotesInput = textInput("Route notes")
 
-        val requestLocationButton = Button(this).apply {
-            text = "Enable Location"
+        val requestLocationButton = actionButton("Enable GPS", primary = true).apply {
             setOnClickListener {
                 requestPermissions(
                     arrayOf(
@@ -191,82 +254,163 @@ class MainActivity : Activity() {
             }
         }
 
-        val savePointButton = Button(this).apply {
-            text = "Save Current Point"
+        val savePointButton = actionButton("Log Point", primary = true).apply {
             setOnClickListener { saveCurrentPoint() }
         }
 
-        startRouteButton = Button(this).apply {
-            text = "Start Route"
+        startRouteButton = actionButton("Start Route", primary = true).apply {
             setOnClickListener { startRouteRecording() }
         }
 
-        stopRouteButton = Button(this).apply {
-            text = "Stop And Save Route"
-            isEnabled = false
+        stopRouteButton = actionButton("Stop And Save", primary = false).apply {
+            setControlEnabled(this, enabled = false)
             setOnClickListener { stopRouteRecording() }
         }
 
-        val exportButton = Button(this).apply {
-            text = "Export Survey JSON"
+        val exportButton = actionButton("Export JSON", primary = false).apply {
             setOnClickListener { requestSurveyExportFile() }
         }
 
-        val clearButton = Button(this).apply {
-            text = "Clear Local Survey"
+        val clearButton = actionButton("Clear Survey", primary = false).apply {
             setOnClickListener { clearSurvey() }
         }
 
-        panel.addView(title)
-        panel.addView(nativeText)
-        panel.addView(sensorText)
-        panel.addView(destinationSpinner)
-        panel.addView(locationText)
-        panel.addView(statusText)
-        panel.addView(requestLocationButton)
-        panel.addView(sectionLabel("Survey point"))
-        panel.addView(pointLabelInput)
-        panel.addView(pointCategorySpinner)
-        panel.addView(pointNotesInput)
-        panel.addView(savePointButton)
-        panel.addView(sectionLabel("Walked route"))
-        panel.addView(routeLabelInput)
-        panel.addView(routeNotesInput)
-        panel.addView(startRouteButton)
-        panel.addView(stopRouteButton)
-        panel.addView(routeStatusText)
-        panel.addView(sectionLabel("Local survey file"))
-        panel.addView(surveySummaryText)
-        panel.addView(exportButton)
-        panel.addView(clearButton)
+        panel.addConsoleView(sectionLabel("Navigation"))
+        panel.addConsoleView(destinationSpinner, topMarginDp = 8)
+        panel.addConsoleView(destinationMetaText, topMarginDp = 8)
+        panel.addConsoleView(navigationMetricText, topMarginDp = 4)
+        panel.addConsoleView(locationText, topMarginDp = 8)
+        panel.addConsoleView(statusText, topMarginDp = 2)
+        panel.addConsoleView(actionRow(requestLocationButton), topMarginDp = 10)
 
-        root.addView(
+        panel.addConsoleView(sectionLabel("Survey point"), topMarginDp = 18)
+        panel.addConsoleView(pointLabelInput, topMarginDp = 8)
+        panel.addConsoleView(pointCategorySpinner, topMarginDp = 8)
+        panel.addConsoleView(pointNotesInput, topMarginDp = 8)
+        panel.addConsoleView(actionRow(savePointButton), topMarginDp = 10)
+
+        panel.addConsoleView(sectionLabel("Walked route"), topMarginDp = 18)
+        panel.addConsoleView(routeLabelInput, topMarginDp = 8)
+        panel.addConsoleView(routeNotesInput, topMarginDp = 8)
+        panel.addConsoleView(actionRow(startRouteButton, stopRouteButton), topMarginDp = 10)
+        panel.addConsoleView(routeStatusText, topMarginDp = 8)
+
+        panel.addConsoleView(sectionLabel("Local survey file"), topMarginDp = 18)
+        panel.addConsoleView(surveySummaryText, topMarginDp = 8)
+        panel.addConsoleView(actionRow(exportButton, clearButton), topMarginDp = 10)
+
+        shell.addView(
             scrollView,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                Gravity.TOP,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1.08f,
             ),
         )
 
         return root
     }
 
+    private fun topBar(): LinearLayout {
+        val title = TextView(this).apply {
+            text = "CampusAR"
+            textSize = 26f
+            typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
+            setTextColor(COLOR_TEXT_PRIMARY)
+            includeFontPadding = false
+        }
+
+        val subtitle = TextView(this).apply {
+            text = "OCT / field survey / graph sparse"
+            textSize = 11f
+            typeface = Typeface.MONOSPACE
+            setTextColor(COLOR_TEXT_SECONDARY)
+            includeFontPadding = false
+            setPadding(0, dp(3), 0, 0)
+        }
+
+        val lockup = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(title)
+            addView(subtitle)
+        }
+
+        val sessionPill = TextView(this).apply {
+            text = "MAP V1"
+            textSize = 11f
+            typeface = Typeface.MONOSPACE
+            setTextColor(COLOR_AMBER)
+            gravity = Gravity.CENTER
+            background = panelBackground(Color.argb(154, 25, 18, 14), COLOR_AMBER_DIM)
+            setPadding(dp(12), dp(7), dp(12), dp(7))
+            includeFontPadding = false
+        }
+
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            addView(
+                lockup,
+                LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f,
+                ),
+            )
+            addView(sessionPill)
+        }
+    }
+
     private fun statusLabel(initialText: String = ""): TextView {
         return TextView(this).apply {
             text = initialText
             textSize = 14f
-            setTextColor(Color.rgb(184, 196, 204))
-            setPadding(0, 8, 0, 8)
+            typeface = Typeface.MONOSPACE
+            setTextColor(COLOR_TEXT_SECONDARY)
+            setLineSpacing(dp(2).toFloat(), 1.0f)
+            setPadding(0, dp(2), 0, dp(2))
+        }
+    }
+
+    private fun telemetryLabel(initialText: String = ""): TextView {
+        return TextView(this).apply {
+            text = initialText
+            textSize = 11f
+            typeface = Typeface.MONOSPACE
+            setTextColor(COLOR_TEXT_SECONDARY)
+            includeFontPadding = false
+            setPadding(0, dp(2), 0, dp(2))
+        }
+    }
+
+    private fun metadataLabel(initialText: String = ""): TextView {
+        return TextView(this).apply {
+            text = initialText
+            textSize = 12f
+            typeface = Typeface.MONOSPACE
+            setTextColor(COLOR_AMBER)
+            includeFontPadding = false
+        }
+    }
+
+    private fun metricLabel(initialText: String = ""): TextView {
+        return TextView(this).apply {
+            text = initialText
+            textSize = 22f
+            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+            setTextColor(COLOR_TEXT_PRIMARY)
+            includeFontPadding = false
         }
     }
 
     private fun sectionLabel(textValue: String): TextView {
         return TextView(this).apply {
-            text = textValue.uppercase()
+            text = "/// ${textValue.uppercase()}"
             textSize = 12f
-            setTextColor(Color.rgb(237, 161, 103))
-            setPadding(0, 22, 0, 8)
+            typeface = Typeface.MONOSPACE
+            setTextColor(COLOR_AMBER)
+            letterSpacing = 0f
+            includeFontPadding = false
         }
     }
 
@@ -274,21 +418,140 @@ class MainActivity : Activity() {
         return EditText(this).apply {
             hint = hintValue
             textSize = 14f
-            setTextColor(Color.WHITE)
-            setHintTextColor(Color.rgb(132, 146, 154))
+            typeface = Typeface.MONOSPACE
+            setTextColor(COLOR_TEXT_PRIMARY)
+            setHintTextColor(COLOR_TEXT_MUTED)
             setSingleLine(false)
             minLines = 1
             maxLines = 3
+            minHeight = dp(46)
+            background = inputBackground()
+            backgroundTintList = null
+            setPadding(dp(12), dp(8), dp(12), dp(8))
         }
+    }
+
+    private fun actionButton(label: String, primary: Boolean): Button {
+        return Button(this).apply {
+            text = label.uppercase()
+            textSize = 12f
+            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+            setTextColor(if (primary) COLOR_GRAPHITE else COLOR_TEXT_PRIMARY)
+            background = buttonBackground(primary)
+            backgroundTintList = null
+            minHeight = dp(44)
+            minWidth = 0
+            includeFontPadding = false
+            stateListAnimator = null
+        }
+    }
+
+    private fun actionRow(vararg buttons: Button): LinearLayout {
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            buttons.forEachIndexed { index, button ->
+                addView(
+                    button,
+                    LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1f,
+                    ).apply {
+                        if (index > 0) {
+                            leftMargin = dp(8)
+                        }
+                    },
+                )
+            }
+        }
+    }
+
+    private fun LinearLayout.addConsoleView(view: View, topMarginDp: Int = 0) {
+        addView(
+            view,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply {
+                topMargin = dp(topMarginDp)
+            },
+        )
+    }
+
+    private fun styledSpinnerAdapter(values: List<String>): ArrayAdapter<String> {
+        return object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                return super.getView(position, convertView, parent).also { view ->
+                    styleSpinnerText(view, dropdown = false)
+                }
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                return super.getDropDownView(position, convertView, parent).also { view ->
+                    styleSpinnerText(view, dropdown = true)
+                }
+            }
+        }.apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+    }
+
+    private fun styleSpinnerText(view: View, dropdown: Boolean) {
+        (view as? TextView)?.apply {
+            typeface = Typeface.MONOSPACE
+            textSize = 13f
+            setTextColor(if (dropdown) COLOR_GRAPHITE else COLOR_TEXT_PRIMARY)
+            setBackgroundColor(if (dropdown) COLOR_TEXT_PRIMARY else Color.TRANSPARENT)
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+        }
+    }
+
+    private fun consoleBackground(): GradientDrawable {
+        return GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(
+                Color.argb(238, 13, 18, 18),
+                Color.argb(232, 24, 20, 16),
+            ),
+        ).apply {
+            cornerRadius = dp(8).toFloat()
+            setStroke(dp(1), COLOR_STROKE)
+        }
+    }
+
+    private fun inputBackground(): GradientDrawable {
+        return panelBackground(Color.argb(178, 8, 13, 14), COLOR_STROKE)
+    }
+
+    private fun buttonBackground(primary: Boolean): GradientDrawable {
+        return if (primary) {
+            panelBackground(COLOR_AMBER, COLOR_AMBER)
+        } else {
+            panelBackground(Color.argb(130, 26, 31, 31), COLOR_AMBER_DIM)
+        }
+    }
+
+    private fun panelBackground(fillColor: Int, strokeColor: Int): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dp(8).toFloat()
+            setColor(fillColor)
+            setStroke(dp(1), strokeColor)
+        }
+    }
+
+    private fun setControlEnabled(button: Button, enabled: Boolean) {
+        button.isEnabled = enabled
+        button.alpha = if (enabled) 1f else 0.42f
+    }
+
+    private fun dp(value: Int): Int {
+        return (value * resources.displayMetrics.density).toInt()
     }
 
     private fun bindDestinationSpinner() {
         val labels = destinations.map { destination -> destination.label }
-        destinationSpinner.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            labels,
-        )
+        destinationSpinner.adapter = styledSpinnerAdapter(labels)
         destinationSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -305,11 +568,7 @@ class MainActivity : Activity() {
     }
 
     private fun bindPointCategorySpinner() {
-        pointCategorySpinner.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            POINT_CATEGORIES,
-        )
+        pointCategorySpinner.adapter = styledSpinnerAdapter(POINT_CATEGORIES)
     }
 
     private fun startLocationUpdates() {
@@ -398,7 +657,17 @@ class MainActivity : Activity() {
         }
 
         compassOverlay.updateState(state, destination?.label ?: "No destination")
+        updateDestinationMeta(destination)
         updateStatusText(state, destination)
+    }
+
+    private fun updateDestinationMeta(destination: Destination?) {
+        destinationMetaText.text = if (destination == null) {
+            "target none / coord unknown"
+        } else {
+            val coordinateStatus = if (destination.temporary) "coord provisional" else "coord verified"
+            "target ${destination.id} / ${destination.category} / floor ${destination.floor} / $coordinateStatus"
+        }
     }
 
     private fun updateStatusText(
@@ -411,6 +680,13 @@ class MainActivity : Activity() {
             state == null -> "Native overlay state unavailable. Build and package Rust .so."
             state.arrival -> "Arrived at ${destination.label}."
             else -> "${state.distanceMeters.toInt()} m, bearing ${state.bearingDegrees.toInt()} deg."
+        }
+        navigationMetricText.text = when {
+            destination == null -> "distance -- / bearing --"
+            currentPoint == null -> "gps pending / bearing --"
+            state == null -> "native pending / signal offline"
+            state.arrival -> "arrived / bearing ${state.bearingDegrees.toInt()} deg"
+            else -> "${state.distanceMeters.toInt()} m / bearing ${state.bearingDegrees.toInt()} deg"
         }
     }
 
@@ -443,8 +719,8 @@ class MainActivity : Activity() {
         routeSamples = mutableListOf()
         lastRouteSample = null
         currentPoint?.let { point -> maybeRecordRouteSample(point, force = true) }
-        startRouteButton.isEnabled = false
-        stopRouteButton.isEnabled = true
+        setControlEnabled(startRouteButton, enabled = false)
+        setControlEnabled(stopRouteButton, enabled = true)
         routeStatusText.text = "Route recorder: recording 1 sample"
     }
 
@@ -454,8 +730,8 @@ class MainActivity : Activity() {
         }
 
         isRecordingRoute = false
-        startRouteButton.isEnabled = true
-        stopRouteButton.isEnabled = false
+        setControlEnabled(startRouteButton, enabled = true)
+        setControlEnabled(stopRouteButton, enabled = false)
 
         if (routeSamples.size < MIN_ROUTE_SAMPLES) {
             routeSamples = mutableListOf()
@@ -526,8 +802,8 @@ class MainActivity : Activity() {
         routeSamples = mutableListOf()
         lastRouteSample = null
         isRecordingRoute = false
-        startRouteButton.isEnabled = true
-        stopRouteButton.isEnabled = false
+        setControlEnabled(startRouteButton, enabled = true)
+        setControlEnabled(stopRouteButton, enabled = false)
         updateSurveySummary()
         statusText.text = "Local survey data cleared."
     }
@@ -535,6 +811,13 @@ class MainActivity : Activity() {
     private fun updateSurveySummary() {
         val current = surveyExport ?: surveyRepository.loadExport().also { surveyExport = it }
         surveySummaryText.text = "Survey: ${current.points.size} points, ${current.routes.size} routes"
+    }
+
+    private fun updateMapCacheText() {
+        val locations = runCatching { mapCache.locationCount() }.getOrDefault(0)
+        val edges = runCatching { mapCache.edgeCount() }.getOrDefault(0)
+        val source = if (locations > 0) "room" else "seed"
+        mapCacheText.text = "cache $source / loc $locations / edges $edges"
     }
 
     private fun triggerFirstLaunchSync() {
@@ -548,6 +831,7 @@ class MainActivity : Activity() {
                     destinations = DestinationRepository(this).loadDestinations()
                     selectedDestination = destinations.firstOrNull()
                     bindDestinationSpinner()
+                    updateMapCacheText()
                     statusText.text =
                         "Synced ${result.locationCount} locations, ${result.edgeCount} edges."
                 }
@@ -596,6 +880,13 @@ class MainActivity : Activity() {
         const val MOTION_STATE_IDLE = 1
         const val MOTION_STATE_WALKING = 2
         const val MOTION_STATE_ACTIVE = 3
+        val COLOR_GRAPHITE: Int = Color.rgb(7, 10, 11)
+        val COLOR_TEXT_PRIMARY: Int = Color.rgb(247, 243, 232)
+        val COLOR_TEXT_SECONDARY: Int = Color.rgb(186, 195, 190)
+        val COLOR_TEXT_MUTED: Int = Color.rgb(115, 127, 124)
+        val COLOR_AMBER: Int = Color.rgb(238, 154, 78)
+        val COLOR_AMBER_DIM: Int = Color.rgb(102, 67, 42)
+        val COLOR_STROKE: Int = Color.rgb(55, 64, 61)
 
         val POINT_CATEGORIES = listOf(
             "gate",

@@ -2,22 +2,22 @@
 
 Source: `CampusAR_SRS_v1.0.docx`, SRS v1.0.
 
-Owner: CLI 2, WSL Codex.
+Owner: active Codex session for backend/data/admin work.
 
-Status: CLI 2 backend/data support slice implemented in the Fastify in-memory scaffold, with a draft Phase 2 persistence migration recorded. No Android, Rust, PostgreSQL connection, applied database migration, or React admin dashboard implementation is included.
+Status: backend/data support slice implemented in the Fastify in-memory scaffold, with a draft Phase 2 persistence migration recorded. No Android, Rust, PostgreSQL connection, applied database migration, or React admin dashboard implementation is included.
 
 ## Boundary
 
-CLI 2 owns backend/data/admin support contracts for Phase 2:
+Backend/data/admin support contracts for Phase 2 cover:
 
-- Field survey JSON validate/import contract for controlled OCT bootstrap mapping data from CLI 1.
+- Field survey JSON validate/import contract for controlled OCT bootstrap mapping data from Android.
 - WiFi RSSI fingerprint storage and sync contracts.
 - Magnetic fingerprint storage and sync contracts.
 - QR anchor metadata contracts.
 - Indoor floor, floor-transition, and barometer profile metadata.
 - Admin review queues for Phase 2 mapping data.
 
-CLI 2 does not own:
+This backend/data/admin slice does not include:
 
 - Kotlin sensor collection implementation.
 - Rust EKF, PDR, pathfinding, or floor-detection engine logic.
@@ -27,7 +27,7 @@ CLI 2 does not own:
 
 ## Active Backlog IDs
 
-| ID | CLI 2 Role |
+| ID | Backend/Data/Admin Role |
 | --- | --- |
 | `P2-04` | Define backend contract for WiFi RSSI fingerprint format and verified mapper collection workflow. |
 | `P2-05` | Define backend contract for magnetic fingerprint format and fallback data lifecycle. |
@@ -35,7 +35,7 @@ CLI 2 does not own:
 | `P2-07` | Define QR anchor data contract and admin approval state. |
 | `P2-11` | Keep Phase 2 docs and git checkpoints current. |
 
-`P2-01`, `P2-02`, `P2-03`, `P2-08`, `P2-09`, and `P2-10` remain primarily CLI 1/mobile-native responsibilities, though they may consume the backend contracts.
+`P2-01`, `P2-02`, `P2-03`, `P2-08`, `P2-09`, and `P2-10` remain primarily mobile/native responsibilities, though they may consume the backend contracts.
 
 ## Phase 2 Assumptions
 
@@ -212,7 +212,7 @@ Admin endpoints to plan:
 
 Implementation notes:
 
-- Storage is in-memory and exists to lock the contracts for CLI 1 Android/Rust consumption.
+- Storage is in-memory and exists to lock the contracts for Android/Rust consumption.
 - Public map reads expose only approved/verified WiFi fingerprints, magnetic fingerprints, and active QR anchors.
 - Mapper upload routes require `verified_mapper` or `admin`.
 - Admin review routes require `admin`.
@@ -232,14 +232,14 @@ The admin dashboard should extend the signal-console direction with:
 
 Do not use generic dashboard cards. Keep the map-first operational console language from `admin-dashboard/VISUAL_DIRECTION.md`.
 
-## Acceptance Criteria For CLI 2 Backend Slice
+## Acceptance Criteria For Backend/Data/Admin Slice
 
 - Phase 2 backend/data scope is recorded in `CODEX_HANDOFF.md`.
-- Backlog shows CLI 2-owned Phase 2 support items as implemented or closed for backend/data.
+- Backlog shows backend/data Phase 2 support items as implemented or closed.
 - Database notes identify required Phase 2 domains.
 - API plan lists Android-facing and admin-facing contracts.
 - Backend check/test/build commands pass.
-- No Android or Rust files are edited by CLI 2.
+- No Android or Rust files are edited as part of this backend/data/admin slice.
 
 ## Blockers
 
