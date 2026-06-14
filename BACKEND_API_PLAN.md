@@ -2,13 +2,11 @@
 
 Source: `CampusAR_SRS_v1.0.docx`, SRS v1.0.
 
-This started as a planning document for the WSL Codex session. It now also records the approved Phase 1 backend/data/admin scaffold and TypeScript/Fastify conversion status.
+This records the approved Phase 1 backend/data/admin scaffold and TypeScript/Fastify conversion status.
 
 ## Ownership
 
-Primary owner: WSL Codex session.
-
-Reason: backend, PostgreSQL/PostGIS, sync, and API work are easier to develop and test from WSL.
+Primary owner: active Codex session when the selected task is backend/data/admin.
 
 Current scope:
 
@@ -22,7 +20,7 @@ Related Phase 1 implementation plan: `PHASE1_BACKEND_DATA_ADMIN_PLAN.md`.
 
 Related Phase 2 backend/data support plan: `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md`.
 
-CLI 2 Phase 1 status: complete for the backend/data/admin scaffold and approved TypeScript/Fastify conversion. Active stack is Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`. Provider integrations and live PostgreSQL connection remain open.
+Phase 1 status: complete for the backend/data/admin scaffold and approved TypeScript/Fastify conversion. Active stack is Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`. Provider integrations and live PostgreSQL connection remain open.
 
 Campus data status: user confirmed there is no existing campus dataset. The backend/data plan must support bootstrapping from two Google Maps pins plus verified mapper walks. See `database/seeds/MAPPING_BOOTSTRAP_PLAN.md`.
 
@@ -175,7 +173,7 @@ Open question: exact conflict policy for delayed offline contributions after map
 
 ## Android Map Contract
 
-CLI 1 should consume these backend-owned contracts later:
+Android should consume these backend-owned contracts later:
 
 - `GET /api/v1/sync/manifest`
 - `GET /api/v1/map/locations`
@@ -223,7 +221,7 @@ Admin review:
 
 See `PHASE2_BACKEND_DATA_SUPPORT_PLAN.md` for field-level planning.
 
-Survey import decision: CLI 1 field-survey exports are admin-only imports. Imported points and walked routes are stored as provisional, pending admin review map data. They are not verified navigation truth.
+Survey import decision: Android field-survey exports are admin-only imports. Imported points and walked routes are stored as provisional, pending admin review map data. They are not verified navigation truth.
 
 ## Privacy And Safety Rules
 
@@ -237,7 +235,7 @@ Open question: minimum aggregation threshold for occupancy zones.
 
 ## Phase 1 Backend Deliverables
 
-Completed or documented by CLI 2:
+Completed or documented for the backend/data/admin slice:
 
 - API boundary decisions for auth, map manifest, delta sync, admin approval, and role management.
 - Conceptual database model review against SRS requirements.

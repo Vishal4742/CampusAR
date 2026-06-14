@@ -2,11 +2,11 @@
 
 Source: `CampusAR_SRS_v1.0.docx`, SRS v1.0.
 
-Owner: CLI 1, Windows Codex.
+Owner: active Codex session for mobile/native work.
 
 Scope: Android app foundation, Rust NDK native engine foundation, Kotlin/Rust JNI boundary, outdoor GPS navigation slice, and compass-style AR overlay planning.
 
-Status: CLI 1 Phase 1 scaffold now includes `android-app/` and `native-engine/`. Android build verification is blocked in this Windows session because `gradle` is not installed, Android SDK environment variables are not set, and Android Rust targets are not installed.
+Status: Phase 1 mobile/native scaffold includes `android-app/` and `native-engine/`. Android SDK, NDK, Gradle, JDK 17, and Rust Android targets are installed locally under `C:\tmp\campusar-toolchain`, and the debug APK builds successfully.
 
 ## Phase 1 Decisions Applied
 
@@ -17,9 +17,9 @@ Status: CLI 1 Phase 1 scaffold now includes `android-app/` and `native-engine/`.
 - JNI return shape: primitive JNI functions only, avoiding object-heavy JNI for the first bridge.
 - Seed data: temporary placeholder destinations in `android-app/app/src/main/assets/seed_destinations.json` until verified OCT coordinates are available.
 
-## CLI 1 Boundary
+## Mobile/Native Boundary
 
-CLI 1 may plan and later implement, after explicit approval:
+Mobile/native work may plan and later implement, after explicit approval:
 
 - `android-app/`
 - `native-engine/`
@@ -29,14 +29,14 @@ CLI 1 may plan and later implement, after explicit approval:
 - JNI bridge and native API contract
 - Mobile-side navigation, sensor, map, AR overlay, and permission flows
 
-CLI 1 must not edit:
+Mobile/native work must not edit:
 
 - `backend/`
 - `database/`
 - `admin-dashboard/`
-- Backend, database, and admin implementation files owned by CLI 2
+- Backend, database, and admin implementation files
 
-Shared contracts with CLI 2 should be proposed in planning docs first, then agreed through `CODEX_HANDOFF.md`.
+Shared contracts with backend/data/admin work should be proposed in planning docs first, then agreed through `CODEX_HANDOFF.md`.
 
 ## Phase 1 Goal
 
@@ -55,20 +55,20 @@ The goal is not full EKF, indoor positioning, P2P relay, gamification, or admin 
 
 ## Approved-Only Scaffold Boundary
 
-If implementation is later explicitly approved, CLI 1 may scaffold only:
+If implementation is later explicitly approved, this mobile/native slice may scaffold only:
 
 ```text
 android-app/
 native-engine/
 ```
 
-No backend, database, admin dashboard, package manifests for server code, or migration files should be created by CLI 1.
+No backend, database, admin dashboard, package manifests for server code, or migration files should be created as part of this slice.
 
 ## Phase 1 Work Packages
 
 | ID | Area | Plan |
 | --- | --- | --- |
-| M1-01 | Repository boundary | Keep Android and Rust work isolated from CLI 2 backend/data/admin ownership. |
+| M1-01 | Repository boundary | Keep Android and Rust work isolated from backend/data/admin ownership. |
 | M1-02 | Android toolchain decision | Confirm Android Gradle Plugin, Kotlin version, minimum SDK 26, target SDK, Java toolchain, and NDK version before scaffolding. |
 | M1-03 | UI toolkit decision | Decide non-AR screen UI stack. The SRS only requires that the AR overlay itself not use Compose. |
 | M1-04 | Map renderer decision | Decide OSMDroid versus Mapbox SDK before implementing map screens or tile cache logic. |
@@ -202,9 +202,9 @@ Recommended temporary format:
 }
 ```
 
-## Relationship To CLI 2
+## Relationship To Backend/Data/Admin
 
-CLI 2 owns backend/data/admin planning. CLI 1 should request these contracts instead of editing backend plans directly:
+Backend/data/admin planning owns these contracts. Mobile/native work should request these contracts instead of editing backend plans directly:
 
 - Auth token shape needed by Android.
 - `GET /sync/manifest` response shape.
@@ -213,7 +213,7 @@ CLI 2 owns backend/data/admin planning. CLI 1 should request these contracts ins
 - Map version and sync cursor fields.
 - Temporary seed data import/export format.
 
-For Phase 1 mobile work, CLI 1 can proceed with local seed data while CLI 2 refines backend API contracts.
+For Phase 1 mobile work, local seed data can proceed while backend API contracts are refined separately.
 
 ## Acceptance Criteria Before Phase 1 Implementation Starts
 
@@ -243,7 +243,7 @@ Once implementation is explicitly approved, the Phase 1 mobile/native slice shou
 - Code avoids backend dependency for local navigation.
 - `CODEX_HANDOFF.md` lists files touched, checks run, and remaining blockers.
 
-## CLI 1 Phase 1 Closeout Status
+## Phase 1 Mobile/Native Closeout Status
 
 | Criterion | Status | Evidence |
 | --- | --- | --- |
@@ -253,8 +253,8 @@ Once implementation is explicitly approved, the Phase 1 mobile/native slice shou
 | Outdoor GPS navigation slice exists | Done | `MainActivity.kt` and `GpsLocationSource.kt` request location and compute overlay state when native library is packaged |
 | Compass-style overlay foundation exists | Done | `CompassOverlaySurfaceView.kt` renders a directional arrow or arrival ring from overlay state |
 | Rust distance/bearing tests pass | Done | `cargo test --manifest-path native-engine/Cargo.toml` passes 6 tests |
-| Android build passes locally | Blocked | `gradle` command not found; no `ANDROID_HOME` or `ANDROID_SDK_ROOT` set |
-| Android Rust targets build locally | Blocked | Installed Rust targets are host-only; Android SDK/NDK variables are not set |
+| Android build passes locally | Done | `gradle -p android-app :app:assembleDebug --stacktrace` completed successfully |
+| Android Rust targets build locally | Done | `native-engine/scripts/build-android.ps1` built `arm64-v8a` and `armeabi-v7a` `.so` files |
 
 ## Blockers Before Implementation
 
@@ -266,7 +266,7 @@ Once implementation is explicitly approved, the Phase 1 mobile/native slice shou
 - Confirm seed destination coordinates.
 - Confirm whether a Git checkpoint commit is desired before scaffolding.
 
-## Next Tasks For CLI 1
+## Next Mobile/Native Tasks
 
 - Resolve the UI toolkit, map renderer, package name, and NDK integration choices.
 - Draft exact Kotlin and Rust file list for scaffolding.

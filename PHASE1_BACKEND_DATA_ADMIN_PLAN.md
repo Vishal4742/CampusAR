@@ -2,22 +2,22 @@
 
 Source: `CampusAR_SRS_v1.0.docx`, SRS v1.0.
 
-Owner: CLI 2, WSL Codex.
+Owner: active Codex session for backend/data/admin work.
 
 Scope: backend, database, API design, auth and roles, admin dashboard planning, and sync API planning.
 
-This plan tracks CLI 2 Phase 1 implementation. Status: closed from the CLI 2 backend/data/admin side.
+This plan tracks Phase 1 backend/data/admin implementation. Status: closed for the backend/data/admin side.
 
-## CLI 2 Boundary
+## Backend/Data/Admin Boundary
 
-CLI 2 may plan and later implement, after explicit approval:
+Backend/data/admin work may plan and later implement, after explicit approval:
 
 - `backend/`
 - `database/`
 - `admin-dashboard/`
 - Backend/API/admin/database planning docs
 
-CLI 2 must not edit:
+Backend/data/admin work must not edit:
 
 - `android-app/`
 - `native-engine/`
@@ -37,11 +37,11 @@ Phase 1 backend/data work establishes the server-side foundation needed for:
 - Initial campus map data model and sync contracts.
 - Backend support for future admin dashboard approval workflows.
 
-The SRS lists the Phase 1 deliverables as Kotlin project, Rust NDK toolchain, GPS navigation outdoor, user auth, and backend API. CLI 2 owns only the backend/data/admin parts of those deliverables.
+The SRS lists the Phase 1 deliverables as Kotlin project, Rust NDK toolchain, GPS navigation outdoor, user auth, and backend API. This plan covers only the backend/data/admin parts of those deliverables.
 
 ## Approved-Only Scaffold Boundary
 
-Implementation approval for CLI 2 is limited to:
+Implementation approval for this backend/data/admin slice is limited to:
 
 ```text
 backend/
@@ -49,13 +49,13 @@ admin-dashboard/
 database/
 ```
 
-No Android or Rust directories should be created or edited by CLI 2.
+No Android or Rust directories should be created or edited as part of this slice.
 
 ## Scaffold Status
 
-CLI 2 Phase 1 is complete for backend/data/admin. Remaining open items are external verification, future implementation phases, or CLI 1/mobile work.
+Phase 1 is complete for backend/data/admin. Remaining open items are external verification, future implementation phases, or mobile/native work.
 
-Created by CLI 2:
+Created for this slice:
 
 - `backend/`: TypeScript/Fastify backend with in-memory Phase 1 auth, roles, map bootstrap, sync, relay dedupe, admin contract routes, TypeBox validation, Drizzle schema layout, and `jose` JWTs.
 - `database/`: PostgreSQL/PostGIS Phase 1 foundation migration, schema notes, and seed-data notes.
@@ -186,7 +186,7 @@ Open question: `GET /admin/pending-locations` may be Phase 3 implementation, but
 
 ## Admin Dashboard Phase 1 Scope
 
-The React admin dashboard is not a Phase 1 SRS deliverable, but CLI 2 owns its planning. Phase 1 should prepare:
+The React admin dashboard is not a Phase 1 SRS deliverable. Phase 1 should prepare:
 
 - Admin login and JWT role support.
 - Admin role-management API contracts.
@@ -196,7 +196,7 @@ The React admin dashboard is not a Phase 1 SRS deliverable, but CLI 2 owns its p
 
 No admin dashboard UI should be scaffolded unless implementation is explicitly approved.
 
-## CLI 2 Phase 1 Completion
+## Phase 1 Backend/Data/Admin Completion
 
 Completed in this phase:
 
@@ -214,7 +214,7 @@ Completed in this phase:
 - API contract, deployment plan, database schema notes, and no-build admin console.
 - Backend tests, TypeScript checks, and production compile.
 
-Deferred after CLI 2 Phase 1:
+Deferred after Phase 1 backend/data/admin:
 
 1. Connect services to PostgreSQL/PostGIS through Drizzle.
 2. Review and apply the Phase 1 PostGIS migration through the chosen migration workflow.
@@ -222,9 +222,9 @@ Deferred after CLI 2 Phase 1:
 4. Replace placeholder seed data with approved OCT campus seed data.
 5. Align the SQL/Drizzle schema with nullable/provisional coordinates before applying migrations.
 6. Add a React admin dashboard shell only when dashboard implementation is approved.
-7. Run device validation on the Redmi Note 10 Pro after the mobile CLI installs the APK.
+7. Run device validation on the Redmi Note 10 Pro after the APK is installed.
 
-## Non-CLI-2 Phase 1 Blockers
+## Remaining Phase 1 Blockers
 
 - Resend sender address/domain verification.
 - Backend hosting target and database hosting target.
@@ -232,7 +232,7 @@ Deferred after CLI 2 Phase 1:
 - Location categories and default confirmation thresholds.
 - Audit and account deletion policy.
 
-## Next Tasks For CLI 2
+## Next Backend/Data/Admin Tasks
 
 - Connect the in-memory service boundary to PostgreSQL/PostGIS.
 - Turn the conceptual model into a reviewed entity relationship plan.
