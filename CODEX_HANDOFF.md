@@ -161,6 +161,18 @@ After those decisions, move into the next narrow implementation slice rather tha
 
 ## Change Log
 
+### 2026-06-14 - Phase 2 Round 2 validation and closeout
+
+- Environment requested: WSL / Linux. Environment observed for this run: Windows PowerShell with the local Android toolchain under `C:\tmp\campusar-toolchain`.
+- Phase 2 Round 2 is complete with one recorded unrelated backend test environment failure.
+- Files created in Round 1: `native-engine/src/navigation/graph.rs`, `native-engine/src/sensors/position.rs`, and `android-app/app/src/main/java/com/campusar/app/data/BackendSyncRepository.kt`.
+- Files modified in Round 1: `native-engine/src/ffi/mod.rs` for position JNI exports and `POSITION_STATE` mutex, `native-engine/src/navigation/mod.rs` for `pub mod graph`, `native-engine/src/sensors/mod.rs` for `pub mod position`, `android-app/app/src/main/java/com/campusar/app/location/DeviceSensorSource.kt` for adaptive sampling by motion state, `android-app/app/src/main/java/com/campusar/app/nativebridge/NativeNavigationEngine.kt` for position bridge methods, and `android-app/app/src/main/AndroidManifest.xml` for the `INTERNET` permission.
+- Checks run: `cargo fmt --manifest-path native-engine/Cargo.toml -- --check` PASS; `cargo test --manifest-path native-engine/Cargo.toml` PASS with 25 tests; `gradle -p android-app :app:assembleDebug --stacktrace` FAIL because `gradle` was not on `PATH`, then PASS after loading `scripts/use-android-toolchain.ps1`; `cd backend; npm run check` PASS; `cd backend; npm test` FAIL before test execution because Windows loaded a Linux `esbuild` package from `backend/node_modules`; `cd backend; npm run build` PASS; `node --check admin-dashboard/app.js` PASS.
+- Native Android library rebuild: `powershell -ExecutionPolicy Bypass -File native-engine/scripts/build-android.ps1` first failed because `ANDROID_NDK_HOME` or `ANDROID_NDK_ROOT` was not set, then passed after loading `scripts/use-android-toolchain.ps1`; rebuilt libraries were copied to `android-app/app/src/main/jniLibs/arm64-v8a/libcampusar_native.so` and `android-app/app/src/main/jniLibs/armeabi-v7a/libcampusar_native.so`.
+- Backlog updates: `P2-01`, `P2-03`, `P2-08`, and `P2-09` moved to Done; `P2-02` remains In Progress because the complementary filter is done and full matrix EKF is deferred; `P2-10` remains In Progress.
+- Open items for next slice: A* pathfinding using `CampusGraph`, `BackendSyncRepository` needs a real caller-supplied backend URL, native `.so` rebuild must be repeated when Rust changes, and `P2-02` full matrix EKF remains deferred until field data is available.
+- Recommended next Phase 2 slice: implement A* pathfinding in Rust using `CampusGraph`, then wire `BackendSyncRepository` into `MainActivity` on first launch to populate the Room cache from the backend.
+
 ### 2026-06-14 - Linux node_modules reinstall and full validation
 
 - Environment: Linux (native/WSL, x64).

@@ -14,6 +14,8 @@ class DeviceSensorSource(private val context: Context) {
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private var listener: SensorEventListener? = null
     private var snapshot = SensorSnapshot()
+    private var currentMotionState: Int = MOTION_STATE_UNKNOWN
+    private var currentDelay: Int = SensorManager.SENSOR_DELAY_UI
 
     fun availability(): SensorAvailability {
         return SensorAvailability(
@@ -46,17 +48,39 @@ class DeviceSensorSource(private val context: Context) {
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
         }
 
-        val registered = SENSOR_TYPES.mapNotNull { type ->
-            sensorManager.getDefaultSensor(type)
-        }.count { sensor ->
-            sensorManager.registerListener(
-                listener,
-                sensor,
-                SensorManager.SENSOR_DELAY_GAME,
-            )
-        }
+        registerWithDelay(currentDelay)
+        onStatus("Sensor stream active at ${motionStateName(currentMotionState)} rate.")
+    }
 
-        onStatus("Sensor stream: $registered sources active.")
+    fun setMotionState(motionState: Int) {
+        if (motionState == currentMotionState || listener == null) {
+            currentMotionState = motionState
+            return
+        }
+        currentMotionState = motionState
+        val newDelay = delayForMotionState(motionState)
+        if (newDelay != currentDelay) {
+            currentDelay = newDelay
+            registerWithDelay(currentDelay)
+        }
+    }
+
+    private fun registerWithDelay(delay: Int) {
+        listener?.let { currentListener ->
+            sensorManager.unregisterListener(currentListener)
+            SENSOR_TYPES.mapNotNull { type ->
+                sensorManager.getDefaultSensor(type)
+            }.forEach { sensor ->
+                sensorManager.registerListener(currentListener, sensor, delay)
+            }
+        }
+    }
+
+    private fun delayForMotionState(motionState: Int): Int = when (motionState) {
+        MOTION_STATE_IDLE    -> SensorManager.SENSOR_DELAY_NORMAL
+        MOTION_STATE_WALKING -> SensorManager.SENSOR_DELAY_GAME
+        MOTION_STATE_ACTIVE  -> SensorManager.SENSOR_DELAY_FASTEST
+        else                 -> SensorManager.SENSOR_DELAY_UI
     }
 
     fun stop() {
@@ -78,7 +102,19 @@ class DeviceSensorSource(private val context: Context) {
         )
     }
 
-    private companion object {
+    companion object {
+        const val MOTION_STATE_UNKNOWN = 0
+        const val MOTION_STATE_IDLE    = 1
+        const val MOTION_STATE_WALKING = 2
+        const val MOTION_STATE_ACTIVE  = 3
+
+        fun motionStateName(state: Int): String = when (state) {
+            MOTION_STATE_IDLE    -> "idle"
+            MOTION_STATE_WALKING -> "walking"
+            MOTION_STATE_ACTIVE  -> "active"
+            else                 -> "unknown"
+        }
+
         val SENSOR_TYPES = listOf(
             Sensor.TYPE_ACCELEROMETER,
             Sensor.TYPE_GYROSCOPE,

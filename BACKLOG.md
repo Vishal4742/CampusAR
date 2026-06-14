@@ -28,16 +28,16 @@ Backend/data/admin status: complete for Phase 2 support endpoints. In-memory sup
 
 | ID | Status | Work item | SRS basis |
 | --- | --- | --- | --- |
-| P2-01 | In Progress | Define sensor data contract between Kotlin and Rust | FR-SENS-01, FR-SENS-02 |
-| P2-02 | Planned | Specify EKF state vector, update rates, and GPS anchor behavior | FR-SENS-02, FR-SENS-03 |
-| P2-03 | Planned | Specify PDR step detection and drift behavior | FR-SENS-04 |
+| P2-01 | Done | Define sensor data contract between Kotlin and Rust | FR-SENS-01, FR-SENS-02 |
+| P2-02 | In Progress | Specify EKF state vector, update rates, and GPS anchor behavior; complementary filter added, full matrix EKF deferred | FR-SENS-02, FR-SENS-03 |
+| P2-03 | Done | Specify PDR step detection and drift behavior | FR-SENS-04 |
 | P2-04 | Done | Define and implement backend contract for WiFi RSSI fingerprint format and mapper collection workflow | FR-SENS-04 |
 | P2-05 | Done | Define and implement backend contract for magnetic fingerprint format and fallback data lifecycle | FR-SENS-04 |
 | P2-06 | Done | Define and implement backend contract for barometer samples and floor-profile cache support; native floor strategy remains mobile/native work | FR-SENS-05 |
 | P2-07 | Done | Define and implement backend contract for QR anchor proposal, approval, and public cache reads; physical placement remains open | FR-SENS-06 |
-| P2-08 | Planned | Define graceful degradation matrix for missing optional sensors | FR-SENS-07 |
-| P2-09 | Planned | Define adaptive sampling policy and motion-state detection | FR-SENS-08 |
-| P2-10 | In Progress | Define bearing smoothing, turn anticipation, and AR state outputs | FR-NAV-05 to FR-NAV-12 |
+| P2-08 | Done | Define graceful degradation matrix for missing optional sensors | FR-SENS-07 |
+| P2-09 | Done | Define adaptive sampling policy and motion-state detection | FR-SENS-08 |
+| P2-10 | In Progress | Define bearing smoothing, turn anticipation, and AR state outputs; foundation exists | FR-NAV-05 to FR-NAV-12 |
 | P2-11 | Done | Update planning docs and git checkpoint state for Phase 2 backend/data closeout; mobile/native closure remains separate | Coordination rule |
 
 ## Phase 3: Crowdsourced Mapping
