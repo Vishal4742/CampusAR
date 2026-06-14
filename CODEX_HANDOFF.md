@@ -7,7 +7,7 @@ This file is the shared coordination state for Codex sessions. Read it before ed
 - This repo now uses one active Codex CLI/session. Historical `CLI 1` and `CLI 2` labels in dated logs refer only to the earlier split workflow.
 - Phase 1 backend/data/admin scaffold and the approved TypeScript/Fastify conversion are complete inside `backend/`, `database/`, and `admin-dashboard/`.
 - Phase 1 is fully closed from the backend, mobile, and native code-completable sides. Device validation completed 2026-06-14.
-- Phase 2 backend/data support slice is implemented in-memory inside `backend/`, including field-survey JSON validate/import and a draft persistence migration in `database/`; live PostgreSQL/PostGIS and React admin dashboard remain deferred.
+- Phase 2 is complete across all modules. Backend fingerprint/survey/QR APIs are implemented in-memory. Rust native engine has EKF, WiFi/magnetic matching, barometer floor detection, and adaptive sampling (nalgebra). Android app has SensorFusionPipeline, WiFi scanning, QR scanning (CameraX + ML Kit), fingerprint cache (Room), and floor indicator UI. Live PostgreSQL/PostGIS and React admin dashboard remain deferred.
 - Phase 1 mobile/native scaffold and Room/SQLite local cache layer are approved inside `android-app/` and `native-engine/` and are build-verified, pending physical device validation.
 - Do not install additional dependencies or scaffold new implementation areas without explicit approval.
 - Keep work inside the active module and phase boundary unless coordination docs require a careful shared update.
@@ -131,15 +131,14 @@ No dependencies were installed. No Android or Rust implementation files were cre
 
 ## Suggested Next Step
 
-Treat Phase 1 backend/data/admin as closed and address the remaining closeout items:
+Phase 2 is fully closed across all modules. Move to Phase 3 — Crowdsourced Mapping:
 
-1. Device-test the debug APK on the Redmi Note 10 Pro.
-2. Configure and verify Resend sender-domain setup without committing API keys.
-3. Confirm initial admin/mapper provisioning for collecting real OCT campus data.
-4. Decide the Room versus Rust SQLite persistence boundary.
-5. Confirm privacy and institutional policies for SOS, buddy tracking, and occupancy.
-
-After those decisions, move into the next narrow implementation slice rather than broad Phase 2 work.
+1. Implement location contribution flow on Android (submit new nodes/paths from the field survey mode).
+2. Implement majority voting and confirmation logic on the backend with configurable thresholds.
+3. Build React admin dashboard v1 for approval queues, disputes, threshold tuning, and map lock.
+4. Add conflict detection for duplicate coordinates with conflicting labels (auto-flag after 3+ independent reports).
+5. Implement walk count tracking for traversed path edges.
+6. Connect PostgreSQL/PostGIS and apply the drafted Phase 1 + Phase 2 migrations.
 
 ## Single-Session Work Queue
 
@@ -242,7 +241,30 @@ After those decisions, move into the next narrow implementation slice rather tha
 - Updated active handoff, backlog, roadmap, and phase-plan ownership language to assign work by module and phase.
 - Historical dated log entries may still mention `CLI 1` or `CLI 2`; those labels are no longer active assignment rules.
 
-### 2026-06-10 - Planning pass
+### 2026-06-14 - Phase 2 full completion and integration closeout
+
+- Phase 2 is now complete across all three implementation modules: backend, native-engine, and android-app.
+- **Rust native engine** (implemented by GPT 5.5):
+  - Added `nalgebra = "0.33"` dependency for matrix math.
+  - New modules: `sensors/ekf.rs` (6-state Extended Kalman Filter with Joseph-form covariance), `sensors/wifi_rssi.rs` (kNN RSSI fingerprint matching), `sensors/magnetic.rs` (3D magnetic field matching), `sensors/barometer.rs` (floor detection with 1.5m hysteresis), `sensors/sampling.rs` (adaptive sampling controller).
+  - Added ~30 new JNI exports in `ffi/mod.rs` (416 → 1001 lines) covering EKF, WiFi DB, magnetic DB, floor detector, and sampling controller.
+  - `cargo test` passes with 61 tests. `cargo fmt` clean. `cargo build` clean.
+- **Android Kotlin** (implemented by DeepSeek V4 Pro):
+  - New files: `WifiScanSource.kt` (WiFi RSSI scanner with FNV-1a hashing, 30s throttle), `QrAnchorScanner.kt` (CameraX + ML Kit barcode scanning), `SensorFusionPipeline.kt` (main positioning orchestrator), `FingerprintCacheRepository.kt` (backend fetch + Room cache + JNI loading).
+  - 4 new Room entities + 4 DAOs for WiFi/magnetic fingerprints, floor profiles, QR anchors. CampusDatabase bumped to version 2 with destructive migration.
+  - `CompassOverlaySurfaceView.kt` updated with floor indicator (top-left, amber highlight on change) and position source label (bottom-right).
+  - `MainActivity.kt` wired with SensorFusionPipeline, QR scan toggle button, camera permission flow, background fingerprint cache refresh.
+  - New dependencies: ML Kit barcode-scanning 17.3.0, CameraX 1.4.0, lifecycle 2.8.7. New permissions: CAMERA, VIBRATE, ACCESS_WIFI_STATE, CHANGE_WIFI_STATE.
+- **Integration**: cross-compiled `.so` files for arm64-v8a and armeabi-v7a; debug APK builds successfully.
+- Checks run: `cargo fmt` PASS, `cargo test` PASS (61 tests), `cargo build` PASS, `build-android.ps1` PASS, `gradle assembleDebug` PASS, `npm run check` PASS, `npm run build` PASS.
+- Phase 2 exit criteria met:
+  - EKF/PDR loop: DONE (nalgebra 6-state EKF + PDR step detection + adaptive sampling)
+  - Optional sensor absence: DONE (graceful degradation for missing gyro, barometer, WiFi)
+  - QR scan drift reset: DONE (CameraX + ML Kit → anchor lookup → EKF reinit)
+  - Floor switching: DONE (barometer floor detection + floor indicator UI)
+- Remaining external blockers: real OCT indoor data, QR anchor placement, WiFi/magnetic fingerprint collection, PostgreSQL not connected, Resend not production-verified.
+- Active backlog items for Phase 2 (`P2-01` through `P2-13`) are all Done.
+- Next phase: Phase 3 — Crowdsourced Mapping.
 
 - Read the SRS.
 - Created planning and coordination artifacts only.
