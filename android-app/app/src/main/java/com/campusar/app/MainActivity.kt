@@ -24,10 +24,18 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.campusar.app.data.BackendSyncRepository
 import com.campusar.app.data.DestinationRepository
+import com.campusar.app.data.FingerprintCacheRepository
 import com.campusar.app.data.MapCacheRepository
 import com.campusar.app.data.SurveyRepository
 import com.campusar.app.location.DeviceSensorSource
+import com.campusar.app.location.FusedPosition
 import com.campusar.app.location.GpsLocationSource
+import com.campusar.app.location.PositionSource
+import com.campusar.app.location.QrAnchorScanner
+import com.campusar.app.location.QrSnapEvent
+import com.campusar.app.location.SensorFusionPipeline
+import com.campusar.app.location.WifiScanSource
+import com.campusar.app.location.WifiScanSnapshot
 import com.campusar.app.model.Destination
 import com.campusar.app.model.GeoPoint
 import com.campusar.app.model.NavigationOverlayState
@@ -62,6 +70,17 @@ class MainActivity : Activity() {
     private lateinit var routeNotesInput: EditText
     private lateinit var startRouteButton: Button
     private lateinit var stopRouteButton: Button
+    private lateinit var qrScanButton: Button
+    private lateinit var positionSourceText: TextView
+
+    // Phase 2 resources
+    private var wifiScanSource: WifiScanSource? = null
+    private var sensorFusionPipeline: SensorFusionPipeline? = null
+    private var qrAnchorScanner: QrAnchorScanner? = null
+    private var fingerprintCacheRepo: FingerprintCacheRepository? = null
+    private var qrScanContainer: FrameLayout? = null
+    private var fusedPosition: FusedPosition? = null
+    private lateinit var rootLayout: FrameLayout
 
     private var currentPoint: GeoPoint? = null
     private var currentHeadingDegrees: Double = 0.0
@@ -99,6 +118,173 @@ class MainActivity : Activity() {
         if (mapCache.locationCount() == 0) {
             triggerFirstLaunchSync()
         }
+
+        initPhase2()
+    }
+
+    private fun initPhase2() {
+        if (!nativeEngine.nativeReady) {
+            sensorText.text = "Phase 2: native library not loaded, GPS-only fallback"
+            return
+        }
+
+        fingerprintCacheRepo = FingerprintCacheRepository(this, nativeEngine)
+        wifiScanSource = WifiScanSource(this)
+
+        val pipeline = SensorFusionPipeline(
+            native = nativeEngine,
+            wifiScanner = wifiScanSource!!,
+            sensorSource = sensorSource,
+        )
+        sensorFusionPipeline = pipeline
+
+        qrAnchorScanner = QrAnchorScanner(this, fingerprintCacheRepo)
+
+        // Start position source updates
+        pipeline.start(
+            onPosition = { position ->
+                fusedPosition = position
+                runOnUiThread {
+                    updateFusedNavigation(position)
+                }
+            },
+            onStatus = { msg ->
+                runOnUiThread {
+                    statusText.text = msg
+                }
+            },
+        )
+
+        // Connect WiFi scanner to pipeline
+        wifiScanSource?.start(
+            onResults = { snapshot ->
+                pipeline.onWifiScanSnapshot(snapshot)
+            },
+            onStatus = { msg ->
+                runOnUiThread {
+                    statusText.text = "WiFi: $msg"
+                }
+            },
+        )
+
+        // Load cached fingerprint data into native engine
+        fingerprintCacheRepo?.loadCachedIntoNative()
+
+        // Refresh fingerprint data from backend in background
+        val backendUrl = getString(R.string.backend_base_url)
+        if (backendUrl.isNotBlank()) {
+            Thread {
+                val result = fingerprintCacheRepo?.refreshFromBackend(backendUrl)
+                runOnUiThread {
+                    if (result != null) {
+                        statusText.text = "Fingerprint cache: ${result.wifiFingerprints} WiFi, ${result.magneticFingerprints} mag, ${result.floorProfiles} floors, ${result.qrAnchors} QR"
+                    }
+                }
+            }.start()
+        }
+
+        sensorText.text = "Phase 2 sensor fusion active"
+    }
+
+    private fun toggleQrScanner() {
+        if (qrAnchorScanner == null) return
+
+        if (qrScanContainer != null) {
+            // Stop scanning
+            qrAnchorScanner?.stopScanning()
+            rootLayout.removeView(qrScanContainer)
+            qrScanContainer = null
+            qrScanButton.text = "SCAN QR"
+            compassOverlay.visibility = View.VISIBLE
+        } else {
+            if (!qrAnchorScanner!!.hasCameraPermission()) {
+                requestPermissions(
+                    arrayOf(Manifest.permission.CAMERA),
+                    CAMERA_PERMISSION_REQUEST,
+                )
+                return
+            }
+
+            val container = FrameLayout(this).apply {
+                layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                )
+                background = android.graphics.drawable.ColorDrawable(
+                    android.graphics.Color.argb(220, 0, 0, 0)
+                )
+            }
+            qrScanContainer = container
+            rootLayout.addView(container)
+            compassOverlay.visibility = View.INVISIBLE
+            qrScanButton.text = "STOP QR"
+
+            qrAnchorScanner?.startScanning(
+                container = container,
+                onSnap = { event ->
+                    pipeline()?.onQrSnap(event)
+                    runOnUiThread {
+                        toggleQrScanner() // Auto-close scanner after snap
+                    }
+                },
+                onStatus = { msg ->
+                    runOnUiThread {
+                        statusText.text = "QR: $msg"
+                    }
+                },
+            )
+        }
+    }
+
+    private fun pipeline(): SensorFusionPipeline? = sensorFusionPipeline
+
+    private fun updateFusedNavigation(position: FusedPosition) {
+        val sourceLabel = when (position.source) {
+            PositionSource.GPS -> "gps"
+            PositionSource.PDR -> "pdr"
+            PositionSource.WIFI -> "wifi"
+            PositionSource.MAGNETIC -> "mag"
+            PositionSource.QR_SNAP -> "qr"
+            PositionSource.FUSED -> "fused"
+        }
+        positionSourceText.text = "source $sourceLabel / floor ${floorDisplayName(position.floorIndex)}"
+
+        compassOverlay.updateFloor(position.floorIndex, selectedDestination?.floor?.takeIf { it != position.floorIndex })
+        compassOverlay.updatePositionSource(sourceLabel)
+
+        // Update existing navigation state using fused position
+        val destination = selectedDestination
+        if (destination != null) {
+            val state = nativeEngine.overlayStateOrNull(
+                GeoPoint(position.latitude, position.longitude),
+                position.headingDegrees,
+                destination,
+            )
+            compassOverlay.updateState(state, destination.label)
+            destinationMetaText.text = "target ${destination.id} / ${destination.category} / floor ${destination.floor}"
+            navigationMetricText.text = if (state != null) {
+                "${state.distanceMeters.toInt()} m / bearing ${state.bearingDegrees.toInt()} deg"
+            } else {
+                "${position.latitude.toInt()} lat / ${position.longitude.toInt()} lon"
+            }
+            locationText.text = "Fused: %.7f, %.7f (${sourceLabel})".format(
+                position.latitude, position.longitude,
+            )
+        }
+    }
+
+    private fun floorDisplayName(floorIndex: Int): String {
+        return when (floorIndex) {
+            0 -> "G"
+            -1 -> "B1"
+            -2 -> "B2"
+            1 -> "1"
+            2 -> "2"
+            3 -> "3"
+            4 -> "4"
+            5 -> "5"
+            else -> floorIndex.toString()
+        }
     }
 
     override fun onStart() {
@@ -112,6 +298,13 @@ class MainActivity : Activity() {
     override fun onStop() {
         locationSource.stop()
         sensorSource.stop()
+        wifiScanSource?.stop()
+        sensorFusionPipeline?.stop()
+        qrAnchorScanner?.stopScanning()
+        qrScanContainer?.let { container ->
+            runCatching { rootLayout.removeView(container) }
+            qrScanContainer = null
+        }
         super.onStop()
     }
 
@@ -137,17 +330,24 @@ class MainActivity : Activity() {
             } else {
                 statusText.text = "Location permission denied. Destination browsing remains available."
             }
+        } else if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            val granted = grantResults.any { result -> result == PackageManager.PERMISSION_GRANTED }
+            if (granted) {
+                toggleQrScanner()
+            } else {
+                statusText.text = "Camera permission denied. QR scanning unavailable."
+            }
         }
     }
 
     private fun buildContentView(): View {
         compassOverlay = CompassOverlaySurfaceView(this)
 
-        val root = FrameLayout(this).apply {
+        rootLayout = FrameLayout(this).apply {
             setBackgroundColor(COLOR_GRAPHITE)
         }
 
-        root.addView(
+        rootLayout.addView(
             compassOverlay,
             FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -161,7 +361,7 @@ class MainActivity : Activity() {
             clipToPadding = false
         }
 
-        root.addView(
+        rootLayout.addView(
             shell,
             FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -254,6 +454,12 @@ class MainActivity : Activity() {
             }
         }
 
+        qrScanButton = actionButton("Scan QR", primary = false).apply {
+            setOnClickListener { toggleQrScanner() }
+        }
+
+        positionSourceText = telemetryLabel("source gps / floor G")
+
         val savePointButton = actionButton("Log Point", primary = true).apply {
             setOnClickListener { saveCurrentPoint() }
         }
@@ -280,8 +486,9 @@ class MainActivity : Activity() {
         panel.addConsoleView(destinationMetaText, topMarginDp = 8)
         panel.addConsoleView(navigationMetricText, topMarginDp = 4)
         panel.addConsoleView(locationText, topMarginDp = 8)
+        panel.addConsoleView(positionSourceText, topMarginDp = 2)
         panel.addConsoleView(statusText, topMarginDp = 2)
-        panel.addConsoleView(actionRow(requestLocationButton), topMarginDp = 10)
+        panel.addConsoleView(actionRow(requestLocationButton, qrScanButton), topMarginDp = 10)
 
         panel.addConsoleView(sectionLabel("Survey point"), topMarginDp = 18)
         panel.addConsoleView(pointLabelInput, topMarginDp = 8)
@@ -308,7 +515,7 @@ class MainActivity : Activity() {
             ),
         )
 
-        return root
+        return rootLayout
     }
 
     private fun topBar(): LinearLayout {
@@ -577,6 +784,8 @@ class MainActivity : Activity() {
                 currentPoint = point
                 locationText.text = point.toLocationText()
                 maybeRecordRouteSample(point)
+                // Feed GPS into sensor fusion pipeline
+                sensorFusionPipeline?.onGpsUpdate(point)
                 updateNavigationState()
             },
             onStatus = { status ->
@@ -589,6 +798,8 @@ class MainActivity : Activity() {
         sensorSource.start(
             onSnapshot = { snapshot ->
                 latestSensorSnapshot = snapshot
+                // Feed sensor data into fusion pipeline
+                sensorFusionPipeline?.onSensorSnapshot(snapshot)
                 updateSensorStatus()
             },
             onStatus = { status ->
@@ -872,6 +1083,7 @@ class MainActivity : Activity() {
 
     private companion object {
         const val LOCATION_PERMISSION_REQUEST = 1001
+        const val CAMERA_PERMISSION_REQUEST = 1002
         const val EXPORT_SURVEY_REQUEST = 2001
         const val ROUTE_SAMPLE_DISTANCE_METERS = 3.0
         const val MIN_ROUTE_SAMPLES = 2

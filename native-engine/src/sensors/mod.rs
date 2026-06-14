@@ -1,4 +1,9 @@
+pub mod barometer;
+pub mod ekf;
 pub mod heading;
+pub mod magnetic;
 pub mod motion;
 pub mod pdr;
 pub mod position;
+pub mod sampling;
+pub mod wifi_rssi;

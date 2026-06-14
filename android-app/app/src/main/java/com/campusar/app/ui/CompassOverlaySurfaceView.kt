@@ -27,6 +27,18 @@ class CompassOverlaySurfaceView(context: Context) : SurfaceView(context), Surfac
     @Volatile
     private var destinationLabel: String = "No destination"
 
+    @Volatile
+    private var currentFloor: Int = 0
+
+    @Volatile
+    private var targetFloor: Int? = null
+
+    @Volatile
+    private var positionSource: String = "gps"
+
+    private var floorHighlightAlpha: Float = 0f
+    private var lastFloorChangeNanos: Long = 0L
+
     private var renderThread: Thread? = null
 
     private val arrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -53,9 +65,33 @@ class CompassOverlaySurfaceView(context: Context) : SurfaceView(context), Surfac
         style = Paint.Style.FILL
     }
 
-    private val secondaryTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val overlayTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = COLOR_TEXT_SECONDARY
         textSize = 23f
+        typeface = Typeface.MONOSPACE
+    }
+
+    private val floorLabelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = COLOR_SIGNAL
+        textSize = 42f
+        typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+    }
+
+    private val floorSubPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = COLOR_TEXT_SECONDARY
+        textSize = 16f
+        typeface = Typeface.MONOSPACE
+    }
+
+    private val floorHighlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = COLOR_SIGNAL_HIGHLIGHT
+        textSize = 42f
+        typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+    }
+
+    private val sourcePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = COLOR_TEXT_MUTED
+        textSize = 13f
         typeface = Typeface.MONOSPACE
     }
 
@@ -71,6 +107,18 @@ class CompassOverlaySurfaceView(context: Context) : SurfaceView(context), Surfac
     fun updateState(state: NavigationOverlayState?, label: String) {
         overlayState = state
         destinationLabel = label
+    }
+
+    fun updateFloor(current: Int, target: Int?) {
+        if (current != currentFloor) {
+            lastFloorChangeNanos = System.nanoTime()
+        }
+        currentFloor = current
+        targetFloor = target
+    }
+
+    fun updatePositionSource(source: String) {
+        positionSource = source
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
@@ -111,6 +159,9 @@ class CompassOverlaySurfaceView(context: Context) : SurfaceView(context), Surfac
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), backgroundPaint)
         drawSignalField(canvas)
 
+        drawFloorIndicator(canvas)
+        drawPositionSource(canvas)
+
         val state = overlayState
         if (state == null) {
             drawPendingState(canvas)
@@ -135,6 +186,66 @@ class CompassOverlaySurfaceView(context: Context) : SurfaceView(context), Surfac
             drawArrow(canvas, centerX, centerY, arrowLength, state.headingDeltaDegrees)
             drawBearingTicks(canvas, centerX, centerY, state.headingDeltaDegrees)
         }
+    }
+
+    private fun drawFloorIndicator(canvas: Canvas) {
+        val x = dp(20)
+        val y = dp(40)
+        val floorLabel = floorDisplayName(currentFloor)
+
+        val dtNanos = System.nanoTime() - lastFloorChangeNanos
+        val highlightDurationNanos = 800_000_000L
+        val highlightAlpha = if (dtNanos < highlightDurationNanos) {
+            1.0f - (dtNanos.toFloat() / highlightDurationNanos.toFloat())
+        } else {
+            0f
+        }
+
+        val paint = if (highlightAlpha > 0f) {
+            floorHighlightPaint.alpha = (highlightAlpha * 255).toInt().coerceIn(0, 255)
+            floorHighlightPaint
+        } else {
+            floorLabelPaint
+        }
+
+        canvas.drawText(floorLabel, x, y, paint)
+
+        // Draw target floor hint if different
+        val target = targetFloor
+        if (target != null && target != currentFloor) {
+            val targetLabel = floorDisplayName(target)
+            canvas.drawText("→ F$targetLabel", x + dp(50), y, floorSubPaint)
+        }
+
+        // Draw destination label below floor
+        canvas.drawText(destinationLabel, x, y + dp(36), overlayTextPaint)
+    }
+
+    private fun drawPositionSource(canvas: Canvas) {
+        val x = width - dp(16)
+        val y = height - dp(24)
+        val label = positionSource.uppercase()
+        sourcePaint.textAlign = Paint.Align.RIGHT
+        canvas.drawText(label, x.toFloat(), y.toFloat(), sourcePaint)
+        sourcePaint.textAlign = Paint.Align.LEFT
+    }
+
+    private fun floorDisplayName(floorIndex: Int): String {
+        return when (floorIndex) {
+            0 -> "G"
+            -1 -> "B1"
+            -2 -> "B2"
+            1 -> "1"
+            2 -> "2"
+            3 -> "3"
+            4 -> "4"
+            5 -> "5"
+            else -> floorIndex.toString()
+        }
+    }
+
+    private fun dp(value: Int): Float {
+        return (value * resources.displayMetrics.density)
     }
 
     private fun drawSignalField(canvas: Canvas) {
@@ -216,8 +327,8 @@ class CompassOverlaySurfaceView(context: Context) : SurfaceView(context), Surfac
             false,
             arrowPaint,
         )
-        canvas.drawText("native signal pending", 32f, height * 0.31f, secondaryTextPaint)
-        canvas.drawText(destinationLabel, 32f, height * 0.31f + 34f, secondaryTextPaint)
+        canvas.drawText("native signal pending", 32f, height * 0.31f, overlayTextPaint)
+        canvas.drawText(destinationLabel, 32f, height * 0.31f + 34f, overlayTextPaint)
     }
 
     private fun drawArrow(
@@ -297,8 +408,10 @@ class CompassOverlaySurfaceView(context: Context) : SurfaceView(context), Surfac
         val COLOR_GRID: Int = Color.rgb(83, 94, 88)
         val COLOR_RING: Int = Color.rgb(238, 154, 78)
         val COLOR_SIGNAL: Int = Color.rgb(238, 154, 78)
+        val COLOR_SIGNAL_HIGHLIGHT: Int = Color.argb(255, 255, 184, 108)
         val COLOR_CYAN: Int = Color.rgb(168, 240, 232)
         val COLOR_TEXT_SECONDARY: Int = Color.rgb(186, 195, 190)
+        val COLOR_TEXT_MUTED: Int = Color.rgb(115, 127, 124)
         val ARROW_HEAD_RADIANS: Double = Math.toRadians(34.0)
     }
 }

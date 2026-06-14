@@ -102,6 +102,35 @@ Backend/data closeout, 2026-06-11:
 - No further backend/data/admin Phase 2 work remains unless PostgreSQL/PostGIS connection, real campus data import, or React admin implementation is explicitly approved.
 - Overall project Phase 2 still depends on mobile/native work for Android sensor collection, Rust EKF/PDR, graceful degradation, adaptive sampling, and AR bearing outputs.
 
+Mobile/native completion, 2026-06-14:
+
+- Implemented 6-state Extended Kalman Filter in Rust using nalgebra with GPS, heading, WiFi, magnetic, and floor measurement updates. Joseph-form covariance update for numerical stability.
+- Implemented WiFi RSSI k-nearest-neighbor fingerprint matching in Rust with FNV-1a BSSID hashing and Euclidean RSSI distance.
+- Implemented magnetic field 3D vector fingerprint matching in Rust with weighted k-nearest-neighbor position averaging.
+- Implemented barometer-based floor detection with pressure-to-altitude conversion and 1.5m hysteresis in Rust.
+- Implemented adaptive sampling controller in Rust (50 Hz walking/active, 10 Hz idle navigation, 5 Hz screen-on no nav, 1 Hz screen-off).
+- Added ~30 new JNI exports in `ffi/mod.rs` (grew from 416 to 1001 lines) for EKF, WiFi DB, magnetic DB, floor detector, and sampling controller.
+- Implemented SensorFusionPipeline in Kotlin as the main positioning orchestrator feeding GPS, PDR, WiFi, magnetic, and barometer data into the EKF.
+- Implemented WiFi RSSI scanner in Kotlin with BroadcastReceiver, FNV-1a BSSID hashing, and 30-second Android throttle compliance.
+- Implemented QR anchor scanner using CameraX and ML Kit barcode scanning with `campusar:anchor:<key>` parsing and haptic feedback.
+- Implemented FingerprintCacheRepository in Kotlin for backend HTTP fetch, Room SQLite persistence, and native JNI bulk loading.
+- Added 4 Room entities and 4 DAOs for cached WiFi fingerprints, magnetic fingerprints, floor profiles, and QR anchors. CampusDatabase bumped to version 2.
+- Updated CompassOverlaySurfaceView with floor indicator (top-left) and position source label (bottom-right) with animated floor-change highlight.
+- Wired SensorFusionPipeline into MainActivity; fused position replaces raw GPS for compass overlay; QR scan toggle with camera permission flow; background fingerprint cache refresh.
+- Added ML Kit barcode-scanning 17.3.0, CameraX 1.4.0, and lifecycle 2.8.7 dependencies. Added CAMERA, VIBRATE, ACCESS_WIFI_STATE, CHANGE_WIFI_STATE permissions.
+- Cross-compiled native `.so` files with nalgebra for arm64-v8a and armeabi-v7a.
+- Verified: `cargo fmt` PASS, `cargo test` PASS (61 tests), `cargo build` PASS, `build-android.ps1` PASS, `gradle assembleDebug` PASS.
+- Exceptions: no real OCT indoor data, no WiFi/magnetic fingerprint dataset, no QR anchor placement list, PostgreSQL not connected, Resend not production-verified.
+- Resolution: Phase 2 is closed across all modules. Remaining exceptions are field data collection and external service provisioning.
+
+Overall Phase 2 completion note, 2026-06-14:
+
+- Phase 2 is complete across backend, native engine, and Android app.
+- Backend side was closed on 2026-06-11 with fingerprint session APIs, survey import, and QR anchor approval.
+- Native engine and Android app were completed on 2026-06-14 with EKF, WiFi/magnetic matching, barometer floor detection, adaptive sampling, sensor fusion pipeline, QR scanning, and fingerprint caching.
+- All Phase 2 exit criteria are met at the code level: EKF/PDR loop operates, optional sensor absence does not crash, QR scan snaps to known anchor, floor switching is represented in navigation.
+- Remaining work requires field data collection (WiFi fingerprints, magnetic fingerprints, QR anchor placement, verified indoor coordinates) and external services (PostgreSQL, Resend).
+
 Primary outcomes:
 
 - Implement native positioning loop with adaptive sampling.

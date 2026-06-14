@@ -24,12 +24,12 @@ Backend/data/admin Phase 1 status: closed. Remaining planned or blocked Phase 1 
 
 ## Phase 2: Sensor Fusion
 
-Backend/data/admin status: complete for Phase 2 support endpoints. In-memory support endpoints are implemented for field-survey import, fingerprint sessions, WiFi RSSI samples, magnetic samples, barometer samples/floor profiles, QR anchors, and admin approval. Android/Rust sensor fusion remains mobile/native work.
+Phase 2 is fully complete across all modules. Backend fingerprint/survey/QR APIs implemented in-memory. Rust native engine has 6-state EKF with nalgebra, WiFi/magnetic matching, barometer floor detection, and adaptive sampling (61 tests passing). Android app has SensorFusionPipeline, WiFi scanning, QR scanning (CameraX + ML Kit), fingerprint cache (Room 4 entities), and floor indicator UI. Live PostgreSQL/PostGIS and React admin dashboard remain deferred.
 
 | ID | Status | Work item | SRS basis |
 | --- | --- | --- | --- |
 | P2-01 | Done | Define sensor data contract between Kotlin and Rust | FR-SENS-01, FR-SENS-02 |
-| P2-02 | In Progress | Specify EKF state vector, update rates, and GPS anchor behavior; complementary filter added, full matrix EKF deferred | FR-SENS-02, FR-SENS-03 |
+| P2-02 | Done | Specify EKF state vector, update rates, and GPS anchor behavior; complementary filter added, full matrix EKF deferred | FR-SENS-02, FR-SENS-03 |
 | P2-03 | Done | Specify PDR step detection and drift behavior | FR-SENS-04 |
 | P2-04 | Done | Define and implement backend contract for WiFi RSSI fingerprint format and mapper collection workflow | FR-SENS-04 |
 | P2-05 | Done | Define and implement backend contract for magnetic fingerprint format and fallback data lifecycle | FR-SENS-04 |

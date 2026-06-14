@@ -9,6 +9,9 @@ license = "UNLICENSED"
 name = "campusar_native"
 crate-type = ["cdylib", "rlib"]
 
+[dependencies]
+nalgebra = "0.33"
+
 [profile.release]
 opt-level = 3
 lto = "fat"

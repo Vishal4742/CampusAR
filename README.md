@@ -115,8 +115,8 @@ graph TB
 
 | Module | Stack | Purpose |
 |:---|:---|:---|
-| [`android-app/`](android-app/) | Kotlin · Android SDK 35 · Room | UI, sensors, permissions, map rendering, BLE/WiFi Direct/Nearby, local cache |
-| [`native-engine/`](native-engine/) | Rust `cdylib` · JNI · Android NDK | EKF sensor fusion, PDR, A\* pathfinding, bearing smoothing, step detection, packet encoding, SOS |
+| [`android-app/`](android-app/) | Kotlin · Android SDK 35 · Room · CameraX · ML Kit | UI, sensors, WiFi scanning, QR anchor scanning, sensor fusion pipeline, fingerprint cache, compass AR overlay, floor indicator, local cache |
+| [`native-engine/`](native-engine/) | Rust `cdylib` · JNI · Android NDK · nalgebra | EKF sensor fusion (6-state), PDR, A\* pathfinding, WiFi RSSI kNN matching, magnetic field matching, barometer floor detection, adaptive sampling, bearing smoothing, step detection |
 | [`backend/`](backend/) | Node.js · TypeScript · Fastify · Drizzle | Auth, roles, map data APIs, delta sync, relay dedup, admin workflows, WebSocket live features |
 | [`admin-dashboard/`](admin-dashboard/) | React _(planned)_ | Approval queues, disputes, thresholds, roles, map lock, occupancy heatmap |
 | [`database/`](database/) | PostgreSQL · PostGIS | User data, campus geometry, path graph, fingerprints, sync cursors, audit |
@@ -209,7 +209,7 @@ gantt
     Phase 1 :done, p1, 2026-05-19, 4w
 
     section Sensor Fusion
-    Phase 2 :active, p2, after p1, 4w
+    Phase 2 :done, p2, after p1, 4w
 
     section Crowdsourced Mapping
     Phase 3 :p3, after p2, 4w
@@ -230,8 +230,8 @@ gantt
 | Phase | Status | Highlights |
 |:---|:---|:---|
 | **1 — Foundation** | ✅ Complete | Android scaffold, Rust engine, Fastify backend, Room cache, JWT auth, seed data model |
-| **2 — Sensor Fusion** | 🔨 In Progress | A\* pathfinding, PDR primitives, fingerprint/QR/survey APIs, sensor contracts _(backend complete, mobile/native in progress)_ |
-| **3 — Crowdsourced Mapping** | 📋 Planned | Location contributions, voting thresholds, admin approval, React dashboard |
+| **2 — Sensor Fusion** | ✅ Complete | nalgebra EKF (6-state), A\* pathfinding, PDR/step detection, WiFi RSSI kNN matching, magnetic field matching, barometer floor detection, adaptive sampling, QR anchor scanning (CameraX + ML Kit), sensor fusion pipeline, fingerprint cache, floor indicator UI |
+| **3 — Crowdsourced Mapping** | 🔨 Next | Location contributions, voting thresholds, admin approval, React dashboard |
 | **4 — Offline & P2P** | 📋 Planned | BLE/WiFi Direct relay, offline queue, delta sync, predictive caching |
 | **5 — Intelligence & Safety** | 📋 Planned | Occupancy heatmap, SOS, lost person detection, path anomaly |
 | **6 — Gamification & Social** | 📋 Planned | Points/badges/leaderboards, buddy tracking, faculty availability |
