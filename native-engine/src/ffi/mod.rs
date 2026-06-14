@@ -1,8 +1,10 @@
 use std::ffi::c_void;
 
-use std::sync::Mutex;
+use std::sync::{Mutex, OnceLock};
 
 use crate::navigation::bearing::{distance_meters, initial_bearing_degrees};
+use crate::navigation::graph::CampusGraph;
+use crate::navigation::pathfinding::{find_path, PathResult};
 use crate::sensors::heading::{heading_confidence_from_accuracy, smooth_heading_degrees};
 use crate::sensors::motion::{
     acceleration_delta_from_gravity, classify_motion_state, gyro_magnitude,
@@ -22,6 +24,16 @@ type JInt = i32;
 type JLong = i64;
 
 static POSITION_STATE: Mutex<Option<PositionState>> = Mutex::new(None);
+static GRAPH: OnceLock<Mutex<CampusGraph>> = OnceLock::new();
+static LAST_PATH: OnceLock<Mutex<PathResult>> = OnceLock::new();
+
+fn graph() -> &'static Mutex<CampusGraph> {
+    GRAPH.get_or_init(|| Mutex::new(CampusGraph::new()))
+}
+
+fn last_path() -> &'static Mutex<PathResult> {
+    LAST_PATH.get_or_init(|| Mutex::new(PathResult::not_found()))
+}
 
 #[no_mangle]
 pub extern "system" fn Java_com_campusar_app_nativebridge_NativeNavigationEngine_nativeEngineVersionCode(
@@ -255,5 +267,149 @@ pub extern "system" fn Java_com_campusar_app_nativebridge_NativeNavigationEngine
         .lock()
         .ok()
         .and_then(|state| state.as_ref().map(|s| estimated_position(s).1))
+        .unwrap_or(f64::NAN)
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_campusar_app_nativebridge_NativeNavigationEngine_nativeGraphClear(
+    _env: JNIEnv,
+    _this: JObject,
+) {
+    if let Ok(mut graph) = graph().lock() {
+        graph.nodes.clear();
+        graph.edges.clear();
+    }
+    if let Ok(mut path) = last_path().lock() {
+        *path = PathResult::not_found();
+    }
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_campusar_app_nativebridge_NativeNavigationEngine_nativeGraphAddNode(
+    _env: JNIEnv,
+    _this: JObject,
+    lat: JDouble,
+    lon: JDouble,
+    floor: JInt,
+) -> JInt {
+    if !lat.is_finite() || !lon.is_finite() {
+        return -1;
+    }
+    graph()
+        .lock()
+        .map(|mut graph| graph.add_node(lat, lon, floor) as JInt)
+        .unwrap_or(-1)
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_campusar_app_nativebridge_NativeNavigationEngine_nativeGraphAddEdge(
+    _env: JNIEnv,
+    _this: JObject,
+    from: JInt,
+    to: JInt,
+    distance: JDouble,
+    bidirectional: JBoolean,
+    wheelchair: JBoolean,
+    floor_transition: JBoolean,
+) {
+    if from < 0 || to < 0 || !distance.is_finite() {
+        return;
+    }
+    if let Ok(mut graph) = graph().lock() {
+        graph.add_edge(
+            from as u32,
+            to as u32,
+            distance,
+            bidirectional != 0,
+            wheelchair != 0,
+            floor_transition != 0,
+        );
+    }
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_campusar_app_nativebridge_NativeNavigationEngine_nativeGraphNodeCount(
+    _env: JNIEnv,
+    _this: JObject,
+) -> JInt {
+    graph()
+        .lock()
+        .map(|graph| graph.node_count() as JInt)
+        .unwrap_or(0)
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_campusar_app_nativebridge_NativeNavigationEngine_nativeGraphEdgeCount(
+    _env: JNIEnv,
+    _this: JObject,
+) -> JInt {
+    graph()
+        .lock()
+        .map(|graph| graph.edge_count() as JInt)
+        .unwrap_or(0)
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_campusar_app_nativebridge_NativeNavigationEngine_nativeGraphFindPath(
+    _env: JNIEnv,
+    _this: JObject,
+    start: JInt,
+    goal: JInt,
+    wheelchair_only: JBoolean,
+) -> JInt {
+    if start < 0 || goal < 0 {
+        if let Ok(mut path) = last_path().lock() {
+            *path = PathResult::not_found();
+        }
+        return 0;
+    }
+
+    let result = graph()
+        .lock()
+        .map(|graph| find_path(&graph, start as u32, goal as u32, wheelchair_only != 0))
+        .unwrap_or_else(|_| PathResult::not_found());
+    let length = if result.found {
+        result.node_indices.len() as JInt
+    } else {
+        0
+    };
+    if let Ok(mut path) = last_path().lock() {
+        *path = result;
+    }
+    length
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_campusar_app_nativebridge_NativeNavigationEngine_nativeGraphPathNodeAt(
+    _env: JNIEnv,
+    _this: JObject,
+    index: JInt,
+) -> JInt {
+    if index < 0 {
+        return -1;
+    }
+    last_path()
+        .lock()
+        .ok()
+        .and_then(|path| path.node_indices.get(index as usize).copied())
+        .map(|node| node as JInt)
+        .unwrap_or(-1)
+}
+
+#[no_mangle]
+pub extern "system" fn Java_com_campusar_app_nativebridge_NativeNavigationEngine_nativeGraphPathDistance(
+    _env: JNIEnv,
+    _this: JObject,
+) -> JDouble {
+    last_path()
+        .lock()
+        .ok()
+        .and_then(|path| {
+            if path.found {
+                Some(path.total_distance_meters)
+            } else {
+                None
+            }
+        })
         .unwrap_or(f64::NAN)
 }
