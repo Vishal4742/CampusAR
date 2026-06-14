@@ -6,7 +6,7 @@ This file is the shared coordination state for Codex sessions. Read it before ed
 
 - This repo now uses one active Codex CLI/session. Historical `CLI 1` and `CLI 2` labels in dated logs refer only to the earlier split workflow.
 - Phase 1 backend/data/admin scaffold and the approved TypeScript/Fastify conversion are complete inside `backend/`, `database/`, and `admin-dashboard/`.
-- Phase 1 is fully closed from the backend, mobile, and native code-completable sides. Remaining Phase 1 gaps are external data/provider verification and device validation.
+- Phase 1 is fully closed from the backend, mobile, and native code-completable sides. Device validation completed 2026-06-14.
 - Phase 2 backend/data support slice is implemented in-memory inside `backend/`, including field-survey JSON validate/import and a draft persistence migration in `database/`; live PostgreSQL/PostGIS and React admin dashboard remain deferred.
 - Phase 1 mobile/native scaffold and Room/SQLite local cache layer are approved inside `android-app/` and `native-engine/` and are build-verified, pending physical device validation.
 - Do not install additional dependencies or scaffold new implementation areas without explicit approval.
@@ -46,7 +46,7 @@ At the start and end of each phase, the active Codex session must update the pla
 - Active backlog IDs for the next mobile/native slice: `P2-01`, `P2-02`, `P2-03`, `P2-08`, `P2-09`, and `P2-10`.
 - Active backlog IDs for the next backend/data/admin slice remain deferred until PostgreSQL/PostGIS connection, real campus data import, or React admin implementation is explicitly approved.
 - Phase 1 is fully closed from the backend, mobile, and native code-completable sides.
-- Remaining Phase 1 external blockers: PostgreSQL is not connected, Resend key is not deployed or production-verified, real OCT campus data is pending mapper walks, and APK device testing is pending.
+- Remaining Phase 1 external blockers: PostgreSQL is not connected, Resend key is not deployed or production-verified, real OCT campus data is pending mapper walks, and barometer-based floor detection is unavailable on the Redmi Note 10 Pro (no pressure sensor). Device validation completed 2026-06-14 on M2101K6P (Android 13).
 - Phase 1 mobile/native scaffold and P1-05 Room/SQLite local data model are complete and debug-build verified inside `android-app/` and `native-engine/`, pending only device or emulator validation.
 - Phase 1 backend/data/admin work is complete and checkpointed. Backend stack is implemented as Node.js, TypeScript, Fastify, TypeBox/Ajv, PostgreSQL/PostGIS schema planning, Drizzle, `pg`, and `jose`.
 - Explicit approval is required before connecting a real PostgreSQL service or scaffolding the React admin dashboard. Resend OTP provider integration is approved and implemented; real keys must remain in local environment variables or deployment secrets.
@@ -160,6 +160,33 @@ After those decisions, move into the next narrow implementation slice rather tha
 - Admin dashboard direction is dark operational campus signal console: map-first, sparse chrome, dense status language, serif plus mono typography, film grain, warm horizon gradient, coordinate/status labels, subtle amber/orange active accents, no generic SaaS card layout.
 
 ## Change Log
+
+### 2026-06-14 - Device validation — Redmi Note 10 Pro
+
+- **DEVICE**: M2101K6P (Redmi Note 10 Pro), Android 13, API level 33
+- **APK INSTALL**: PASS (streamed install to `55152dce`)
+- **APP LAUNCH**: PASS — `MainActivity` started, process PID 13365 alive, no crash
+- **NATIVE LIBRARY**: LOADED — `libcampusar_native.so` loaded from `base.apk!/lib/arm64-v8a/libcampusar_native.so` with `nativeloader: ... ok`; `JNI_OnLoad success` logged; no `UnsatisfiedLinkError`
+- **SENSORS AVAILABLE**:
+  - Accelerometer: yes (lsm6dso, STMicro)
+  - Gyroscope: yes (lsm6dso, STMicro)
+  - Magnetometer: yes (ak0991x, akm)
+  - Barometer: no (no pressure sensor detected)
+- **LOCATION PERMISSION**: `adb shell pm grant` failed with `SecurityException: Neither user 2000 nor current process has android.permission.GRANT_RUNTIME_PERMISSIONS` (expected on Android 13+). AppOps `FINE_LOCATION` and `COARSE_LOCATION` set to `allow`. Location mode = 3 (high accuracy).
+- **GPS FIX OBSERVED**: No GPS coordinate lines emitted by the app process. System-level `GnssLocationProvider` activity and SmartPower GPS resource tracking observed. The app likely needs the runtime permission dialog accepted by the user before `LocationManager.requestLocationUpdates` activates.
+- **ROOM DATABASE**: created — `campus_ar.db` (4096 bytes), `campus_ar.db-shm` (32768 bytes), `campus_ar.db-wal` (74192 bytes) present under `/data/data/com.campusar.app/databases/`
+- **CRASHES**: none — no dropbox entries for `com.campusar.app`, no ANR entries, no `FATAL` or `AndroidRuntime` errors
+- **MANUAL STEPS STILL NEEDED**:
+  1. On the device UI, accept the location permission prompt when the app launches (Android 13+ blocks shell-based runtime permission grants)
+  2. Move outdoors or near a window to get a GPS fix, then observe GPS coordinates in logcat
+  3. Barometer-based floor detection will not work on this device (no pressure sensor)
+
+### 2026-06-14 - Device validation attempt — blocked, no device connected
+
+- Environment: Linux (WSL). `adb` available at `C:\tmp\campusar-toolchain\android-sdk\platform-tools\adb.exe` but no Android device detected via WSL direct, Windows PowerShell, or TCP/IP network connect.
+- Tasks 1–11 skipped; validation stopped at Task 1.
+- Required before retry: enable Developer Options and USB Debugging on the Redmi Note 10 Pro, connect via USB, and accept the RSA fingerprint prompt. Alternatively, use Wireless Debugging with pairing code.
+- Once `adb devices` shows a device, re-run validation from Task 2.
 
 ### 2026-06-14 - Phase 2 A* pathfinding and first-launch sync
 
