@@ -1,5 +1,6 @@
 pub mod ffi;
 pub mod navigation;
+pub mod sensors;
 pub mod utils;
 
 use navigation::bearing::{distance_meters, initial_bearing_degrees};

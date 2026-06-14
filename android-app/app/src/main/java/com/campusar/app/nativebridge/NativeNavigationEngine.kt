@@ -138,6 +138,34 @@ class NativeNavigationEngine {
         } ?: DEFAULT_STEP_LENGTH_METERS
     }
 
+    external fun nativePositionInit(lat: Double, lon: Double, heading: Double)
+    external fun nativePositionUpdateGps(lat: Double, lon: Double, accuracyMeters: Double, epochMillis: Long)
+    external fun nativePositionUpdatePdr(headingDegrees: Double, stepLengthMeters: Double, stepCount: Int)
+    external fun nativePositionLatitude(): Double
+    external fun nativePositionLongitude(): Double
+
+    fun initPosition(lat: Double, lon: Double, heading: Double) {
+        callNative { nativePositionInit(lat, lon, heading) }
+    }
+
+    fun updatePositionGps(lat: Double, lon: Double, accuracyMeters: Double, epochMillis: Long) {
+        callNative { nativePositionUpdateGps(lat, lon, accuracyMeters, epochMillis) }
+    }
+
+    fun updatePositionPdr(headingDegrees: Double, stepLengthMeters: Double, stepCount: Int) {
+        callNative { nativePositionUpdatePdr(headingDegrees, stepLengthMeters, stepCount) }
+    }
+
+    fun estimatedLatitudeOrNull(): Double? {
+        val lat = callNative { nativePositionLatitude() } ?: return null
+        return if (lat.isFinite()) lat else null
+    }
+
+    fun estimatedLongitudeOrNull(): Double? {
+        val lon = callNative { nativePositionLongitude() } ?: return null
+        return if (lon.isFinite()) lon else null
+    }
+
     fun deadReckonDeltaOrNull(
         headingDegrees: Double,
         stepLengthMeters: Double,
