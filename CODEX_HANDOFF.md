@@ -168,6 +168,9 @@ Phase 2 is fully closed across all modules. Move to Phase 3 — Crowdsourced Map
 - `LoginActivity` is now the launcher activity; `MainActivity` becomes secondary. `MainActivity.onCreate()` checks for a valid session and redirects to `LoginActivity` if none found.
 - `BackendSyncRepository.get()` now reads the Bearer token from `AuthRepository.getAccessToken()` and sets `Authorization: Bearer <token>` when present; falls back to anonymous for public sync endpoints.
 - Build verified: `gradle -p android-app :app:assembleDebug --stacktrace` passes.
+- Admin dashboard now uses Vite + React + TypeScript in `admin-dashboard/` with `npm run build` as the verification step.
+- Admin login posts `{email}` to `POST /api/v1/auth/login`, stores the JWT in local storage, and sends `Authorization: Bearer <token>` on `/api/v1/me`.
+- Admin shell follows the dark campus signal-console direction and renders `/health` plus `/api/v1/me`; live `localhost:8080` verification was blocked by Apache/EnterpriseDB on that port.
 
 - Closed **P1-06**: the OCT initial campus entity and provisional center are recorded (`database/seeds/OCT_SEED_CONTRACT.md`, `source-links.json`, `backend/src/services/store.ts` `seedCampus()`). Added a P1-06 status note to `OCT_SEED_CONTRACT.md`. Verified campus geometry (geofence, footprints, floor plans, path graph, QR anchors, fingerprints) is deferred to Phase 3 (P3-02).
 - Closed **P1-07**: wrote the visitor / student / staff / faculty / verified-mapper / admin onboarding UX plan in `ONBOARDING_UX_PLAN.md`, mapped to the existing backend auth endpoints (`/auth/register/visitor`, `/auth/register/verified`, `/auth/otp/*`, `/auth/login`, `/auth/refresh`, `/admin/users/:id/role`, `/admin/admins`). Android UI implementation is a future follow-up, out of Phase 1 scope.

@@ -1,36 +1,33 @@
 # CampusAR Admin Dashboard
 
-Owner: CLI 2, WSL Codex.
+Owner: active backend/data/admin task.
 
-This is the planning scaffold for the React admin dashboard. No React/Vite dependencies are installed yet.
+This is the React + Vite + TypeScript admin dashboard scaffold for CampusAR.
 
 Visual direction is captured in `VISUAL_DIRECTION.md`.
 
-## Phase 1 Scope
+## Commands
 
-The SRS places the first admin dashboard implementation in Phase 3. During Phase 1, CLI 2 only prepares backend contracts and data shapes that the dashboard will later consume.
+```powershell
+npm install --include=dev
+npm run dev
+npm run build
+```
 
-Phase 1 dashboard-facing contracts:
-
-- Admin login and role authorization.
-- User role management.
-- Map lock state.
-- Confirmation thresholds by location category.
-- Pending location review data shape.
-- Admin audit events.
+Default local backend URL: `http://localhost:8080`.
 
 ## Current Scaffold
 
-`index.html` is a no-build contract console. It can call:
+The app currently includes:
 
-- `/health`
-- `/api/v1/routes`
-- `/api/v1/sync/manifest`
-- `/api/v1/admin/users`
-- `/api/v1/admin/thresholds`
-- `/api/v1/admin/map-lock`
-
-It is not the final React dashboard. It exists to smoke-test backend contracts until dashboard tooling is approved.
+- A Vite build step with strict TypeScript checking.
+- A dark campus signal-console app shell matching `VISUAL_DIRECTION.md`.
+- Compact route tabs for `Signal`, `Review`, and `Operators`.
+- A map-first spatial review surface with OCT provisional coordinate/status language.
+- Admin login via `POST /api/v1/auth/login` with `{ "email": "..." }`.
+- Access-token persistence in local storage.
+- Bearer-token requests to `GET /api/v1/me`.
+- Status readouts for `GET /health`, role, verification state, and auth state.
 
 ## Future Dashboard Views
 
