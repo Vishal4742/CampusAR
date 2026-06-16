@@ -4,6 +4,12 @@ Owner: CLI 2, WSL Codex.
 
 Status: planning contract. Do not treat this as verified campus geometry.
 
+## P1-06 Status
+
+The OCT initial campus entity and provisional center are recorded (closes backlog item P1-06). The contract below, the source links in `source-links.json` (with `userConfirmedNoCampusDataset: true`), and the runtime seed in `backend/src/services/store.ts` `seedCampus()` together materialize the `oct-bhopal` campus with provisional center `23.2462927, 77.5019383` (`coordinate_status: provisional`, `geofence_status: unknown`, map version `1` / `draft`) and two provisional `campus_pin` locations. Recorded as of 2026-06-15.
+
+Verified campus geometry — geofence, building footprints, floor plans, path graph, room/stair/lift coordinates, QR-anchor placements, and WiFi/magnetic fingerprints — remains unknown and is deferred to Phase 3 crowdsourced mapping (backlog item P3-02, "verified mapper provisioning workflow, required because no existing campus dataset is available"). The provisional center is a draft outdoor reference point only.
+
 ## Initial Campus Entity
 
 CampusAR should treat Oriental College of Technology as the initial campus entity.

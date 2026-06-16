@@ -6,7 +6,7 @@ This backlog is planning-only. Items are phrased as work packages, not implement
 
 ## Phase 1: Foundation
 
-Backend/data/admin Phase 1 status: closed. Remaining planned or blocked Phase 1 items below are mobile, external data, production provisioning, or future implementation work unless explicitly reassigned.
+Phase 1 status: closed. All Phase 1 backlog items are Done. P1-06 (campus entity recording) closed 2026-06-15 with verified geometry deferred to Phase 3 (P3-02). P1-07 (onboarding UX plan) closed 2026-06-15 in `ONBOARDING_UX_PLAN.md`; Android UI implementation is a future follow-up.
 
 | ID | Status | Work item | SRS basis |
 | --- | --- | --- | --- |
@@ -15,8 +15,8 @@ Backend/data/admin Phase 1 status: closed. Remaining planned or blocked Phase 1 
 | P1-03 | Done | Select OTP/email provider; college email domain decided as `oriental.ac.in`, Resend selected for OTP delivery | FR-AUTH-01, FR-AUTH-02 |
 | P1-04 | Done | Define API contracts for auth, roles, map sync, and dashboard access | Backend, admin requirements |
 | P1-05 | Done | Define initial local data model for cached graph, locations, floors, and settings | FR-NAV-01, FR-SYNC-01 |
-| P1-06 | Blocked | OCT initial campus entity and provisional center are recorded; real campus dataset still requires verified mapper walks | Navigation scope |
-| P1-07 | Planned | Plan visitor, student, staff, verified mapper, and admin onboarding UX | User classes |
+| P1-06 | Done | OCT initial campus entity and provisional center are recorded (seed contract + in-memory seed + source links, 2026-06-15); verified campus geometry deferred to Phase 3 (P3-02) | Navigation scope |
+| P1-07 | Done | Plan visitor, student, staff, verified mapper, and admin onboarding UX (written in `ONBOARDING_UX_PLAN.md`); Android UI implementation deferred | User classes |
 | P1-08 | Done | Plan outdoor GPS-backed navigation flow | FR-SENS-03, FR-NAV-03 |
 | P1-09 | Done | Plan backend deployment environment and uptime target | NFR-AVAIL-01 |
 | P1-10 | Done | Define release and test device baseline: SRS Android 8.0+/2 GB minimum, Redmi Note 10 Pro physical test target | Operating environment |

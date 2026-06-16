@@ -75,6 +75,12 @@ Final Phase 1 completion note, 2026-06-14:
 - All Phase 1 code-completable items are now done across backend, mobile, and native.
 - Remaining exceptions: PostgreSQL is not connected, Resend is not production-verified, real OCT campus data is pending mapper walks, and APK device validation is pending.
 
+Phase 1 administrative closeout, 2026-06-15:
+
+- Closed P1-06: the OCT initial campus entity and provisional center are recorded in the seed contract (`database/seeds/OCT_SEED_CONTRACT.md`), `source-links.json`, and the runtime `seedCampus()` seed. Verified campus geometry is deferred to Phase 3 (P3-02).
+- Closed P1-07: the visitor / student / staff / verified mapper / admin onboarding UX plan is written in `ONBOARDING_UX_PLAN.md`, mapped to the existing backend auth endpoints. Android UI implementation is a future follow-up.
+- **All Phase 1 backlog items (P1-01 through P1-11) are Done. Phase 1 is fully closed.** Remaining exceptions are external (Postgres connection, Resend production verification, real OCT data) or belong to Phase 3+.
+
 ## Phase 2: Sensor Fusion, Weeks 5-8
 
 SRS deliverables: EKF in Rust, PDR, WiFi RSSI, indoor map, floor switching, QR landmark snapping.

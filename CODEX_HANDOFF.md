@@ -160,6 +160,14 @@ Phase 2 is fully closed across all modules. Move to Phase 3 — Crowdsourced Map
 
 ## Change Log
 
+### 2026-06-15 - Phase 1 administrative closeout — all P1 items Done
+
+- Closed **P1-06**: the OCT initial campus entity and provisional center are recorded (`database/seeds/OCT_SEED_CONTRACT.md`, `source-links.json`, `backend/src/services/store.ts` `seedCampus()`). Added a P1-06 status note to `OCT_SEED_CONTRACT.md`. Verified campus geometry (geofence, footprints, floor plans, path graph, QR anchors, fingerprints) is deferred to Phase 3 (P3-02).
+- Closed **P1-07**: wrote the visitor / student / staff / faculty / verified-mapper / admin onboarding UX plan in `ONBOARDING_UX_PLAN.md`, mapped to the existing backend auth endpoints (`/auth/register/visitor`, `/auth/register/verified`, `/auth/otp/*`, `/auth/login`, `/auth/refresh`, `/admin/users/:id/role`, `/admin/admins`). Android UI implementation is a future follow-up, out of Phase 1 scope.
+- Updated `BACKLOG.md` (P1-06 `Blocked`→`Done`, P1-07 `Planned`→`Done`, Phase 1 status header) and `PHASED_ROADMAP.md` (Phase 1 closeout note).
+- **All Phase 1 backlog items (P1-01 through P1-11) are Done. Phase 1 is fully closed.**
+- Still open as external/future work: PostgreSQL/PostGIS connection, Resend production verification, real OCT campus data (Phase 3), Android onboarding UI implementation.
+
 ### 2026-06-14 - Device validation — Redmi Note 10 Pro
 
 - **DEVICE**: M2101K6P (Redmi Note 10 Pro), Android 13, API level 33
