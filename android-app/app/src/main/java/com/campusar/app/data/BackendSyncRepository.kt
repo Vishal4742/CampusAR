@@ -26,6 +26,7 @@ class BackendSyncRepository(
     private val baseUrl: String,
 ) {
     private val mapCache = MapCacheRepository(context)
+    private val authRepo = AuthRepository(context)
 
     private fun get(path: String): String? {
         return try {
@@ -34,6 +35,10 @@ class BackendSyncRepository(
                 connection.connectTimeout = TIMEOUT_MILLIS
                 connection.readTimeout = TIMEOUT_MILLIS
                 connection.requestMethod = "GET"
+                val token = authRepo.getAccessToken()
+                if (token != null) {
+                    connection.setRequestProperty("Authorization", "Bearer $token")
+                }
                 connection.inputStream.bufferedReader(Charsets.UTF_8).use { reader ->
                     reader.readText()
                 }

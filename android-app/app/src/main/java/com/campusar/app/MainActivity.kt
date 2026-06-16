@@ -24,6 +24,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.campusar.app.data.BackendSyncRepository
 import com.campusar.app.data.DestinationRepository
+import com.campusar.app.data.AuthRepository
 import com.campusar.app.data.FingerprintCacheRepository
 import com.campusar.app.data.MapCacheRepository
 import com.campusar.app.data.SurveyRepository
@@ -95,6 +96,13 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val authRepo = AuthRepository(this)
+        if (authRepo.getActiveSession() == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
 
         nativeEngine = NativeNavigationEngine()
         locationSource = GpsLocationSource(this)

@@ -9,6 +9,7 @@ import com.campusar.app.db.dao.FloorProfileDao
 import com.campusar.app.db.dao.LocationDao
 import com.campusar.app.db.dao.MagneticFingerprintDao
 import com.campusar.app.db.dao.QrAnchorDao
+import com.campusar.app.db.dao.SessionDao
 import com.campusar.app.db.dao.SettingsDao
 import com.campusar.app.db.dao.WifiFingerprintDao
 import com.campusar.app.db.entity.AppSettingsEntity
@@ -18,6 +19,7 @@ import com.campusar.app.db.entity.CachedLocationEntity
 import com.campusar.app.db.entity.CachedMagneticFingerprintEntity
 import com.campusar.app.db.entity.CachedQrAnchorEntity
 import com.campusar.app.db.entity.CachedWifiFingerprintEntity
+import com.campusar.app.db.entity.UserSessionEntity
 
 @Database(
     entities = [
@@ -28,8 +30,9 @@ import com.campusar.app.db.entity.CachedWifiFingerprintEntity
         CachedMagneticFingerprintEntity::class,
         CachedFloorProfileEntity::class,
         CachedQrAnchorEntity::class,
+        UserSessionEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class CampusDatabase : RoomDatabase() {
@@ -40,6 +43,7 @@ abstract class CampusDatabase : RoomDatabase() {
     abstract fun magneticFingerprintDao(): MagneticFingerprintDao
     abstract fun floorProfileDao(): FloorProfileDao
     abstract fun qrAnchorDao(): QrAnchorDao
+    abstract fun sessionDao(): SessionDao
 
     companion object {
         @Volatile

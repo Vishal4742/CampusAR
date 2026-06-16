@@ -160,7 +160,14 @@ Phase 2 is fully closed across all modules. Move to Phase 3 — Crowdsourced Map
 
 ## Change Log
 
-### 2026-06-15 - Phase 1 administrative closeout — all P1 items Done
+### 2026-06-16 - Android onboarding/login UI with JWT session persistence
+
+- Added `UserSessionEntity` (Room entity) + `SessionDao`. Bumped `CampusDatabase` version 2→3 (destructive migration).
+- Added `AuthRepository` with `registerVisitor()` and `login()` calling `POST /api/v1/auth/register/visitor` and `POST /auth/login`, parsing `{user, tokens}` and persisting to Room.
+- Added `LoginActivity` (programmatic dark-theme UI matching `MainActivity.buildContentView()` style) with name field, email field, "Continue as Visitor" and "Login" buttons. On auth success → `startActivity(MainActivity) + finish()`.
+- `LoginActivity` is now the launcher activity; `MainActivity` becomes secondary. `MainActivity.onCreate()` checks for a valid session and redirects to `LoginActivity` if none found.
+- `BackendSyncRepository.get()` now reads the Bearer token from `AuthRepository.getAccessToken()` and sets `Authorization: Bearer <token>` when present; falls back to anonymous for public sync endpoints.
+- Build verified: `gradle -p android-app :app:assembleDebug --stacktrace` passes.
 
 - Closed **P1-06**: the OCT initial campus entity and provisional center are recorded (`database/seeds/OCT_SEED_CONTRACT.md`, `source-links.json`, `backend/src/services/store.ts` `seedCampus()`). Added a P1-06 status note to `OCT_SEED_CONTRACT.md`. Verified campus geometry (geofence, footprints, floor plans, path graph, QR anchors, fingerprints) is deferred to Phase 3 (P3-02).
 - Closed **P1-07**: wrote the visitor / student / staff / faculty / verified-mapper / admin onboarding UX plan in `ONBOARDING_UX_PLAN.md`, mapped to the existing backend auth endpoints (`/auth/register/visitor`, `/auth/register/verified`, `/auth/otp/*`, `/auth/login`, `/auth/refresh`, `/admin/users/:id/role`, `/admin/admins`). Android UI implementation is a future follow-up, out of Phase 1 scope.
