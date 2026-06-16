@@ -19,6 +19,10 @@ backend/.env
 backend/.env.local
 *.log
 
+# Generated documentation artifacts
+docs/
+vishal_minor_1 (2).docx
+
 # IDE / OS
 .idea/
 *.iml
